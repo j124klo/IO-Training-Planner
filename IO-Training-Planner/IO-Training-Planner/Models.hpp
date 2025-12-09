@@ -37,7 +37,6 @@ struct PlanEntry {
 struct TrainingPlan {
     int id;
     string name;
-    bool isPublic;
     vector<PlanEntry> entries;
 };
 

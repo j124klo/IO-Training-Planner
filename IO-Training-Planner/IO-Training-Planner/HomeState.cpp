@@ -13,21 +13,31 @@ void HomeState::Init()
 {
 	//this->_data->assets.loadTexture("Home State Background", HOME_STATE_BACKGROUND_FILEPATH);
 	this->_data->assets.loadTexture("Deafult Background", DEAFULT_BACKGROUND_FILEPATH);
-	//	reszta co ma siê za³adowaæ tutaj
+	this->_data->assets.loadTexture("Gui Bar", GUI_BAR_FILEPATH);
+	this->_data->assets.loadTexture("Plan Panel", PLAN_PANEL_FILEPATH);
+	this->_data->assets.loadTexture("Menu Button", MENU_BUTTON_FILEPATH);
+	this->_data->assets.loadTexture("Home Button", HOME_BUTTON_FILEPATH);
 
 	//this->_background.setTexture(this->_data->assets.getTexture("Home State Background"));
 	this->_background.setTexture(this->_data->assets.getTexture("Deafult Background"));
-	//	reszta co ma siê ustawiæ tutaj
+	this->_guiBar.setTexture(this->_data->assets.getTexture("Gui Bar"));
+	this->_planPanel.setTexture(this->_data->assets.getTexture("Plan Panel"));
+	this->_menuButton.setTexture(this->_data->assets.getTexture("Menu Button"));
+	this->_homeButton.setTexture(this->_data->assets.getTexture("Home Button"));
 
+	this->_guiBarDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 3 / 4;
+	this->_guiBarDestination.y = 0.0f;
+	this->_guiBar.setPosition(0 - this->_guiBar.getGlobalBounds().width *3 /4, 0);
+	this->_menuButton.setScale(1.3f, 1.3f);
+	this->_menuButton.setPosition(this->_guiBar.getGlobalBounds().width / 2 - this->_menuButton.getGlobalBounds().width / 2, 20.0f);
+	this->_homeButton.setScale(1.3f, 1.3f);
+	this->_homeButton.setPosition(this->_guiBar.getGlobalBounds().width /2 - this->_homeButton.getGlobalBounds().width /2, 20.0f + (this->_homeButton.getGlobalBounds().height + 40.0f));
 	
-	//	tak siê ustawia elementy w oknie  |
-	//									  V
-
-	/*this->_BlackJack_station.setPosition(
-		((SCREAN_WIDTH / 2) - (this->_BlackJack_station.getGlobalBounds().width / 2)),
-		((SCREAN_HEIGHT / 2) - (this->_BlackJack_station.getGlobalBounds().height / 2))
+	this->_planPanel.setScale(0.5f, 0.5f);
+	this->_planPanel.setPosition(
+		(SCREAN_WIDTH - this->_guiBar.getGlobalBounds().width) / 2 - this->_planPanel.getGlobalBounds().width / 2 + this->_guiBar.getGlobalBounds().width,
+		SCREAN_HEIGHT /2 - this->_planPanel.getGlobalBounds().height /2
 	);
-	this->_gui_bar.setPosition(0, (SCREAN_HEIGHT - this->_gui_bar.getGlobalBounds().height));*/
 }
 
 void HomeState::HandleInput()
@@ -41,14 +51,27 @@ void HomeState::HandleInput()
 			this->_data->window.close();
 		}
 
-		//	tu dodaje sie akcje typu klikanie elementów i przycisków (wszystko mo¿e byæ przyciskiem, nie ma ograniczeñ, nawet background)
+		if (this->_data->input.isSpriteClicked(this->_menuButton, sf::Mouse::Left, this->_data->window))
+		{
+			if (this->_guiBarDestination.x == 0.0f)
+			{
+				this->_guiBarDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 3 / 4;
+			}
+			else
+			{
+				this->_guiBarDestination.x = 0.0f;
+			}
+		}
 
 	}
 }
 
 void HomeState::Update(float dt)
 {
-	//	tu jak coœ przesuwamy po ekrania, zmieniamy czy jest widoczne itp (np pasek menu najlepiej za³adowaæ poza ekranem i go wysun¹æ na ekran)
+	if (floorV2f(this->_guiBar.getPosition()) != floorV2f(this->_guiBarDestination))
+	{
+		ObjMoveTo(this->_guiBar, this->_guiBarDestination, 650.0f, dt);
+	}
 }
 
 void HomeState::Draw(float dt)
@@ -56,7 +79,10 @@ void HomeState::Draw(float dt)
 	this->_data->window.clear(sf::Color::Black);
 
 	this->_data->window.draw(this->_background);
-	//	tu co nad czym ma siê wyœwietlaæ (im wy¿ej w kodzie tym bardziej na spodzie)
+	this->_data->window.draw(this->_planPanel);
+	this->_data->window.draw(this->_guiBar);
+	this->_data->window.draw(this->_menuButton);
+	this->_data->window.draw(this->_homeButton);
 
 	this->_data->window.display();
 }

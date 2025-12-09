@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include "State.hpp"
 #include "AppPlanner.hpp"
+#include "ObjectMoveTo.hpp"
 
 using namespace std;
 
@@ -15,7 +16,13 @@ private:
 	sf::Clock _clock;
 
 	sf::Sprite _background;
-	//	nowe elementy tutaj
+	sf::Sprite _planPanel;
+	vector<sf::Text> _planTexts;
+
+	sf::Vector2f _guiBarDestination;
+	sf::Sprite _guiBar;
+	sf::Sprite _menuButton;
+	sf::Sprite _homeButton;
 
 public:
 	HomeState(AppDataRef data);

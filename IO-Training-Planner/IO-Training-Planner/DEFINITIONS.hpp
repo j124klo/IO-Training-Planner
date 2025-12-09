@@ -18,3 +18,7 @@
 
 //	home state
 //#define HOME_STATE_BACKGROUND_FILEPATH "Resources/Images/Home Background.png"
+#define GUI_BAR_FILEPATH "Resources/Images/Gui Bar.png"
+#define PLAN_PANEL_FILEPATH "Resources/Images/Plan Panel.png"
+#define HOME_BUTTON_FILEPATH "Resources/Images/Home Button.png"
+#define MENU_BUTTON_FILEPATH "Resources/Images/Menu Button.png"

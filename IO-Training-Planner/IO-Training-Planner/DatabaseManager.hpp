@@ -25,13 +25,16 @@ public:
     DatabaseManager();
 
     shared_ptr<User> addUser(const string& login, const string& pass);
-
     shared_ptr<User> getUserByLogin(const string& login);
+	shared_ptr<User> getUserById(int id);
+    bool assignPlanToUser(int userId, int planId);
 
     shared_ptr<Exercise> addExercise(const string& name, vector<ValueType> types);
-
     shared_ptr<Exercise> getExerciseById(int id);
-
     const vector<shared_ptr<Exercise>>& getAllExercises() const;
 
+    shared_ptr<TrainingPlan> addTrainingPlan(const string& name);
+	shared_ptr<TrainingPlan> getTrainingPlanById(int id);
+    bool addExerciseToPlan(int planId, int exerciseId, int dayOfWeek, std::vector<ResultValue> targets);
+    
 };

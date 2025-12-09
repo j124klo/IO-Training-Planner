@@ -147,7 +147,8 @@
     <ClCompile Include="Models.hpp" />
     <ClCompile Include="HomeState.cpp" />
     <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="InputManager.hpp" />
+    <ClInclude Include="Button.hpp" />
+    <ClInclude Include="InputManager.hpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="SplashState.cpp" />
     <ClCompile Include="StateMachine.cpp" />
@@ -159,12 +160,17 @@
     <ClInclude Include="DEFINITIONS.hpp" />
     <ClInclude Include="HomeState.hpp" />
     <ClInclude Include="LoginState.hpp" />
+    <ClInclude Include="ObjectMoveTo.hpp" />
     <ClInclude Include="SplashState.hpp" />
     <ClInclude Include="State.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Images\Continue Button.png" />
     <Image Include="Resources\Images\Default Background.png" />
+    <Image Include="Resources\Images\GUI Bar.png" />
+    <Image Include="Resources\Images\Home Button.png" />
+    <Image Include="Resources\Images\Menu Button.png" />
+    <Image Include="Resources\Images\Plan Panel.png" />
     <Image Include="Resources\Images\Splash Background.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
