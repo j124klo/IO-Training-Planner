@@ -28,6 +28,18 @@
     <Filter Include="Resource Files\Images">
       <UniqueIdentifier>{9b82a4f1-8ee3-4388-8ad7-9bd5b3187f01}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Tools">
+      <UniqueIdentifier>{b38d5431-a882-4b66-89b4-0b40334fcc86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tools">
+      <UniqueIdentifier>{c2255b94-b8e7-4b68-8d2b-5582409bf95d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Data">
+      <UniqueIdentifier>{c94e1c66-b09f-49da-94b2-aa862a323c6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Data">
+      <UniqueIdentifier>{20875607-313a-4106-a7a7-2234768a2e18}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -60,6 +72,15 @@
     <ClCompile Include="HomeState.cpp">
       <Filter>Source Files\States</Filter>
     </ClCompile>
+    <ClCompile Include="Models.hpp">
+      <Filter>Header Files\Core\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="DatabaseManager.cpp">
+      <Filter>Source Files\Core\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="LoginState.cpp">
+      <Filter>Source Files\States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DEFINITIONS.hpp">
@@ -77,12 +98,21 @@
     <ClInclude Include="HomeState.hpp">
       <Filter>Header Files\States</Filter>
     </ClInclude>
+    <ClInclude Include="DatabaseManager.hpp">
+      <Filter>Header Files\Core\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="LoginState.hpp">
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Images\Splash Background.png">
       <Filter>Resource Files\Images</Filter>
     </Image>
-    <Image Include="Resources\Images\Home Background.png">
+    <Image Include="Resources\Images\Default Background.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="Resources\Images\Continue Button.png">
       <Filter>Resource Files\Images</Filter>
     </Image>
   </ItemGroup>

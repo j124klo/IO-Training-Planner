@@ -1,6 +1,6 @@
 #include "DEFINITIONS.hpp"
 #include "SplashState.hpp"
-#include "HomeState.hpp"
+#include "LoginState.hpp"
 
 using namespace std;
 
@@ -31,7 +31,7 @@ void SplashState::Update(float dt)
 {
 	if (this->_clock.getElapsedTime().asSeconds() > SPLASH_STATE_SHOW_TIME)
 	{
-		this->_data->machine.AddState(StateRef(new HomeState(_data)), true);
+		this->_data->machine.AddState(StateRef(new LoginState(_data)), true);
 	}
 }
 

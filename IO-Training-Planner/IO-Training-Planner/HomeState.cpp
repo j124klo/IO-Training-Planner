@@ -11,10 +11,12 @@ HomeState::HomeState(AppDataRef data) : _data(data)
 
 void HomeState::Init()
 {
-	this->_data->assets.loadTexture("Home State Background", HOME_STATE_BACKGROUND_FILEPATH);
+	//this->_data->assets.loadTexture("Home State Background", HOME_STATE_BACKGROUND_FILEPATH);
+	this->_data->assets.loadTexture("Deafult Background", DEAFULT_BACKGROUND_FILEPATH);
 	//	reszta co ma siê za³adowaæ tutaj
 
-	this->_background.setTexture(this->_data->assets.getTexture("Home State Background"));
+	//this->_background.setTexture(this->_data->assets.getTexture("Home State Background"));
+	this->_background.setTexture(this->_data->assets.getTexture("Deafult Background"));
 	//	reszta co ma siê ustawiæ tutaj
 
 	

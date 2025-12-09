@@ -142,6 +142,9 @@
     <ClCompile Include="AppPlanner.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="AssetManager.hpp" />
+    <ClCompile Include="DatabaseManager.cpp" />
+    <ClCompile Include="LoginState.cpp" />
+    <ClCompile Include="Models.hpp" />
     <ClCompile Include="HomeState.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="InputManager.hpp" />
@@ -152,13 +155,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppPlanner.hpp" />
+    <ClInclude Include="DatabaseManager.hpp" />
     <ClInclude Include="DEFINITIONS.hpp" />
     <ClInclude Include="HomeState.hpp" />
+    <ClInclude Include="LoginState.hpp" />
     <ClInclude Include="SplashState.hpp" />
     <ClInclude Include="State.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Resources\Images\Home Background.png" />
+    <Image Include="Resources\Images\Continue Button.png" />
+    <Image Include="Resources\Images\Default Background.png" />
     <Image Include="Resources\Images\Splash Background.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

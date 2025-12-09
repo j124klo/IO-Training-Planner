@@ -16,8 +16,10 @@ public:
 	~InputManager() {}
 
 	bool isSpriteClicked(sf::Sprite object, sf::Mouse::Button button, sf::RenderWindow& window);
+	bool isRectangleShapeClicked(sf::RectangleShape object, sf::Mouse::Button button, sf::RenderWindow& window);
 	bool isSpriteClickedAndReleased(sf::Sprite object, sf::Mouse::Button button, sf::RenderWindow& window, bool& isPressed, bool& doUpdate);
 	bool isKeyPressedAndReleased(sf::Keyboard::Key key, bool& isPressed, bool& doUpdate);
+	bool typingText(sf::Event& event, string& text, sf::Text& displayedText, bool& isActive);
 
 	void updateMousePositions(sf::RenderWindow& window);
 

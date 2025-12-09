@@ -8,6 +8,7 @@
 #include "StateMachine.hpp"
 #include "AssetManager.hpp"
 #include "InputManager.hpp"
+#include "DatabaseManager.hpp"
 
 using namespace std;
 
@@ -17,6 +18,8 @@ struct AppData
 	sf::RenderWindow window;
 	AssetManager assets;
 	InputManager input;
+	DatabaseManager database;
+	shared_ptr<User> currentUser = nullptr;
 };
 
 typedef shared_ptr<AppData> AppDataRef;
