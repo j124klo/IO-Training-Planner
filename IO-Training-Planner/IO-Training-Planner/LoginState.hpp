@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include "State.hpp"
 #include "AppPlanner.hpp"
+#include "Button.hpp"
 
 using namespace std;
 
@@ -27,12 +28,15 @@ private:
 	string _passwordText;
 	bool _isPasswordActive;
 
-	sf::Sprite _continueButton;
+	Button _continueButton;
 
 public:
 	LoginState(AppDataRef data);
 
 	void Init();
+	void Login_Init();
+	void Password_Init();
+	void Button_Init();
 
 	void HandleInput();
 	void Update(float dt);

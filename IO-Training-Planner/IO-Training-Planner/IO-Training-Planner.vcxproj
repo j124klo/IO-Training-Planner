@@ -141,7 +141,7 @@
   <ItemGroup>
     <ClCompile Include="AppPlanner.cpp" />
     <ClCompile Include="AssetManager.cpp" />
-    <ClCompile Include="AssetManager.hpp" />
+    <ClInclude Include="AssetManager.hpp" />
     <ClCompile Include="DatabaseManager.cpp" />
     <ClCompile Include="LoginState.cpp" />
     <ClCompile Include="Models.hpp" />
@@ -152,7 +152,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="SplashState.cpp" />
     <ClCompile Include="StateMachine.cpp" />
-    <ClCompile Include="StateMachine.hpp" />
+    <ClInclude Include="StateMachine.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppPlanner.hpp" />
@@ -165,13 +165,18 @@
     <ClInclude Include="State.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Resources\Images\Calculator_Button.png" />
     <Image Include="Resources\Images\Continue Button.png" />
     <Image Include="Resources\Images\Default Background.png" />
+    <Image Include="Resources\Images\Exercise List Button.png" />
     <Image Include="Resources\Images\GUI Bar.png" />
     <Image Include="Resources\Images\Home Button.png" />
     <Image Include="Resources\Images\Menu Button.png" />
     <Image Include="Resources\Images\Plan Panel.png" />
+    <Image Include="Resources\Images\Progress Button.png" />
     <Image Include="Resources\Images\Splash Background.png" />
+    <Image Include="Resources\Images\Stopwatch Button.png" />
+    <Image Include="Resources\Images\Training Button.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -4,7 +4,7 @@ using namespace std;
 
 void DatabaseManager::seedData()
 {
-    addUser("user1", "12345");
+    addUser("a", "a");
 
     addExercise("Push-ups", { ValueType::REPS });
     addExercise("Running", { ValueType::DISTANCE_KM, ValueType::TIME_SEC });

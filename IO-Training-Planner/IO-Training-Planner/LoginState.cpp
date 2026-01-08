@@ -9,18 +9,10 @@ LoginState::LoginState(AppDataRef data) : _data(data)
 
 }
 
-void LoginState::Init()
+void LoginState::Login_Init()
 {
-	this->_data->assets.loadTexture("Deafult Background", DEAFULT_BACKGROUND_FILEPATH);
-	this->_data->assets.loadFont("Deafult Font", DEAFULT_FONT_FILEPATH);
-	this->_data->assets.loadTexture("Continue Button", CONTINUE_BUTTON_FILEPATH);
-
-	this->_background.setTexture(this->_data->assets.getTexture("Deafult Background"));
 	this->_login.setFont(this->_data->assets.getFont("Deafult Font"));
 	this->_loginLabel.setFont(this->_data->assets.getFont("Deafult Font"));
-	this->_password.setFont(this->_data->assets.getFont("Deafult Font"));
-	this->_passwordLabel.setFont(this->_data->assets.getFont("Deafult Font"));
-	this->_continueButton.setTexture(this->_data->assets.getTexture("Continue Button"));
 
 	this->_isLoginActive = false;
 	this->_loginText = "";
@@ -44,6 +36,11 @@ void LoginState::Init()
 		this->_loginBounds.getPosition().x + this->_loginBounds.getSize().x / 2 - this->_loginLabel.getGlobalBounds().width / 2,
 		this->_loginBounds.getPosition().y - this->_loginLabel.getGlobalBounds().height - 20.0f
 	);
+}
+void LoginState::Password_Init()
+{
+	this->_password.setFont(this->_data->assets.getFont("Deafult Font"));
+	this->_passwordLabel.setFont(this->_data->assets.getFont("Deafult Font"));
 
 	this->_isPasswordActive = false;
 	this->_passwordText = "";
@@ -67,12 +64,33 @@ void LoginState::Init()
 		this->_passwordBounds.getPosition().x + this->_passwordBounds.getSize().x / 2 - this->_passwordLabel.getGlobalBounds().width / 2,
 		this->_passwordBounds.getPosition().y - this->_passwordLabel.getGlobalBounds().height - 20.0f
 	);
+}
+void LoginState::Button_Init()
+{
+	this->_continueButton._sprite.setTexture(this->_data->assets.getTexture("Continue Button"));
 
-	this->_continueButton.setScale(0.8f, 0.8f);
-	this->_continueButton.setPosition(
-		SCREAN_WIDTH / 2 - this->_continueButton.getGlobalBounds().width / 2,
-		this->_passwordBounds.getPosition().y + this->_continueButton.getGlobalBounds().height * 2
+	this->_continueButton._pressed = false;
+	this->_continueButton._update = false;
+	this->_continueButton._rect = sf::IntRect(0, 0, 800, 300);
+	this->_continueButton._sprite.setTextureRect(this->_continueButton._rect);
+	this->_continueButton._sprite.setScale(0.25f, 0.25f);
+	this->_continueButton._sprite.setPosition(
+		SCREAN_WIDTH / 2 - this->_continueButton._sprite.getGlobalBounds().width / 2,
+		this->_passwordBounds.getPosition().y + this->_continueButton._sprite.getGlobalBounds().height * 2
 	);
+}
+
+void LoginState::Init()
+{
+	this->_data->assets.loadTexture("Deafult Background", DEAFULT_BACKGROUND_FILEPATH);
+	this->_data->assets.loadFont("Deafult Font", DEAFULT_FONT_FILEPATH);
+	this->_data->assets.loadTexture("Continue Button", CONTINUE_BUTTON_FILEPATH);
+
+	this->_background.setTexture(this->_data->assets.getTexture("Deafult Background"));
+	
+	Login_Init();
+	Password_Init();
+	Button_Init();
 }
 
 void LoginState::HandleInput()
@@ -86,7 +104,7 @@ void LoginState::HandleInput()
 			this->_data->window.close();
 		}
 
-		if (this->_data->input.isSpriteClicked(this->_continueButton, sf::Mouse::Left, this->_data->window))
+		if (this->_data->input.isSpriteClickedAndReleased(this->_continueButton._sprite, sf::Mouse::Left, this->_data->window, this->_continueButton._pressed, this->_continueButton._update))
 		{
 			auto user = this->_data->database.getUserByLogin(this->_login.getString());
 			if (user && user->password == this->_password.getString()) {
@@ -140,7 +158,21 @@ void LoginState::HandleInput()
 
 void LoginState::Update(float dt)
 {
-	//	tu jak coœ przesuwamy po ekrania, zmieniamy czy jest widoczne itp (np pasek menu najlepiej za³adowaæ poza ekranem i go wysun¹æ na ekran)
+	if (this->_continueButton._update)
+	{
+		this->_continueButton._update = false;
+
+		if (this->_continueButton._pressed)
+		{
+			this->_continueButton._rect.left = 800;
+			this->_continueButton._sprite.setTextureRect(this->_continueButton._rect);
+		}
+		else
+		{
+			this->_continueButton._rect.left = 0;
+			this->_continueButton._sprite.setTextureRect(this->_continueButton._rect);
+		}
+	}
 }
 
 void LoginState::Draw(float dt)
@@ -157,7 +189,7 @@ void LoginState::Draw(float dt)
 	this->_data->window.draw(this->_passwordBounds);
 	this->_data->window.draw(this->_password);
 
-	this->_data->window.draw(this->_continueButton);
+	this->_data->window.draw(this->_continueButton._sprite);
 
 	this->_data->window.display();
 }

@@ -14,7 +14,6 @@ private:
     vector<shared_ptr<Exercise>> exercises;
     vector<shared_ptr<TrainingPlan>> plans;
 
-	//  ID counters (klucze g³ówne w sql)
     int nextUserId = 1;
     int nextExId = 1;
     int nextPlanId = 1;

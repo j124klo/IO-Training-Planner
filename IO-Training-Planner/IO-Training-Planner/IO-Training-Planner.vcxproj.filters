@@ -51,17 +51,11 @@
     <ClCompile Include="AssetManager.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="AssetManager.hpp">
-      <Filter>Header Files\Core</Filter>
-    </ClCompile>
     <ClCompile Include="InputManager.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="StateMachine.cpp">
       <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="StateMachine.hpp">
-      <Filter>Header Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="SplashState.cpp">
       <Filter>Source Files\States</Filter>
@@ -110,6 +104,12 @@
     <ClInclude Include="Button.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AssetManager.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="StateMachine.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Images\Splash Background.png">
@@ -131,6 +131,21 @@
       <Filter>Resource Files\Images</Filter>
     </Image>
     <Image Include="Resources\Images\Menu Button.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="Resources\Images\Calculator_Button.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="Resources\Images\Stopwatch Button.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="Resources\Images\Training Button.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="Resources\Images\Progress Button.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="Resources\Images\Exercise List Button.png">
       <Filter>Resource Files\Images</Filter>
     </Image>
   </ItemGroup>
