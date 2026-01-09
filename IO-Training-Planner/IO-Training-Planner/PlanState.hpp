@@ -10,12 +10,18 @@
 #include "Button.hpp"
 #include "Exercise.hpp"
 #include "DatabaseManager.hpp"
+#include "PlanEntry.hpp"
+#include <algorithm>
+#include <sstream>
+#include <iomanip>
 
 using namespace std;
 
 class PlanState : public State
 {
 private:
+	string getDayName(int dayId);
+
 	AppDataRef _data;
 	sf::Clock _clock;
 
@@ -43,6 +49,7 @@ private:
 
 	//	Exercise entries
 	vector<ExerciseItem> _exercises;
+	vector<PlanGUIEntry> _planEntries;
 
 public:
 	PlanState(AppDataRef data);

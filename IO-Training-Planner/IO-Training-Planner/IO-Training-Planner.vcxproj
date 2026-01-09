@@ -156,6 +156,7 @@
     <ClCompile Include="PlanState.cpp" />
     <ClCompile Include="SplashState.cpp" />
     <ClCompile Include="StateMachine.cpp" />
+    <ClInclude Include="PlanEntry.hpp" />
     <ClInclude Include="PlanState.hpp" />
     <ClInclude Include="StateMachine.hpp" />
   </ItemGroup>

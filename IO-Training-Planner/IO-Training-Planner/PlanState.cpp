@@ -10,6 +10,19 @@ PlanState::PlanState(AppDataRef data) : _data(data)
 
 }
 
+string PlanState::getDayName(int dayId) {
+	switch (dayId) {
+	case 1: return "Poniedzialek";
+	case 2: return "Wtorek";
+	case 3: return "Sroda";
+	case 4: return "Czwartek";
+	case 5: return "Piatek";
+	case 6: return "Sobota";
+	case 7: return "Niedziela";
+	default: return "";
+	}
+}
+
 void PlanState::GUI_Init()
 {
 	this->_guiBar.setTexture(this->_data->assets.getTexture("Gui Bar"));
@@ -373,33 +386,63 @@ void PlanState::GUI_Draw(float dt)
 
 void PlanState::Exercises_Init()
 {
-	/*
-	this->_exercises.clear();
-	auto dbExercises = this->_data->database.getAllExercises();
+	this->_planEntries.clear();
 
-	for (const auto& dbEx : dbExercises)
-	{
-		ExerciseItem localEx;
-		localEx._name = dbEx->name;
-		localEx._description = dbEx->description;
-		this->_exercises.push_back(localEx);
+	if (!this->_data->currentUser || !this->_data->currentUser->currentPlanId.has_value()) {
+		return;
 	}
 
-	//	pêtla ustawiaj¹ca teksty na ekranie, ich pozycje oraz style
-	for (size_t i = 0; i < this->_exercises.size(); i++)
+	int planId = this->_data->currentUser->currentPlanId.value();
+
+	auto dbPlan = this->_data->database.getTrainingPlanById(planId);
+
+	if (!dbPlan) return;
+
+	for (const auto& dbEntry : dbPlan->entries)
 	{
-		this->_exercises[i]._nameText.setFont(this->_data->assets.getFont("Deafult Font"));
-		this->_exercises[i]._nameText.setString(this->_exercises[i]._name);
-		this->_exercises[i]._nameText.setCharacterSize(40);
-		this->_exercises[i]._nameText.setFillColor(sf::Color::White);
-		this->_exercises[i]._nameText.setPosition(400.0f, 100.0f + i * 150.0f);
-		this->_exercises[i]._descriptionText.setFont(this->_data->assets.getFont("Deafult Font"));
-		this->_exercises[i]._descriptionText.setString(this->_exercises[i]._description);
-		this->_exercises[i]._descriptionText.setCharacterSize(20);
-		this->_exercises[i]._descriptionText.setFillColor(sf::Color(200, 200, 200));
-		this->_exercises[i]._descriptionText.setPosition(400.0f, 140.0f + i * 150.0f);
+		PlanGUIEntry guiEntry;
+
+		guiEntry._dayId = dbEntry.dayOfWeek;
+		guiEntry._dayName = getDayName(dbEntry.dayOfWeek);
+
+		auto exercise = this->_data->database.getExerciseById(dbEntry.exerciseId);
+		if (exercise) {
+			guiEntry._exerciseName = exercise->name;
+		}
+		else {
+			guiEntry._exerciseName = "Nieznane cwiczenie";
+		}
+
+		stringstream ss;
+		for (size_t i = 0; i < dbEntry.targetValues.size(); ++i) {
+
+			if (holds_alternative<int>(dbEntry.targetValues[i])) {
+				ss << get<int>(dbEntry.targetValues[i]);
+			}
+			else if (holds_alternative<float>(dbEntry.targetValues[i])) {
+				float val = get<float>(dbEntry.targetValues[i]);
+				if (val == (int)val) ss << (int)val;
+				else ss << fixed << setprecision(1) << val;
+			}
+
+			if (i < dbEntry.targetValues.size() - 1) {
+				ss << " x ";
+			}
+		}
+
+		if (guiEntry._exerciseName == "Bieganie") ss << " km";
+		else if (guiEntry._exerciseName.find("Push-ups") != string::npos) ss << " powt.";
+		else ss << " kg";
+
+		guiEntry._targetInfo = ss.str();
+
+		this->_planEntries.push_back(guiEntry);
 	}
-	*/
+
+	sort(this->_planEntries.begin(), this->_planEntries.end(),
+		[](const PlanGUIEntry& a, const PlanGUIEntry& b) {
+			return a._dayId < b._dayId;
+		});
 }
 void PlanState::Exercises_Draw(float dt)
 {

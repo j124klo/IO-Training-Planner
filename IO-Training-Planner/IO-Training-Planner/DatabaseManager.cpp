@@ -208,7 +208,7 @@ void DatabaseManager::createTables() {
 void DatabaseManager::seedData()
 {
     cout << "Seeding database..." << endl;
-    addUser("a", "a"); // Twoje "a", "a" zmieni³em na admin/admin
+    addUser("admin", "admin");
     addUser("b", "b");
 
     addExercise("Push-ups", "Klasyczne pompki na klatke piersiowa", { ValueType::REPS });
