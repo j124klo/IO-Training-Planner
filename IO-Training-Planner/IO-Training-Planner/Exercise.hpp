@@ -3,7 +3,7 @@
 
 using namespace std;
 
-struct Exercise
+struct ExerciseItem
 {
 	string _name;
 	string _description;

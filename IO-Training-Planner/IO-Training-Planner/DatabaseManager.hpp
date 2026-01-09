@@ -69,7 +69,7 @@ public:
     shared_ptr<User> getUserById(int id);
     bool assignPlanToUser(int userId, int planId);
 
-    shared_ptr<Exercise> addExercise(const string& name, vector<ValueType> types);
+    shared_ptr<Exercise> addExercise(const string& name, const string& description, vector<ValueType> types);
     shared_ptr<Exercise> getExerciseById(int id);
     vector<shared_ptr<Exercise>> getAllExercises(); // Zmiana: zwracamy kopiê wektora, nie referencjê
 

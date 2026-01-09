@@ -376,6 +376,15 @@ void ExerciseListState::GUI_Draw(float dt)
 void ExerciseListState::Exercises_Init()
 {
 	//	pêtla wczytuj¹ca æwiczenia z bazy danych do wektora _exercises
+	this->_exercises.clear();
+	auto dbExercises = this->_data->database.getAllExercises();
+
+	for (const auto& dbEx : dbExercises) {
+		ExerciseItem localEx;
+		localEx._name = dbEx->name;
+		localEx._description = dbEx->description;
+		this->_exercises.push_back(localEx);
+	}
 }
 
 

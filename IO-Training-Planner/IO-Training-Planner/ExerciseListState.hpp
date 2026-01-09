@@ -9,6 +9,7 @@
 #include "ObjectMoveTo.hpp"
 #include "Button.hpp"
 #include "Exercise.hpp"
+#include "DatabaseManager.hpp"
 
 using namespace std;
 
@@ -41,7 +42,7 @@ private:
 	Button _exerciseListButton;
 
 	//	Exercise entries
-	vector<Exercise> _exercises;
+	vector<ExerciseItem> _exercises;
 
 public:
 	ExerciseListState(AppDataRef data);

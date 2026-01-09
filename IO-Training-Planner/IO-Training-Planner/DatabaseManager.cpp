@@ -183,6 +183,7 @@ void DatabaseManager::createTables() {
     *db << "CREATE TABLE IF NOT EXISTS exercises ("
         "id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "name TEXT, "
+        "description TEXT, "
         "value_types TEXT, " // Przechowujemy jako string "0,1"
         "is_public INTEGER DEFAULT 1"
         ");";
@@ -210,9 +211,9 @@ void DatabaseManager::seedData()
     addUser("a", "a"); // Twoje "a", "a" zmieni³em na admin/admin
     addUser("b", "b");
 
-    addExercise("Push-ups", { ValueType::REPS });
-    addExercise("Running", { ValueType::DISTANCE_KM, ValueType::TIME_SEC });
-    addExercise("Deadlift", { ValueType::WEIGHT_KG, ValueType::REPS });
+    addExercise("Push-ups", "Klasyczne pompki na klatke piersiowa", { ValueType::REPS });
+    addExercise("Running", "Bieganie w terenie lub na biezni", { ValueType::DISTANCE_KM, ValueType::TIME_SEC });
+    addExercise("Deadlift", "Martwy ciag ze sztanga", { ValueType::WEIGHT_KG, ValueType::REPS });
 
     auto plan = addTrainingPlan("Beginner Plan");
     // Przyk³adowe przypisanie (zak³adamy ID 1, 2, 3 bo dopiero dodaliœmy)
@@ -295,10 +296,10 @@ bool DatabaseManager::assignPlanToUser(int userId, int planId)
     }
 }
 
-shared_ptr<Exercise> DatabaseManager::addExercise(const string& name, vector<ValueType> types)
+shared_ptr<Exercise> DatabaseManager::addExercise(const string& name, const string& description, vector<ValueType> types)
 {
     string typesStr = serializeTypes(types);
-    *db << "INSERT INTO exercises (name, value_types) VALUES (?, ?);" << name << typesStr;
+    *db << "INSERT INTO exercises (name, description, value_types) VALUES (?, ?, ?);" << name << description << typesStr;
 
     int id = db->last_insert_rowid();
     return getExerciseById(id);
@@ -310,11 +311,12 @@ shared_ptr<Exercise> DatabaseManager::getExerciseById(int id)
     bool found = false;
     string typeStr;
 
-    *db << "SELECT id, name, value_types, is_public FROM exercises WHERE id = ?;"
+    *db << "SELECT id, name, description, value_types, is_public FROM exercises WHERE id = ?;"
         << id
-        >> [&](int _id, string _n, string _t, int _pub) {
+        >> [&](int _id, string _n, string _desc, string _t, int _pub) {
         ex->id = _id;
         ex->name = _n;
+        ex->description = _desc;
         ex->valueTypes = deserializeTypes(_t);
         ex->isPublic = (_pub != 0);
         found = true;
@@ -327,11 +329,12 @@ vector<shared_ptr<Exercise>> DatabaseManager::getAllExercises()
 {
     vector<shared_ptr<Exercise>> list;
     try {
-        *db << "SELECT id, name, value_types, is_public FROM exercises;"
-            >> [&](int _id, string _n, string _t, int _pub) {
+        *db << "SELECT id, name, description, value_types, is_public FROM exercises;"
+            >> [&](int _id, string _n, string _desc, string _t, int _pub) {
             auto ex = make_shared<Exercise>();
             ex->id = _id;
             ex->name = _n;
+            ex->description = _desc;
             ex->valueTypes = deserializeTypes(_t);
             ex->isPublic = (_pub != 0);
             list.push_back(ex);
