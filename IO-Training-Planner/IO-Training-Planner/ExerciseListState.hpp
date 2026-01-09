@@ -53,6 +53,7 @@ public:
 	void GUI_Draw(float dt);
 
 	void Exercises_Init();
+	void Exercises_Draw(float dt);
 
 
 	void Init();
