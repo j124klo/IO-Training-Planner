@@ -1,6 +1,7 @@
 #include "DEFINITIONS.hpp"
 #include "ExerciseListState.hpp"
 #include "HomeState.hpp"
+#include "PlanState.hpp"
 
 using namespace std;
 
@@ -132,7 +133,6 @@ void ExerciseListState::GUI_Init()
 		20.0f + 3 * (this->_exerciseListButton._sprite.getGlobalBounds().height + 40.0f)
 	);
 }
-
 void ExerciseListState::GUI_HandleInput()
 {
 	if (this->_data->input.isSpriteClickedAndReleased(this->_menuButton._sprite, sf::Mouse::Left, this->_data->window, this->_menuButton._pressed, this->_menuButton._update))
@@ -183,7 +183,7 @@ void ExerciseListState::GUI_HandleInput()
 	}
 	if (this->_data->input.isSpriteClickedAndReleased(this->_planButton._sprite, sf::Mouse::Left, this->_data->window, this->_planButton._pressed, this->_planButton._update))
 	{
-
+		this->_data->machine.AddState(StateRef(new PlanState(this->_data)), true);
 	}
 	if (this->_data->input.isSpriteClickedAndReleased(this->_stopwatchButton._sprite, sf::Mouse::Left, this->_data->window, this->_stopwatchButton._pressed, this->_stopwatchButton._update))
 	{
@@ -202,7 +202,6 @@ void ExerciseListState::GUI_HandleInput()
 		this->_data->machine.AddState(StateRef(new ExerciseListState(this->_data)), true);
 	}
 }
-
 void ExerciseListState::GUI_Update(float dt)
 {
 	//	updating button textures
@@ -358,7 +357,6 @@ void ExerciseListState::GUI_Update(float dt)
 		ObjMoveTo(this->_exerciseListButton._sprite, this->_exerciseListButtonDestination, 650.0f, dt);
 	}
 }
-
 void ExerciseListState::GUI_Draw(float dt)
 {
 	this->_data->window.draw(this->_guiBar);

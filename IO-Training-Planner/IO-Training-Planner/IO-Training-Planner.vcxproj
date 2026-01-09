@@ -153,8 +153,10 @@
     <ClInclude Include="ExerciseListState.hpp" />
     <ClInclude Include="InputManager.hpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="PlanState.cpp" />
     <ClCompile Include="SplashState.cpp" />
     <ClCompile Include="StateMachine.cpp" />
+    <ClInclude Include="PlanState.hpp" />
     <ClInclude Include="StateMachine.hpp" />
   </ItemGroup>
   <ItemGroup>
