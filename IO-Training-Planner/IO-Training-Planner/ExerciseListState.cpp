@@ -372,6 +372,13 @@ void ExerciseListState::GUI_Draw(float dt)
 	this->_data->window.draw(this->_exerciseListButton._sprite);
 }
 
+
+void ExerciseListState::Exercises_Init()
+{
+	//	pêtla wczytuj¹ca æwiczenia z bazy danych do wektora _exercises
+}
+
+
 void ExerciseListState::Init()
 {
 	this->_background.setTexture(this->_data->assets.getTexture("Deafult Background"));

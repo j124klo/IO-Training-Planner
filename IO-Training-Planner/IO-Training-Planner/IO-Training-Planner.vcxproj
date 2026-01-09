@@ -149,6 +149,7 @@
     <ClCompile Include="HomeState.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClInclude Include="Button.hpp" />
+    <ClInclude Include="Exercise.hpp" />
     <ClInclude Include="ExerciseListState.hpp" />
     <ClInclude Include="InputManager.hpp" />
     <ClCompile Include="Main.cpp" />
