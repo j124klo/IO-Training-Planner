@@ -72,6 +72,9 @@
     <ClCompile Include="LoginState.cpp">
       <Filter>Source Files\States</Filter>
     </ClCompile>
+    <ClCompile Include="ExerciseListState.cpp">
+      <Filter>Source Files\States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DEFINITIONS.hpp">
@@ -109,6 +112,9 @@
     </ClInclude>
     <ClInclude Include="StateMachine.hpp">
       <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ExerciseListState.hpp">
+      <Filter>Header Files\States</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

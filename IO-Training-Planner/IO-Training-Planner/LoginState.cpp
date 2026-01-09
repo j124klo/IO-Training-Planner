@@ -108,8 +108,8 @@ void LoginState::HandleInput()
 		{
 			auto user = this->_data->database.getUserByLogin(this->_login.getString());
 			if (user && user->password == this->_password.getString()) {
-				_data->currentUser = user;
-				_data->machine.AddState(StateRef(new HomeState(_data)), true);
+				this->_data->currentUser = user;
+				this->_data->machine.AddState(StateRef(new HomeState(this->_data)), true);
 			}
 		}
 

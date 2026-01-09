@@ -1,27 +1,16 @@
 #include "DEFINITIONS.hpp"
-#include "HomeState.hpp"
 #include "ExerciseListState.hpp"
-//	#include pozosta³e stany do których mo¿na przejœæ z tego stanu
+#include "HomeState.hpp"
 
 using namespace std;
 
-HomeState::HomeState(AppDataRef data) : _data(data)
+ExerciseListState::ExerciseListState(AppDataRef data) : _data(data)
 {
 
 }
 
-void HomeState::GUI_Init()
+void ExerciseListState::GUI_Init()
 {
-	this->_data->assets.loadTexture("Gui Bar", GUI_BAR_FILEPATH);
-	this->_data->assets.loadTexture("Menu Button", MENU_BUTTON_FILEPATH);
-	this->_data->assets.loadTexture("Home Button", HOME_BUTTON_FILEPATH);
-	this->_data->assets.loadTexture("Training Button", TRAINING_BUTTON_FILEPATH);
-	this->_data->assets.loadTexture("Plan Button", PLAN_BUTTON_FILEPATH);
-	this->_data->assets.loadTexture("Stopwatch Button", STOPWATCH_BUTTON_FILEPATH);
-	this->_data->assets.loadTexture("Calculator Button", CALCULATOR_BUTTON_FILEPATH);
-	this->_data->assets.loadTexture("Progress Button", PROGRESS_BUTTON_FILEPATH);
-	this->_data->assets.loadTexture("Exercise List Button", EXERCISE_LIST_BUTTON_FILEPATH);
-
 	this->_guiBar.setTexture(this->_data->assets.getTexture("Gui Bar"));
 	this->_menuButton._sprite.setTexture(this->_data->assets.getTexture("Menu Button"));
 	this->_homeButton._sprite.setTexture(this->_data->assets.getTexture("Home Button"));
@@ -144,77 +133,77 @@ void HomeState::GUI_Init()
 	);
 }
 
-void HomeState::GUI_HandleInput()
+void ExerciseListState::GUI_HandleInput()
 {
-		if (this->_data->input.isSpriteClickedAndReleased(this->_menuButton._sprite, sf::Mouse::Left, this->_data->window, this->_menuButton._pressed, this->_menuButton._update))
+	if (this->_data->input.isSpriteClickedAndReleased(this->_menuButton._sprite, sf::Mouse::Left, this->_data->window, this->_menuButton._pressed, this->_menuButton._update))
+	{
+		if (this->_guiBarDestination.x == 0.0f)
 		{
-			if (this->_guiBarDestination.x == 0.0f)
-			{
-				this->_guiBarDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 0.9;
+			this->_guiBarDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 0.9;
 
-				this->_menuButtonDestination.x = this->_menuButton._sprite.getGlobalBounds().width;
-				this->_homeButtonDestination.x = this->_homeButton._sprite.getGlobalBounds().width;
-				this->_homeButtonDestination.y = 20.0f + (this->_homeButton._sprite.getGlobalBounds().height + 40.0f);
+			this->_menuButtonDestination.x = this->_menuButton._sprite.getGlobalBounds().width;
+			this->_homeButtonDestination.x = this->_homeButton._sprite.getGlobalBounds().width;
+			this->_homeButtonDestination.y = 20.0f + (this->_homeButton._sprite.getGlobalBounds().height + 40.0f);
 
-				this->_trainingButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 3 - this->_trainingButton._sprite.getGlobalBounds().width / 2 + 10.0f;
-				this->_planButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_planButton._sprite.getGlobalBounds().width / 2 - 10.0f;
+			this->_trainingButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 3 - this->_trainingButton._sprite.getGlobalBounds().width / 2 + 10.0f;
+			this->_planButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_planButton._sprite.getGlobalBounds().width / 2 - 10.0f;
 
-				this->_stopwatchButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 3 - this->_stopwatchButton._sprite.getGlobalBounds().width / 2 + 10.0f;
-				this->_calculatorButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_calculatorButton._sprite.getGlobalBounds().width / 2 - 10.0f;
-			
-				this->_progressButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 3 - this->_progressButton._sprite.getGlobalBounds().width / 2 + 10.0f;
-				this->_exerciseListButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_exerciseListButton._sprite.getGlobalBounds().width / 2 - 10.0f;
-			}
-			else
-			{
-				this->_guiBarDestination.x = 0.0f;
+			this->_stopwatchButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 3 - this->_stopwatchButton._sprite.getGlobalBounds().width / 2 + 10.0f;
+			this->_calculatorButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_calculatorButton._sprite.getGlobalBounds().width / 2 - 10.0f;
 
-				this->_menuButtonDestination.x = this->_guiBar.getGlobalBounds().width / 3 - this->_menuButton._sprite.getGlobalBounds().width / 2 - 10.0f;
-				this->_homeButtonDestination.x = this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_homeButton._sprite.getGlobalBounds().width / 2 + 10.0f;
-				this->_homeButtonDestination.y = 20.0f;
-
-				this->_trainingButtonDestination.x = this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_trainingButton._sprite.getGlobalBounds().width / 2 + 10.0f;
-				this->_planButtonDestination.x = this->_guiBar.getGlobalBounds().width / 3 - this->_planButton._sprite.getGlobalBounds().width / 2 - 10.0f;
-
-				this->_stopwatchButtonDestination.x = this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_stopwatchButton._sprite.getGlobalBounds().width / 2 + 10.0f;
-				this->_calculatorButtonDestination.x = this->_guiBar.getGlobalBounds().width / 3 - this->_calculatorButton._sprite.getGlobalBounds().width / 2 - 10.0f;
-
-				this->_progressButtonDestination.x = this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_progressButton._sprite.getGlobalBounds().width / 2 + 10.0f;
-				this->_exerciseListButtonDestination.x = this->_guiBar.getGlobalBounds().width / 3 - this->_exerciseListButton._sprite.getGlobalBounds().width / 2 - 10.0f;
-			}
+			this->_progressButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 3 - this->_progressButton._sprite.getGlobalBounds().width / 2 + 10.0f;
+			this->_exerciseListButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_exerciseListButton._sprite.getGlobalBounds().width / 2 - 10.0f;
 		}
-		
-		if (this->_data->input.isSpriteClickedAndReleased(this->_homeButton._sprite, sf::Mouse::Left, this->_data->window, this->_homeButton._pressed, this->_homeButton._update))
+		else
 		{
-			this->_data->machine.AddState(StateRef(new HomeState(this->_data)), true);
-		}
-		if (this->_data->input.isSpriteClickedAndReleased(this->_trainingButton._sprite, sf::Mouse::Left, this->_data->window, this->_trainingButton._pressed, this->_trainingButton._update))
-		{
+			this->_guiBarDestination.x = 0.0f;
 
-		}
-		if (this->_data->input.isSpriteClickedAndReleased(this->_planButton._sprite, sf::Mouse::Left, this->_data->window, this->_planButton._pressed, this->_planButton._update))
-		{
+			this->_menuButtonDestination.x = this->_guiBar.getGlobalBounds().width / 3 - this->_menuButton._sprite.getGlobalBounds().width / 2 - 10.0f;
+			this->_homeButtonDestination.x = this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_homeButton._sprite.getGlobalBounds().width / 2 + 10.0f;
+			this->_homeButtonDestination.y = 20.0f;
 
-		}
-		if (this->_data->input.isSpriteClickedAndReleased(this->_stopwatchButton._sprite, sf::Mouse::Left, this->_data->window, this->_stopwatchButton._pressed, this->_stopwatchButton._update))
-		{
+			this->_trainingButtonDestination.x = this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_trainingButton._sprite.getGlobalBounds().width / 2 + 10.0f;
+			this->_planButtonDestination.x = this->_guiBar.getGlobalBounds().width / 3 - this->_planButton._sprite.getGlobalBounds().width / 2 - 10.0f;
 
-		}
-		if (this->_data->input.isSpriteClickedAndReleased(this->_calculatorButton._sprite, sf::Mouse::Left, this->_data->window, this->_calculatorButton._pressed, this->_calculatorButton._update))
-		{
+			this->_stopwatchButtonDestination.x = this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_stopwatchButton._sprite.getGlobalBounds().width / 2 + 10.0f;
+			this->_calculatorButtonDestination.x = this->_guiBar.getGlobalBounds().width / 3 - this->_calculatorButton._sprite.getGlobalBounds().width / 2 - 10.0f;
 
+			this->_progressButtonDestination.x = this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_progressButton._sprite.getGlobalBounds().width / 2 + 10.0f;
+			this->_exerciseListButtonDestination.x = this->_guiBar.getGlobalBounds().width / 3 - this->_exerciseListButton._sprite.getGlobalBounds().width / 2 - 10.0f;
 		}
-		if (this->_data->input.isSpriteClickedAndReleased(this->_progressButton._sprite, sf::Mouse::Left, this->_data->window, this->_progressButton._pressed, this->_progressButton._update))
-		{
+	}
 
-		}
-		if (this->_data->input.isSpriteClickedAndReleased(this->_exerciseListButton._sprite, sf::Mouse::Left, this->_data->window, this->_exerciseListButton._pressed, this->_exerciseListButton._update))
-		{
-			this->_data->machine.AddState(StateRef(new ExerciseListState(this->_data)), true);
-		}
+	if (this->_data->input.isSpriteClickedAndReleased(this->_homeButton._sprite, sf::Mouse::Left, this->_data->window, this->_homeButton._pressed, this->_homeButton._update))
+	{
+		this->_data->machine.AddState(StateRef(new HomeState(this->_data)), true);
+	}
+	if (this->_data->input.isSpriteClickedAndReleased(this->_trainingButton._sprite, sf::Mouse::Left, this->_data->window, this->_trainingButton._pressed, this->_trainingButton._update))
+	{
+
+	}
+	if (this->_data->input.isSpriteClickedAndReleased(this->_planButton._sprite, sf::Mouse::Left, this->_data->window, this->_planButton._pressed, this->_planButton._update))
+	{
+
+	}
+	if (this->_data->input.isSpriteClickedAndReleased(this->_stopwatchButton._sprite, sf::Mouse::Left, this->_data->window, this->_stopwatchButton._pressed, this->_stopwatchButton._update))
+	{
+
+	}
+	if (this->_data->input.isSpriteClickedAndReleased(this->_calculatorButton._sprite, sf::Mouse::Left, this->_data->window, this->_calculatorButton._pressed, this->_calculatorButton._update))
+	{
+
+	}
+	if (this->_data->input.isSpriteClickedAndReleased(this->_progressButton._sprite, sf::Mouse::Left, this->_data->window, this->_progressButton._pressed, this->_progressButton._update))
+	{
+
+	}
+	if (this->_data->input.isSpriteClickedAndReleased(this->_exerciseListButton._sprite, sf::Mouse::Left, this->_data->window, this->_exerciseListButton._pressed, this->_exerciseListButton._update))
+	{
+		this->_data->machine.AddState(StateRef(new ExerciseListState(this->_data)), true);
+	}
 }
 
-void HomeState::GUI_Update(float dt)
+void ExerciseListState::GUI_Update(float dt)
 {
 	//	updating button textures
 	if (this->_menuButton._update)
@@ -370,7 +359,7 @@ void HomeState::GUI_Update(float dt)
 	}
 }
 
-void HomeState::GUI_Draw(float dt)
+void ExerciseListState::GUI_Draw(float dt)
 {
 	this->_data->window.draw(this->_guiBar);
 	this->_data->window.draw(this->_menuButton._sprite);
@@ -383,24 +372,14 @@ void HomeState::GUI_Draw(float dt)
 	this->_data->window.draw(this->_exerciseListButton._sprite);
 }
 
-void HomeState::Init()
+void ExerciseListState::Init()
 {
-	this->_data->assets.loadTexture("Deafult Background", DEAFULT_BACKGROUND_FILEPATH);
-	this->_data->assets.loadTexture("Plan Panel", PLAN_PANEL_FILEPATH);
-
 	this->_background.setTexture(this->_data->assets.getTexture("Deafult Background"));
-	this->_planPanel.setTexture(this->_data->assets.getTexture("Plan Panel"));
 
 	GUI_Init();
-
-	this->_planPanel.setScale(0.6f, 0.6f);
-	this->_planPanel.setPosition(
-		this->_menuButton._sprite.getGlobalBounds().width * 2 + (SCREAN_WIDTH - this->_menuButton._sprite.getGlobalBounds().width * 2 - this->_planPanel.getGlobalBounds().width) / 2,
-		SCREAN_HEIGHT / 2 - this->_planPanel.getGlobalBounds().height / 2
-	);
 }
 
-void HomeState::HandleInput()
+void ExerciseListState::HandleInput()
 {
 	sf::Event event;
 
@@ -415,17 +394,16 @@ void HomeState::HandleInput()
 	}
 }
 
-void HomeState::Update(float dt)
+void ExerciseListState::Update(float dt)
 {
 	GUI_Update(dt);
 }
 
-void HomeState::Draw(float dt)
+void ExerciseListState::Draw(float dt)
 {
 	this->_data->window.clear(sf::Color::Black);
 
 	this->_data->window.draw(this->_background);
-	this->_data->window.draw(this->_planPanel);
 
 	GUI_Draw(dt);
 
