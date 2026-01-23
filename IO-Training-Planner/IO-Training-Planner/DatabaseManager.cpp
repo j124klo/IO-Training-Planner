@@ -159,11 +159,12 @@ DatabaseManager::DatabaseManager()
         createTables();
 
         // Sprawdzamy czy s¹ jacyœ userzy, jak nie - dodajemy dane startowe
-        int count = 0;
-        *db << "SELECT count(*) FROM users;" >> count;
-        if (count == 0) {
-            seedData();
-        }
+        //int count = 0;
+        //*db << "SELECT count(*) FROM users;" >> count;
+        //if (count == 0) {
+        //    seedData();
+        //}
+        seedData();
     }
     catch (exception& e) {
         cout << "Database Init Error: " << e.what() << endl;
@@ -210,24 +211,78 @@ void DatabaseManager::seedData()
     cout << "Seeding database..." << endl;
     addUser("admin", "admin");
     addUser("b", "b");
+    addUser("wiktor", "2137");
 
     addExercise("Push-ups", "Klasyczne pompki na klatke piersiowa", { ValueType::REPS });
     addExercise("Running", "Bieganie w terenie lub na biezni", { ValueType::DISTANCE_KM, ValueType::TIME_SEC });
     addExercise("Deadlift", "Martwy ciag ze sztanga", { ValueType::WEIGHT_KG, ValueType::REPS });
 
-    auto plan = addTrainingPlan("Beginner Plan");
-    // Przyk³adowe przypisanie (zak³adamy ID 1, 2, 3 bo dopiero dodaliœmy)
-    addExerciseToPlan(plan->id, 1, 1, { 20 });
-    assignPlanToUser(1, plan->id);
+    // Nowe (mo¿esz tu dopisywaæ kolejne w dowolnym momencie)
+    addExercise("Squats", "Przysiady ze sztanga", { ValueType::WEIGHT_KG, ValueType::REPS });
+    addExercise("Plank", "Deska - wzmacnianie brzucha", { ValueType::TIME_SEC });
+    addExercise("Cycling", "Jazda na rowerku-maszynie", { ValueType::DISTANCE_KM, ValueType::TIME_SEC });
+
+    // 3. PUSTY PLAN TRENINGOWY (tylko sama nazwa)
+    // Sprawdzamy czy plan istnieje, jeœli nie - tworzymy go, ale zostawiamy pusty.
+    int existingPlanId = -1;
+    string planName = "Beginner Plan";
+
+    try {
+        *db << "SELECT id FROM plans WHERE name = ?;"
+            << planName
+            >> existingPlanId;
+    }
+    catch (...) {}
+
+    if (existingPlanId != -1) {
+        cout << "[INFO] Plan '" << planName << "' juz istnieje. Pomijam." << endl;
+    }
+    else {
+        addTrainingPlan(planName);
+        cout << "[INFO] Utworzono pusty plan: " << planName << endl;
+
+        // UWAGA: Na Twoj¹ proœbê usun¹³em tutaj addExerciseToPlan oraz assignPlanToUser.
+        // Plan jest teraz pust¹ teczk¹, która czeka na póŸniej.
+    }
+
+    cout << "--- [SEED DATA] Done. ---" << endl;
 }
 
-shared_ptr<User> DatabaseManager::addUser(const string& login, const string& pass)
+/*shared_ptr<User> DatabaseManager::addUser(const string& login, const string& pass)
 {
     try {
         *db << "INSERT INTO users (login, password) VALUES (?, ?);"
             << login << pass;
 
         int id = db->last_insert_rowid();
+        return getUserById(id);
+    }
+    catch (exception& e) {
+        cout << "Add User Error: " << e.what() << endl;
+        return nullptr;
+    }
+}*/
+
+shared_ptr<User> DatabaseManager::addUser(const string& login, const string& pass)
+{
+    // KROK 1: SprawdŸ, czy u¿ytkownik o takim loginie ju¿ istnieje
+    // Wykorzystujemy Twoj¹ gotow¹ metodê pomocnicz¹
+    auto existingUser = getUserByLogin(login);
+
+    if (existingUser != nullptr) {
+        // U¿ytkownik znaleziony!
+        // Nie dodajemy duplikatu, po prostu zwracamy istniej¹cego.
+        return existingUser;
+    }
+
+    // KROK 2: Jeœli nie znaleziono (existingUser == nullptr), to dodajemy nowego
+    try {
+        *db << "INSERT INTO users (login, password) VALUES (?, ?);"
+            << login << pass; // Pamiêtaj o haszowaniu, jeœli je ju¿ wdro¿y³eœ!
+
+        int id = db->last_insert_rowid();
+
+        cout << "[INFO] Zarejestrowano nowego uzytkownika: " << login << endl; // Log w konsoli
         return getUserById(id);
     }
     catch (exception& e) {
@@ -296,13 +351,53 @@ bool DatabaseManager::assignPlanToUser(int userId, int planId)
     }
 }
 
-shared_ptr<Exercise> DatabaseManager::addExercise(const string& name, const string& description, vector<ValueType> types)
+/*shared_ptr<Exercise> DatabaseManager::addExercise(const string& name, const string& description, vector<ValueType> types)
 {
     string typesStr = serializeTypes(types);
     *db << "INSERT INTO exercises (name, description, value_types) VALUES (?, ?, ?);" << name << description << typesStr;
 
     int id = db->last_insert_rowid();
     return getExerciseById(id);
+}*/
+
+shared_ptr<Exercise> DatabaseManager::addExercise(const string& name, const string& description, vector<ValueType> types)
+{
+    // KROK 1: Sprawdzenie, czy æwiczenie ju¿ istnieje
+    int existingId = -1;
+
+    try {
+        // Próbujemy pobraæ ID æwiczenia o takiej samej nazwie
+        *db << "SELECT id FROM exercises WHERE name = ?;"
+            << name
+            >> existingId;
+    }
+    catch (exception& e) {
+        // Jeœli nie znaleziono, sqlite mo¿e rzuciæ wyj¹tek lub po prostu nie zmieniæ existingId
+        // Ignorujemy to, bo -1 oznacza "nie znaleziono"
+    }
+
+    // KROK 2: Decyzja
+    if (existingId != -1) {
+        // Æwiczenie ju¿ jest! Nie dublujemy go.
+        // Zwracamy wskaŸnik do tego, które ju¿ siedzi w bazie.
+        // (Opcjonalnie: móg³byœ tu zrobiæ UPDATE, ¿eby zaktualizowaæ opis, jeœli siê zmieni³)
+        return getExerciseById(existingId);
+    }
+
+    // KROK 3: Dodawanie (tylko jeœli nie znaleziono)
+    try {
+        string typesStr = serializeTypes(types);
+        *db << "INSERT INTO exercises (name, description, value_types) VALUES (?, ?, ?);"
+            << name << description << typesStr;
+
+        int newId = db->last_insert_rowid();
+        cout << "[INFO] Dodano nowe cwiczenie: " << name << endl; // Log dla Twojej wiadomoœci
+        return getExerciseById(newId);
+    }
+    catch (exception& e) {
+        cout << "Add Exercise Error: " << e.what() << endl;
+        return nullptr;
+    }
 }
 
 shared_ptr<Exercise> DatabaseManager::getExerciseById(int id)
