@@ -1,5 +1,6 @@
 #include "DEFINITIONS.hpp"
 #include "CalculatorState.hpp"
+#include "RepPercentageState.hpp"
 
 using namespace std;
 
@@ -163,10 +164,8 @@ void CalculatorState::State_HandleInput(sf::Event& event)
 				int reps = stoi(this->_repsText);
 				double oneRM = Calculate1RM(weight, reps);
 
-				ostringstream oss;
-				oss << fixed << setprecision(2) << oneRM << " kg";
-				this->_resultValue.setString(oss.str());
-				this->_resultValue.setFillColor(sf::Color::Yellow);
+				// PrzejdŸ do widoku procentów powtórzeñ
+				this->_data->machine.AddState(StateRef(new RepPercentageState(this->_data, oneRM)), true);
 			}
 			catch (const exception&)
 			{

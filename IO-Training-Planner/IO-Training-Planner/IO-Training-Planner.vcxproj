@@ -143,6 +143,7 @@
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="CalculatorState.cpp" />
     <ClCompile Include="ProgressState.cpp" />
+    <ClCompile Include="RepPercentageState.cpp" />
     <ClCompile Include="StopwatchState.cpp" />
     <ClCompile Include="TrainingState.cpp" />
     <ClInclude Include="AssetManager.hpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="PlanEntry.hpp" />
     <ClInclude Include="PlanState.hpp" />
     <ClInclude Include="ProgressState.hpp" />
+    <ClInclude Include="RepPercentageState.hpp" />
     <ClInclude Include="StateMachine.hpp" />
     <ClInclude Include="StopwatchState.hpp" />
     <ClInclude Include="TrainingState.hpp" />

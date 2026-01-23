@@ -93,6 +93,9 @@
     <ClCompile Include="TrainingState.cpp">
       <Filter>Source Files\States</Filter>
     </ClCompile>
+    <ClCompile Include="RepPercentageState.cpp">
+      <Filter>Source Files\States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DEFINITIONS.hpp">
@@ -156,6 +159,9 @@
       <Filter>Header Files\States</Filter>
     </ClInclude>
     <ClInclude Include="CalculatorState.hpp">
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="RepPercentageState.hpp">
       <Filter>Header Files\States</Filter>
     </ClInclude>
   </ItemGroup>
