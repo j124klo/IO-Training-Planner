@@ -12,7 +12,7 @@ void ProgressState::State_Init()
 {
 	this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
 }
-void ProgressState::State_HandleInput()
+void ProgressState::State_HandleInput(sf::Event& event)
 {
 
 }

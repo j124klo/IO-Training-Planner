@@ -30,7 +30,7 @@ void GuiState::HandleInput()
         }
 
         this->GUI_HandleInput();
-        this->State_HandleInput();
+        this->State_HandleInput(event);
     }
 }
 void GuiState::Update(float dt)

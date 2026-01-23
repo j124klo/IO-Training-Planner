@@ -46,7 +46,7 @@ public:
     virtual void Draw(float dt) override;
 
     virtual void State_Init() = 0;
-    virtual void State_HandleInput() = 0;
+    virtual void State_HandleInput(sf::Event& event) = 0;
     virtual void State_Update(float dt) = 0;
     virtual void State_Draw(float dt) = 0;
 };

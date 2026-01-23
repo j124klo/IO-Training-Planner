@@ -23,7 +23,7 @@ public:
 	HomeState(AppDataRef data);
 
 	void State_Init();
-	void State_HandleInput();
+	void State_HandleInput(sf::Event& event);
 	void State_Update(float dt);
 	void State_Draw(float dt);
 };

@@ -12,7 +12,7 @@ void TrainingState::State_Init()
 {
 	this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
 }
-void TrainingState::State_HandleInput()
+void TrainingState::State_HandleInput(sf::Event& event)
 {
 
 }

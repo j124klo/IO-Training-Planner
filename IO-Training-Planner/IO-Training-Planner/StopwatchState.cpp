@@ -12,7 +12,7 @@ void StopwatchState::State_Init()
 {
 	this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
 }
-void StopwatchState::State_HandleInput()
+void StopwatchState::State_HandleInput(sf::Event& event)
 {
 
 }

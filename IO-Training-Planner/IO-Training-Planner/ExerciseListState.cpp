@@ -51,7 +51,7 @@ void ExerciseListState::State_Init()
 
 	Exercises_Init();
 }
-void ExerciseListState::State_HandleInput()
+void ExerciseListState::State_HandleInput(sf::Event& event)
 {
 	
 }

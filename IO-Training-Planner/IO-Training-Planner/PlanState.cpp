@@ -99,7 +99,7 @@ void PlanState::State_Init()
 
 	Plan_Init();
 }
-void PlanState::State_HandleInput()
+void PlanState::State_HandleInput(sf::Event& event)
 {
 
 }
