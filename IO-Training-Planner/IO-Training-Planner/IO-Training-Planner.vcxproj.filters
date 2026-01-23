@@ -78,6 +78,21 @@
     <ClCompile Include="PlanState.cpp">
       <Filter>Source Files\States</Filter>
     </ClCompile>
+    <ClCompile Include="CalculatorState.cpp">
+      <Filter>Source Files\States</Filter>
+    </ClCompile>
+    <ClCompile Include="GuiState.cpp">
+      <Filter>Source Files\States</Filter>
+    </ClCompile>
+    <ClCompile Include="ProgressState.cpp">
+      <Filter>Source Files\States</Filter>
+    </ClCompile>
+    <ClCompile Include="StopwatchState.cpp">
+      <Filter>Source Files\States</Filter>
+    </ClCompile>
+    <ClCompile Include="TrainingState.cpp">
+      <Filter>Source Files\States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DEFINITIONS.hpp">
@@ -125,8 +140,23 @@
     <ClInclude Include="PlanState.hpp">
       <Filter>Header Files\States</Filter>
     </ClInclude>
+    <ClInclude Include="TrainingState.hpp">
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="StopwatchState.hpp">
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="ProgressState.hpp">
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
     <ClInclude Include="PlanEntry.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Core\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="GuiState.hpp">
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="CalculatorState.hpp">
+      <Filter>Header Files\States</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

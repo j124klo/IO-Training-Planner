@@ -5,8 +5,8 @@
 #define SCREAN_HEIGHT 900
 
 //	miscellaneous
-#define DEAFULT_BACKGROUND_FILEPATH "Resources/Images/Default Background.png"
-#define DEAFULT_FONT_FILEPATH "Resources/Fonts/Roboto-VariableFont_wdth,wght.ttf"
+#define DEFAULT_BACKGROUND_FILEPATH "Resources/Images/Default Background.png"
+#define DEFAULT_FONT_FILEPATH "Resources/Fonts/Roboto-VariableFont_wdth,wght.ttf"
 
 //	splash state
 #define SPLASH_STATE_SHOW_TIME 1.5

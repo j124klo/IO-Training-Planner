@@ -16,17 +16,15 @@
 
 using namespace std;
 
-class PlanState : public GuiState	//	uwaga, tu nic nie dzia³a
+class PlanState : public GuiState
 {
 private:
-	string getDayName(int dayId);
-
-	AppDataRef _data;
 	sf::Clock _clock;
 
 	sf::Sprite _background;
 
-	vector<PlanGUIEntry> _planEntries;
+	//string getDayName(int dayId);
+	//vector<PlanGUIEntry> _planEntries;
 
 public:
 	PlanState(AppDataRef data);

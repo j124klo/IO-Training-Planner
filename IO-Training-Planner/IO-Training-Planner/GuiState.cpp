@@ -1,7 +1,12 @@
 #include "DEFINITIONS.hpp"
 #include "GuiState.hpp"
+
 #include "HomeState.hpp"
+#include "TrainingState.hpp"
 #include "PlanState.hpp"
+#include "StopwatchState.hpp"
+#include "CalculatorState.hpp"
+#include "ProgressState.hpp"
 #include "ExerciseListState.hpp"
 
 GuiState::GuiState(AppDataRef data) : _data(data)
@@ -222,7 +227,7 @@ void GuiState::GUI_HandleInput()
 	}
 	if (this->_data->input.isSpriteClickedAndReleased(this->_trainingButton._sprite, sf::Mouse::Left, this->_data->window, this->_trainingButton._pressed, this->_trainingButton._update))
 	{
-
+		this->_data->machine.AddState(StateRef(new TrainingState(this->_data)), true);
 	}
 	if (this->_data->input.isSpriteClickedAndReleased(this->_planButton._sprite, sf::Mouse::Left, this->_data->window, this->_planButton._pressed, this->_planButton._update))
 	{
@@ -230,15 +235,15 @@ void GuiState::GUI_HandleInput()
 	}
 	if (this->_data->input.isSpriteClickedAndReleased(this->_stopwatchButton._sprite, sf::Mouse::Left, this->_data->window, this->_stopwatchButton._pressed, this->_stopwatchButton._update))
 	{
-
+		this->_data->machine.AddState(StateRef(new StopwatchState(this->_data)), true);
 	}
 	if (this->_data->input.isSpriteClickedAndReleased(this->_calculatorButton._sprite, sf::Mouse::Left, this->_data->window, this->_calculatorButton._pressed, this->_calculatorButton._update))
 	{
-
+		this->_data->machine.AddState(StateRef(new CalculatorState(this->_data)), true);
 	}
 	if (this->_data->input.isSpriteClickedAndReleased(this->_progressButton._sprite, sf::Mouse::Left, this->_data->window, this->_progressButton._pressed, this->_progressButton._update))
 	{
-
+		this->_data->machine.AddState(StateRef(new ProgressState(this->_data)), true);
 	}
 	if (this->_data->input.isSpriteClickedAndReleased(this->_exerciseListButton._sprite, sf::Mouse::Left, this->_data->window, this->_exerciseListButton._pressed, this->_exerciseListButton._update))
 	{

@@ -11,8 +11,8 @@ LoginState::LoginState(AppDataRef data) : _data(data)
 
 void LoginState::Login_Init()
 {
-	this->_login.setFont(this->_data->assets.getFont("Deafult Font"));
-	this->_loginLabel.setFont(this->_data->assets.getFont("Deafult Font"));
+	this->_login.setFont(this->_data->assets.getFont("Default Font"));
+	this->_loginLabel.setFont(this->_data->assets.getFont("Default Font"));
 
 	this->_isLoginActive = false;
 	this->_loginText = "";
@@ -39,8 +39,8 @@ void LoginState::Login_Init()
 }
 void LoginState::Password_Init()
 {
-	this->_password.setFont(this->_data->assets.getFont("Deafult Font"));
-	this->_passwordLabel.setFont(this->_data->assets.getFont("Deafult Font"));
+	this->_password.setFont(this->_data->assets.getFont("Default Font"));
+	this->_passwordLabel.setFont(this->_data->assets.getFont("Default Font"));
 
 	this->_isPasswordActive = false;
 	this->_passwordText = "";
@@ -82,17 +82,16 @@ void LoginState::Button_Init()
 
 void LoginState::Init()
 {
-	this->_data->assets.loadTexture("Deafult Background", DEAFULT_BACKGROUND_FILEPATH);
-	this->_data->assets.loadFont("Deafult Font", DEAFULT_FONT_FILEPATH);
+	this->_data->assets.loadTexture("Default Background", DEFAULT_BACKGROUND_FILEPATH);
+	this->_data->assets.loadFont("Default Font", DEFAULT_FONT_FILEPATH);
 	this->_data->assets.loadTexture("Continue Button", CONTINUE_BUTTON_FILEPATH);
 
-	this->_background.setTexture(this->_data->assets.getTexture("Deafult Background"));
+	this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
 	
 	Login_Init();
 	Password_Init();
 	Button_Init();
 }
-
 void LoginState::HandleInput()
 {
 	sf::Event event;
@@ -155,7 +154,6 @@ void LoginState::HandleInput()
 		}
 	}
 }
-
 void LoginState::Update(float dt)
 {
 	if (this->_continueButton._update)
@@ -174,7 +172,6 @@ void LoginState::Update(float dt)
 		}
 	}
 }
-
 void LoginState::Draw(float dt)
 {
 	this->_data->window.clear(sf::Color::Black);
