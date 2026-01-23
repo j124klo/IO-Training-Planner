@@ -144,6 +144,7 @@
     <ClInclude Include="AssetManager.hpp" />
     <ClCompile Include="DatabaseManager.cpp" />
     <ClCompile Include="ExerciseListState.cpp" />
+    <ClCompile Include="GuiState.cpp" />
     <ClCompile Include="LoginState.cpp" />
     <ClCompile Include="Models.hpp" />
     <ClCompile Include="HomeState.cpp" />
@@ -151,6 +152,7 @@
     <ClInclude Include="Button.hpp" />
     <ClInclude Include="Exercise.hpp" />
     <ClInclude Include="ExerciseListState.hpp" />
+    <ClInclude Include="GuiState.hpp" />
     <ClInclude Include="InputManager.hpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="PlanState.cpp" />
