@@ -34,7 +34,7 @@ public:
 
     shared_ptr<TrainingPlan> addTrainingPlan(const string& name);
 	shared_ptr<TrainingPlan> getTrainingPlanById(int id);
-    bool addExerciseToPlan(int planId, int exerciseId, int dayOfWeek, std::vector<ResultValue> targets);
+    bool addExerciseToPlan(int planId, int exerciseId, int dayOfWeek, int orderInDay, std::vector<ResultValue> targets);
     
 };*/
 
@@ -75,5 +75,5 @@ public:
 
     shared_ptr<TrainingPlan> addTrainingPlan(const string& name);
     shared_ptr<TrainingPlan> getTrainingPlanById(int id);
-    bool addExerciseToPlan(int planId, int exerciseId, int dayOfWeek, std::vector<ResultValue> targets);
+    bool addExerciseToPlan(int planId, int exerciseId, int dayOfWeek, int orderInDay, std::vector<ResultValue> targets);
 };

@@ -31,6 +31,7 @@ struct Exercise {
 struct PlanEntry {
     int exerciseId;
     int dayOfWeek; // 0-6
+    int orderInDay; // Kolejnoœæ æwiczenia w danym dniu (1, 2, 3, ...)
     vector<ResultValue> targetValues;
 };
 

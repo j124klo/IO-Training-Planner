@@ -20,11 +20,10 @@ class PlanState : public GuiState
 {
 private:
 	sf::Clock _clock;
-
 	sf::Sprite _background;
 
-	//string getDayName(int dayId);
-	//vector<PlanGUIEntry> _planEntries;
+	string getDayName(int dayId);
+	vector<PlanGUIEntry> _planEntries;
 
 public:
 	PlanState(AppDataRef data);

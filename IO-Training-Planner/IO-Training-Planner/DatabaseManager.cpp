@@ -201,7 +201,8 @@ void DatabaseManager::createTables() {
         "plan_id INTEGER, "
         "exercise_id INTEGER, "
         "day_of_week INTEGER, "
-        "target_val_1 REAL, " // Uproszczenie: trzymamy 2 wartoœci celu
+        "order_in_day INTEGER DEFAULT 1, "
+        "target_val_1 REAL, "
         "target_val_2 REAL"
         ");";
 }
@@ -212,20 +213,23 @@ void DatabaseManager::seedData()
     addUser("admin", "admin");
     addUser("b", "b");
     addUser("wiktor", "2137");
+    auto userA = addUser("a", "a");
 
-    addExercise("Push-ups", "Klasyczne pompki na klatke piersiowa", { ValueType::REPS });
-    addExercise("Running", "Bieganie w terenie lub na biezni", { ValueType::DISTANCE_KM, ValueType::TIME_SEC });
-    addExercise("Deadlift", "Martwy ciag ze sztanga", { ValueType::WEIGHT_KG, ValueType::REPS });
+    auto exPushUps = addExercise("Push-ups", "Klasyczne pompki na klatke piersiowa", { ValueType::REPS });
+    auto exRunning = addExercise("Running", "Bieganie w terenie lub na biezni", { ValueType::DISTANCE_KM, ValueType::TIME_SEC });
+    auto exDeadlift = addExercise("Deadlift", "Martwy ciag ze sztanga", { ValueType::WEIGHT_KG, ValueType::REPS });
+
 
     // Nowe (mo¿esz tu dopisywaæ kolejne w dowolnym momencie)
-    addExercise("Squats", "Przysiady ze sztanga", { ValueType::WEIGHT_KG, ValueType::REPS });
-    addExercise("Plank", "Deska - wzmacnianie brzucha", { ValueType::TIME_SEC });
-    addExercise("Cycling", "Jazda na rowerku-maszynie", { ValueType::DISTANCE_KM, ValueType::TIME_SEC });
+    auto exSquats = addExercise("Squats", "Przysiady ze sztanga", { ValueType::WEIGHT_KG, ValueType::REPS });
+    auto exPlank = addExercise("Plank", "Deska - wzmacnianie brzucha", { ValueType::TIME_SEC });
+    auto exCycling = addExercise("Cycling", "Jazda na rowerku-maszynie", { ValueType::DISTANCE_KM, ValueType::TIME_SEC });
 
     // 3. PUSTY PLAN TRENINGOWY (tylko sama nazwa)
     // Sprawdzamy czy plan istnieje, jeœli nie - tworzymy go, ale zostawiamy pusty.
+    
+    string planName = "Full Body Workout";
     int existingPlanId = -1;
-    string planName = "Beginner Plan";
 
     try {
         *db << "SELECT id FROM plans WHERE name = ?;"
@@ -238,11 +242,42 @@ void DatabaseManager::seedData()
         cout << "[INFO] Plan '" << planName << "' juz istnieje. Pomijam." << endl;
     }
     else {
-        addTrainingPlan(planName);
-        cout << "[INFO] Utworzono pusty plan: " << planName << endl;
+        //addTrainingPlan(planName);
+        //cout << "[INFO] Utworzono pusty plan: " << planName << endl;
 
         // UWAGA: Na Twoj¹ proœbê usun¹³em tutaj addExerciseToPlan oraz assignPlanToUser.
         // Plan jest teraz pust¹ teczk¹, która czeka na póŸniej.
+
+        auto plan = addTrainingPlan(planName);
+        if (plan) {
+            cout << "[INFO] Ukladanie harmonogramu dla: " << planName << endl;
+
+            // --- PONIEDZIA£EK (Dzieñ 1) - Klatka i Rozgrzewka ---
+
+            if (exRunning)   addExerciseToPlan(plan->id, exRunning->id, 1, 1, { 2.0f, 15.0f });
+            if (exDeadlift)  addExerciseToPlan(plan->id, exDeadlift->id, 1, 3, { 100.0f, 6 });
+            if (exPushUps)   addExerciseToPlan(plan->id, exPushUps->id, 1, 2, { 10 });   
+
+            // --- ŒRODA (Dzieñ 3) - Nogi i Plecy ---
+            // Kolejnoœæ: 1. Przysiady, 2. Martwy ci¹g
+
+            if (exDeadlift)     addExerciseToPlan(plan->id, exDeadlift->id, 3, 2, { 100.0f, 5 });   // 100kg x 5
+            if (exSquats)       addExerciseToPlan(plan->id, exSquats->id, 3, 1, { 80.0f, 8 });    // 80kg x 8
+
+            // --- PI¥TEK (Dzieñ 5) - Cardio i Brzuch ---
+            // Kolejnoœæ: 1. Rower, 2. Deska
+
+            if (exCycling)      addExerciseToPlan(plan->id, exCycling->id, 5, 1, { 15.0f, 45.0f }); // 15km w 45min
+            if (exPlank)        addExerciseToPlan(plan->id, exPlank->id, 5, 2, { 90.0f });        // 90 sekund
+        }
+    }
+
+    if (userA && existingPlanId != -1) {
+        // Opcjonalnie: SprawdŸ czy user ju¿ ma ten plan, ¿eby nie robiæ UPDATE niepotrzebnie
+        if (userA->currentPlanId != existingPlanId) {
+            assignPlanToUser(userA->id, existingPlanId);
+            cout << "[SUCCESS] Przypisano plan ID " << existingPlanId << " do uzytkownika 'a'." << endl;
+        }
     }
 
     cout << "--- [SEED DATA] Done. ---" << endl;
@@ -464,14 +499,14 @@ shared_ptr<TrainingPlan> DatabaseManager::getTrainingPlanById(int id)
 
     if (!found) return nullptr;
 
-    // 2. Pobierz wpisy (æwiczenia w planie)
-    *db << "SELECT exercise_id, day_of_week, target_val_1, target_val_2 FROM plan_entries WHERE plan_id = ?;"
+    // 2. Pobierz wpisy (æwiczenia w planie) SORTOWANE po order_in_day
+    *db << "SELECT exercise_id, day_of_week, order_in_day, target_val_1, target_val_2 FROM plan_entries WHERE plan_id = ? ORDER BY day_of_week ASC, order_in_day ASC;"
         << id
-        >> [&](int exId, int day, double v1, double v2) {
+        >> [&](int exId, int day, int orderInDay, double v1, double v2) {
         PlanEntry entry;
         entry.exerciseId = exId;
         entry.dayOfWeek = day;
-        // Tutaj proste mapowanie - mo¿na rozbudowaæ w zale¿noœci od typu æwiczenia
+        entry.orderInDay = orderInDay;
         if (v1 > 0) entry.targetValues.push_back((float)v1);
         if (v2 > 0) entry.targetValues.push_back((float)v2);
         plan->entries.push_back(entry);
@@ -480,7 +515,7 @@ shared_ptr<TrainingPlan> DatabaseManager::getTrainingPlanById(int id)
     return plan;
 }
 
-bool DatabaseManager::addExerciseToPlan(int planId, int exerciseId, int dayOfWeek, std::vector<ResultValue> targets)
+bool DatabaseManager::addExerciseToPlan(int planId, int exerciseId, int dayOfWeek, int orderInDay, std::vector<ResultValue> targets)
 {
     // Uproszczenie: zapisujemy max 2 wartoœci celu do kolumn target_val_1 i 2
     // W pe³nej wersji mo¿na by to robiæ w osobnej tabeli, ale na start wystarczy
@@ -497,8 +532,8 @@ bool DatabaseManager::addExerciseToPlan(int planId, int exerciseId, int dayOfWee
     }
 
     try {
-        *db << "INSERT INTO plan_entries (plan_id, exercise_id, day_of_week, target_val_1, target_val_2) VALUES (?, ?, ?, ?, ?);"
-            << planId << exerciseId << dayOfWeek << v1 << v2;
+        *db << "INSERT INTO plan_entries (plan_id, exercise_id, day_of_week, order_in_day, target_val_1, target_val_2) VALUES (?, ?, ?, ?, ?, ?);"
+            << planId << exerciseId << dayOfWeek << orderInDay << v1 << v2;
         return true;
     }
     catch (...) { return false; }
