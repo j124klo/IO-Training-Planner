@@ -47,8 +47,6 @@ private:
 	sf::Vector2f _exerciseListButtonDestination;
 	Button _exerciseListButton;
 
-	//	Exercise entries
-	vector<ExerciseItem> _exercises;
 	vector<PlanGUIEntry> _planEntries;
 
 public:
@@ -59,8 +57,8 @@ public:
 	void GUI_Update(float dt);
 	void GUI_Draw(float dt);
 
-	void Exercises_Init();
-	void Exercises_Draw(float dt);
+	void Plan_Init();
+	void Plan_Draw(float dt);
 
 
 	void Init();

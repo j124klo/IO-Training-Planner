@@ -171,7 +171,7 @@
     <ClInclude Include="State.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Resources\Images\Calculator_Button.png" />
+    <Image Include="Resources\Images\Calculator Button.png" />
     <Image Include="Resources\Images\Continue Button.png" />
     <Image Include="Resources\Images\Default Background.png" />
     <Image Include="Resources\Images\Exercise List Button.png" />

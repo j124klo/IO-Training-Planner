@@ -6,7 +6,9 @@ using namespace std;
 
 struct PlanGUIEntry {
     string _dayName;
+	//sf::Text _dayNameText;
     string _exerciseName;
+	//sf::Text _exerciseNameText;
     string _targetInfo;
     int _dayId;
 };

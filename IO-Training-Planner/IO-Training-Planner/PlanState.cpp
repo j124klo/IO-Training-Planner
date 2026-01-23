@@ -12,13 +12,13 @@ PlanState::PlanState(AppDataRef data) : _data(data)
 
 string PlanState::getDayName(int dayId) {
 	switch (dayId) {
-	case 1: return "Poniedzialek";
-	case 2: return "Wtorek";
-	case 3: return "Sroda";
-	case 4: return "Czwartek";
-	case 5: return "Piatek";
-	case 6: return "Sobota";
-	case 7: return "Niedziela";
+	case 1: return "Monday";
+	case 2: return "Tuesday";
+	case 3: return "Wednesday";
+	case 4: return "Thursday";
+	case 5: return "Friday";
+	case 6: return "Saturday";
+	case 7: return "Sunday";
 	default: return "";
 	}
 }
@@ -384,7 +384,7 @@ void PlanState::GUI_Draw(float dt)
 }
 
 
-void PlanState::Exercises_Init()
+void PlanState::Plan_Init()
 {
 	this->_planEntries.clear();
 
@@ -396,7 +396,7 @@ void PlanState::Exercises_Init()
 
 	auto dbPlan = this->_data->database.getTrainingPlanById(planId);
 
-	if (!dbPlan) return;
+	if (!dbPlan) return;	//	<-- nie ma szans ¿e to tak zostanie bo bêdzie crash programu
 
 	for (const auto& dbEntry : dbPlan->entries)
 	{
@@ -443,8 +443,10 @@ void PlanState::Exercises_Init()
 		[](const PlanGUIEntry& a, const PlanGUIEntry& b) {
 			return a._dayId < b._dayId;
 		});
+
+
 }
-void PlanState::Exercises_Draw(float dt)
+void PlanState::Plan_Draw(float dt)
 {
 	/*
 	for (const auto& ex : this->_exercises)
@@ -462,7 +464,7 @@ void PlanState::Init()
 	this->_background.setTexture(this->_data->assets.getTexture("Deafult Background"));
 
 	GUI_Init();
-	Exercises_Init();
+	Plan_Init();
 }
 
 void PlanState::HandleInput()
@@ -492,7 +494,7 @@ void PlanState::Draw(float dt)
 	this->_data->window.draw(this->_background);
 
 	GUI_Draw(dt);
-	Exercises_Draw(dt);
+	Plan_Draw(dt);
 
 	this->_data->window.display();
 }
