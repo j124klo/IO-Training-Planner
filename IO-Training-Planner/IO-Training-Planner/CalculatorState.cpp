@@ -16,65 +16,83 @@ void CalculatorState::InputFields_Init()
 	this->_weightInput.setFont(this->_data->assets.getFont("Default Font"));
 	this->_repsInput.setFont(this->_data->assets.getFont("Default Font"));
 
-	// Weight input
+	// Weight input - pozycja Y na 2/6 ekranu
 	this->_weightBounds.setFillColor(sf::Color::White);
 	this->_weightBounds.setSize({ 250.0f, 60.0f });
-	this->_weightBounds.setPosition(300.0f, 150.0f);	//	zmieniæ na zale¿ne od ekranu
+	this->_weightBounds.setPosition(
+		SCREAN_WIDTH / 2.0f + 40.0f / 2.0f,
+		SCREAN_HEIGHT * 2.0f / 6.0f - this->_weightBounds.getSize().y / 2.0f
+	);
 
 	this->_weightInput.setCharacterSize(40);
 	this->_weightInput.setFillColor(sf::Color::Black);
 	this->_weightInput.setString("");
 	this->_weightInput.setPosition(
 		this->_weightBounds.getPosition().x + 10.0f,
-		this->_weightBounds.getPosition().y + 10.0f		//	zmieniæ na zale¿ne od ekranu
+		this->_weightBounds.getPosition().y + 10.0f
 	);
 	this->_isWeightActive = false;
 	this->_weightText = "";
 
-	// Reps input
+	// Reps input - pozycja Y na 3/6 ekranu
 	this->_repsBounds.setFillColor(sf::Color::White);
 	this->_repsBounds.setSize({ 250.0f, 60.0f });
-	this->_repsBounds.setPosition(300.0f, 280.0f);		//	zmieniæ na zale¿ne od ekranu
+	this->_repsBounds.setPosition(
+		SCREAN_WIDTH / 2.0f + 40.0f / 2.0f,
+		SCREAN_HEIGHT * 3.0f / 6.0f - this->_repsBounds.getSize().y / 2.0f
+	);
 
 	this->_repsInput.setCharacterSize(40);
 	this->_repsInput.setFillColor(sf::Color::Black);
 	this->_repsInput.setString("");
 	this->_repsInput.setPosition(
 		this->_repsBounds.getPosition().x + 10.0f,
-		this->_repsBounds.getPosition().y + 10.0f		//	zmieniæ na zale¿ne od ekranu
+		this->_repsBounds.getPosition().y + 10.0f
 	);
 	this->_isRepsActive = false;
 	this->_repsText = "";
 }
 void CalculatorState::Labels_Init()
 {
-	// Weight label
+	// Weight label - pozycja Y na 2/6 ekranu, z przerw¹ 40.0f od pola wpisywania
 	this->_weightLabel.setFont(this->_data->assets.getFont("Default Font"));
 	this->_weightLabel.setCharacterSize(35);
 	this->_weightLabel.setFillColor(sf::Color::White);
 	this->_weightLabel.setString("Weight (kg):");
-	this->_weightLabel.setPosition(50.0f, 160.0f);
+	this->_weightLabel.setPosition(
+		SCREAN_WIDTH / 2.0f - 40.0f / 2.0f - this->_weightLabel.getGlobalBounds().width,
+		SCREAN_HEIGHT * 2.0f / 6.0f - this->_weightLabel.getGlobalBounds().height / 2.0f
+	);
 
-	// Reps label
+	// Reps label - pozycja Y na 3/6 ekranu, z przerw¹ 40.0f od pola wpisywania
 	this->_repsLabel.setFont(this->_data->assets.getFont("Default Font"));
 	this->_repsLabel.setCharacterSize(35);
 	this->_repsLabel.setFillColor(sf::Color::White);
 	this->_repsLabel.setString("Reps:");
-	this->_repsLabel.setPosition(50.0f, 290.0f);
+	this->_repsLabel.setPosition(
+		SCREAN_WIDTH / 2.0f - 40.0f / 2.0f - this->_repsLabel.getGlobalBounds().width,
+		SCREAN_HEIGHT * 3.0f / 6.0f - this->_repsLabel.getGlobalBounds().height / 2.0f
+	);
 
-	// Result label
+	// Result label - pozycja Y na 4/6 ekranu
 	this->_resultLabel.setFont(this->_data->assets.getFont("Default Font"));
 	this->_resultLabel.setCharacterSize(35);
 	this->_resultLabel.setFillColor(sf::Color::White);
 	this->_resultLabel.setString("1RM:");
-	this->_resultLabel.setPosition(50.0f, 450.0f);
+	this->_resultLabel.setPosition(
+		SCREAN_WIDTH / 2.0f - 40.0f / 2.0f - this->_resultLabel.getGlobalBounds().width,
+		SCREAN_HEIGHT * 4.0f / 6.0f - this->_resultLabel.getGlobalBounds().height / 2.0f
+	);
 
-	// Result value
+	// Result value - pozycja Y na 4/6 ekranu
 	this->_resultValue.setFont(this->_data->assets.getFont("Default Font"));
 	this->_resultValue.setCharacterSize(40);
 	this->_resultValue.setFillColor(sf::Color::Yellow);
 	this->_resultValue.setString("0.0 kg");
-	this->_resultValue.setPosition(300.0f, 440.0f);
+	this->_resultValue.setPosition(
+		SCREAN_WIDTH / 2.0f + 40.0f / 2.0f,
+		SCREAN_HEIGHT * 4.0f / 6.0f - this->_resultValue.getGlobalBounds().height / 2.0f
+	);
 }
 void CalculatorState::Buttons_Init()
 {
@@ -85,7 +103,11 @@ void CalculatorState::Buttons_Init()
 	this->_calculateButton._rect = sf::IntRect(0, 0, 800, 300);
 	this->_calculateButton._sprite.setTextureRect(this->_calculateButton._rect);
 	this->_calculateButton._sprite.setScale(0.25f, 0.25f);
-	this->_calculateButton._sprite.setPosition(300.0f, 580.0f);
+	// Przycisk na 5/6 ekranu, wyœrodkowany
+	this->_calculateButton._sprite.setPosition(
+		SCREAN_WIDTH / 2.0f - this->_calculateButton._sprite.getGlobalBounds().width / 2.0f,
+		SCREAN_HEIGHT * 5.0f / 6.0f - this->_calculateButton._sprite.getGlobalBounds().height / 2.0f
+	);
 }
 
 double CalculatorState::Calculate1RM(double weight, int reps)
@@ -144,6 +166,7 @@ void CalculatorState::State_HandleInput(sf::Event& event)
 				ostringstream oss;
 				oss << fixed << setprecision(2) << oneRM << " kg";
 				this->_resultValue.setString(oss.str());
+				this->_resultValue.setFillColor(sf::Color::Yellow);
 			}
 			catch (const exception&)
 			{
