@@ -1,4 +1,5 @@
 #include "AssetManager.hpp"
+#include <iostream>		//	temp, for cerr
 
 using namespace std;
 
@@ -8,6 +9,10 @@ void AssetManager::loadTexture(const string& name, const string& fileName)
 	if (texture.loadFromFile(fileName))
 	{
 		this->_textures[name] = texture;
+	}
+	else	//	temp
+	{
+		cerr << "ERROR: Failed to load texture: " << fileName << endl;
 	}
 }
 
@@ -22,6 +27,10 @@ void AssetManager::loadFont(const string& name, const string& fileName)
 	if (font.loadFromFile(fileName))
 	{
 		this->_fonts[name] = font;
+	}
+	else	//	temp
+	{
+		cerr << "ERROR: Failed to load font: " << fileName << endl;
 	}
 }
 
