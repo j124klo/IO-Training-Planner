@@ -140,12 +140,14 @@ void HomeState::State_Init()
     }
 }
 
-void HomeState::State_HandleInput()
+void HomeState::State_HandleInput(sf::Event& event)
 {
+
 }
 
 void HomeState::State_Update(float dt)
 {
+
 }
 
 void HomeState::State_Draw(float dt)
