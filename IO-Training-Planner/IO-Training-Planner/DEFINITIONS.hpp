@@ -21,7 +21,7 @@
 #define PLAN_PANEL_FILEPATH "Resources/Images/Plan Panel.png"
 
 //	GUI
-#define GUI_BAR_FILEPATH "Resources/Images/Gui Bar.png"
+#define GUI_BAR_FILEPATH "Resources/Images/GUI Bar.png"
 #define MENU_BUTTON_FILEPATH "Resources/Images/Menu Button.png"
 #define HOME_BUTTON_FILEPATH "Resources/Images/Home Button.png"
 #define TRAINING_BUTTON_FILEPATH "Resources/Images/Training Button.png"
