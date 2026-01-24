@@ -225,6 +225,13 @@ void DatabaseManager::seedData()
     auto exPlank = addExercise("Plank", "Deska - wzmacnianie brzucha", { ValueType::TIME_SEC });
     auto exCycling = addExercise("Cycling", "Jazda na rowerku-maszynie", { ValueType::DISTANCE_KM, ValueType::TIME_SEC });
 
+    addExercise("Jumping Jacks", "Pajacyki - cwiczenie cardio", { ValueType::REPS });
+    addExercise("Burpees", "Burpees - cwiczenie calego ciala", { ValueType::REPS });
+    addExercise("Bench Press", "Wyciskanie sztangi na lawce", { ValueType::WEIGHT_KG, ValueType::REPS });
+    addExercise("Pull-ups", "Podciaganie na dr¹¿ku", { ValueType::REPS });
+    addExercise("Lunges", "Wykroki z hantlami", { ValueType::WEIGHT_KG, ValueType::REPS });
+    addExercise("Sit-ups", "Brzuszki klasyczne", { ValueType::REPS });
+
     // 3. PUSTY PLAN TRENINGOWY (tylko sama nazwa)
     // Sprawdzamy czy plan istnieje, jeœli nie - tworzymy go, ale zostawiamy pusty.
     
