@@ -48,3 +48,13 @@ struct User {
     vector<Record> history;
     optional<int> currentPlanId;
 };
+
+struct WorkoutLog {
+    int id;
+    int userId;
+    int exerciseId;
+    string date;        // YYYY-MM-DD
+    int setNumber;
+    double weight;
+    int reps;
+};

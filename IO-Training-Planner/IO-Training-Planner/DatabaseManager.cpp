@@ -205,6 +205,17 @@ void DatabaseManager::createTables() {
         "target_val_1 REAL, "
         "target_val_2 REAL"
         ");";
+
+	// Tabela WorkoutLogs
+    *db << "CREATE TABLE IF NOT EXISTS workout_logs ("
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "user_id INTEGER, "
+        "exercise_id INTEGER, "
+        "date TEXT, "
+        "set_number INTEGER, "
+        "weight REAL, "
+        "reps INTEGER"
+        ");";
 }
 
 void DatabaseManager::seedData()
