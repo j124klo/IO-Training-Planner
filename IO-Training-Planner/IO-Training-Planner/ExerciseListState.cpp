@@ -82,18 +82,24 @@ void ExerciseListState::ScrollPanel_HandleInput(sf::Event& event)
 }
 void ExerciseListState::ScrollPanel_Update(float dt)
 {
-	if (floorf(this->_scrollTopDestination.y) > floorf(this->_scrollEdgeTop.getGlobalBounds().height - this->_scrollTop.getGlobalBounds().height / 2.0f))
+	float scrollDelta = this->_data->input.getScrollDelta() * 80.0f;
+
+	float topBound = this->_scrollEdgeTop.getGlobalBounds().height - this->_scrollTop.getGlobalBounds().height / 2.0f;
+
+	float contentDeltaY = this->_scrollTop.getGlobalBounds().height * 1.5f;
+	for (size_t i = 0; i < this->_exercises.size(); i++)
 	{
-		this->_scrollTopDestination.y = this->_scrollEdgeTop.getGlobalBounds().height - this->_scrollTop.getGlobalBounds().height / 2.0f;
+		contentDeltaY += this->_exercises[i]._nameText.getGlobalBounds().height + this->_exercises[i]._descriptionText.getGlobalBounds().height + 60.0f;
 	}
-	else
-	{
-		this->_scrollTopDestination.y += this->_data->input.getScrollDelta() * 50.0f;
-	}
+	float bottomBound = this->_scrollEdgeBot.getPosition().y - contentDeltaY + 60.0f;
+
+	this->_scrollTopDestination.y += scrollDelta;
+	if (this->_scrollTopDestination.y > topBound) {	this->_scrollTopDestination.y = topBound; }
+	else if (this->_scrollTopDestination.y < bottomBound) {	this->_scrollTopDestination.y = bottomBound; }
 
 	if (floorV2f(this->_scrollTop.getPosition()) != floorV2f(this->_scrollTopDestination))
 	{
-		ObjMoveTo(this->_scrollTop, this->_scrollTopDestination, 500.0f, dt);
+		ObjMoveTo(this->_scrollTop, this->_scrollTopDestination, 800.0f, dt);
 
 		float currentY = this->_scrollTop.getPosition().y + this->_scrollTop.getGlobalBounds().height;
 		for (size_t i = 0; i < this->_exercises.size(); i++)
@@ -104,6 +110,7 @@ void ExerciseListState::ScrollPanel_Update(float dt)
 				this->_exercises[i]._nameText.getPosition().y + this->_exercises[i]._nameText.getGlobalBounds().height + 20.0f
 			);
 			currentY += this->_exercises[i]._nameText.getGlobalBounds().height + this->_exercises[i]._descriptionText.getGlobalBounds().height + 60.0f;
+
 			this->_scrollBot.setPosition(this->_scrollBot.getPosition().x, currentY - 60.f);
 		}
 

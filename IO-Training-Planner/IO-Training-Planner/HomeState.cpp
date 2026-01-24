@@ -99,7 +99,7 @@ void HomeState::State_Init()
             float rowHeight = 40.0f;     // Sta³y odstêp miêdzy liniami (im wiêcej, tym rzadziej)
 
             // Wygl¹d tekstu
-            int fontSize = 16;           // Rozmiar czcionki (¿eby siê mieœci³o)
+            int fontSize = 22;           // Rozmiar czcionki (¿eby siê mieœci³o)
 
             for (const auto& entry : dbPlan->entries) {
 
@@ -113,7 +113,7 @@ void HomeState::State_Init()
                 text.setFont(this->_data->assets.getFont("Default Font"));
                 text.setString(exName);
                 text.setCharacterSize(fontSize);
-                text.setFillColor(sf::Color::Cyan); // Jasny b³êkit
+                text.setFillColor(sf::Color(77, 153, 204));
 
                 // === MAGIA CENTROWANIA POZIOMEGO (X) ===
 
