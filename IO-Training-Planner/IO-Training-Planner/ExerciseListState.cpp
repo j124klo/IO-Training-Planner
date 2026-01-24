@@ -44,6 +44,7 @@ void ExerciseListState::Exercises_Init()
 
 		currentY += this->_exercises[i]._nameText.getGlobalBounds().height + this->_exercises[i]._descriptionText.getGlobalBounds().height + 60.0f;
 	}
+	this->_scrollBot.setPosition(this->_scrollEdgeTop.getPosition().x, currentY - 60.f);
 }
 void ExerciseListState::Exercises_Draw(float dt)
 {
@@ -74,7 +75,6 @@ void ExerciseListState::ScrollPanel_Init()
 	this->_scrollTopDestination = this->_scrollTop.getPosition();
 
 	this->_scrollMid.setPosition(this->_scrollEdgeTop.getPosition().x, 0.0f);
-	this->_scrollBot.setPosition(this->_scrollEdgeTop.getPosition().x, SCREAN_HEIGHT);
 }
 void ExerciseListState::ScrollPanel_HandleInput(sf::Event& event)
 {
@@ -104,6 +104,7 @@ void ExerciseListState::ScrollPanel_Update(float dt)
 				this->_exercises[i]._nameText.getPosition().y + this->_exercises[i]._nameText.getGlobalBounds().height + 20.0f
 			);
 			currentY += this->_exercises[i]._nameText.getGlobalBounds().height + this->_exercises[i]._descriptionText.getGlobalBounds().height + 60.0f;
+			this->_scrollBot.setPosition(this->_scrollBot.getPosition().x, currentY - 60.f);
 		}
 
 		this->_data->input.resetScrollDelta();
