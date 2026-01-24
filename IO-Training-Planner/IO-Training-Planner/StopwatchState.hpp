@@ -12,10 +12,12 @@
 
 using namespace std;
 
-enum class StopwatchMode
+enum class IntervalPhase
 {
-    Stopwatch,  // Stoper (liczy w górê)
-    Timer       // Timer (odlicza w dó³)
+    Prepare,    // Preparation before start
+    Work,       // Work phase
+    Rest,       // Rest phase
+    Finished    // Completed
 };
 
 class StopwatchState : public GuiState
@@ -23,47 +25,57 @@ class StopwatchState : public GuiState
 private:
     sf::Clock _clock;
 
-    // Stoper
-    float _elapsedTime;
+    // Interval state
+    float _currentTime;
     bool _isRunning;
-    StopwatchMode _mode;
+    IntervalPhase _phase;
 
-    // Timer - ustawienia
-    float _timerDuration;
-    int _timerMinutes;
-    int _timerSeconds;
-    bool _timerFinished;
+    // Interval settings
+    int _workSeconds;       // Work time (seconds)
+    int _restSeconds;       // Rest time (seconds)
+    int _prepareSeconds;    // Preparation time
+    int _totalRounds;       // Total rounds
+    int _currentRound;      // Current round
 
-    // Okr¹¿enia
-    vector<float> _laps;
-    vector<sf::Text> _lapTexts;
-
-    // Grafika
+    // Graphics
     sf::Sprite _background;
     sf::Text _timeDisplay;
-    sf::Text _modeLabel;
+    sf::Text _phaseLabel;
+    sf::Text _roundLabel;
 
-    // Przyciski
-    Button _startStopButton;
+    // Main buttons
     sf::Text _startStopText;
-    Button _resetButton;
     sf::Text _resetText;
-    Button _lapButton;
-    sf::Text _lapText;
-    Button _modeButton;
-    sf::Text _modeText;
 
-    // Timer controls
-    sf::Text _timerSettingText;
-    sf::Text _plusMinText;
-    sf::Text _minusMinText;
-    sf::Text _plusSecText;
-    sf::Text _minusSecText;
+    // Settings - work
+    sf::Text _workLabel;
+    sf::Text _workTimeText;
+    sf::Text _workPlusText;
+    sf::Text _workMinusText;
 
-    // Pomocnicze funkcje
+    // Settings - rest
+    sf::Text _restLabel;
+    sf::Text _restTimeText;
+    sf::Text _restPlusText;
+    sf::Text _restMinusText;
+
+    // Settings - rounds
+    sf::Text _roundsLabel;
+    sf::Text _roundsText;
+    sf::Text _roundsPlusText;
+    sf::Text _roundsMinusText;
+
+    // Progress bar
+    sf::RectangleShape _progressBarBg;
+    sf::RectangleShape _progressBarFill;
+
+    // Helper functions
     string formatTime(float seconds);
-    void updateLapDisplay();
-    void setupButton(sf::Text& text, const string& label, float x, float y);
+    string formatTimeShort(int seconds);
+    void setupText(sf::Text& text, const string& label, int size, float x, float y, sf::Color color = sf::Color::White);
+    void updateSettingsDisplay();
+    void nextPhase();
+    float getCurrentPhaseDuration();
 
 public:
     StopwatchState(AppDataRef data);

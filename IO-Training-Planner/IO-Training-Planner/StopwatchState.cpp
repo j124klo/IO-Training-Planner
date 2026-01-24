@@ -5,65 +5,112 @@ using namespace std;
 
 StopwatchState::StopwatchState(AppDataRef data) : GuiState(data)
 {
-    _elapsedTime = 0.0f;
+    _currentTime = 0.0f;
     _isRunning = false;
-    _mode = StopwatchMode::Stopwatch;
-    _timerDuration = 0.0f;
-    _timerMinutes = 1;
-    _timerSeconds = 0;
-    _timerFinished = false;
+    _phase = IntervalPhase::Prepare;
+    
+    // Default settings
+    _workSeconds = 30;
+    _restSeconds = 10;
+    _prepareSeconds = 5;
+    _totalRounds = 8;
+    _currentRound = 1;
 }
 
 string StopwatchState::formatTime(float seconds)
 {
-    int hours = static_cast<int>(seconds) / 3600;
-    int minutes = (static_cast<int>(seconds) % 3600) / 60;
+    int mins = static_cast<int>(seconds) / 60;
     int secs = static_cast<int>(seconds) % 60;
-    int millisecs = static_cast<int>((seconds - static_cast<int>(seconds)) * 100);
+    int ms = static_cast<int>((seconds - static_cast<int>(seconds)) * 10);
 
     ostringstream oss;
-    oss << std::setfill('0') << std::setw(2) << hours << ":"
-        << std::setfill('0') << std::setw(2) << minutes << ":"
+    oss << std::setfill('0') << std::setw(2) << mins << ":"
         << std::setfill('0') << std::setw(2) << secs << "."
-        << std::setfill('0') << std::setw(2) << millisecs;
+        << ms;
 
     return oss.str();
 }
 
-void StopwatchState::setupButton(sf::Text& text, const string& label, float x, float y)
+string StopwatchState::formatTimeShort(int seconds)
+{
+    int mins = seconds / 60;
+    int secs = seconds % 60;
+
+    ostringstream oss;
+    oss << std::setfill('0') << std::setw(2) << mins << ":"
+        << std::setfill('0') << std::setw(2) << secs;
+
+    return oss.str();
+}
+
+void StopwatchState::setupText(sf::Text& text, const string& label, int size, float x, float y, sf::Color color)
 {
     text.setFont(this->_data->assets.getFont("Default Font"));
     text.setString(label);
-    text.setCharacterSize(24);
-    text.setFillColor(sf::Color::White);
+    text.setCharacterSize(size);
+    text.setFillColor(color);
     sf::FloatRect bounds = text.getLocalBounds();
     text.setOrigin(bounds.width / 2.0f, bounds.height / 2.0f);
     text.setPosition(x, y);
 }
 
-void StopwatchState::updateLapDisplay()
+void StopwatchState::updateSettingsDisplay()
 {
-    _lapTexts.clear();
-    float startY = SCREAN_HEIGHT / 2.0f + 130.0f;
-    int displayCount = min(static_cast<int>(_laps.size()), 5);
+    this->_workTimeText.setString(formatTimeShort(_workSeconds));
+    sf::FloatRect wb = this->_workTimeText.getLocalBounds();
+    this->_workTimeText.setOrigin(wb.width / 2.0f, wb.height / 2.0f);
 
-    for (int i = 0; i < displayCount; i++)
+    this->_restTimeText.setString(formatTimeShort(_restSeconds));
+    sf::FloatRect rb = this->_restTimeText.getLocalBounds();
+    this->_restTimeText.setOrigin(rb.width / 2.0f, rb.height / 2.0f);
+
+    this->_roundsText.setString(to_string(_totalRounds));
+    sf::FloatRect rndb = this->_roundsText.getLocalBounds();
+    this->_roundsText.setOrigin(rndb.width / 2.0f, rndb.height / 2.0f);
+}
+
+float StopwatchState::getCurrentPhaseDuration()
+{
+    switch (_phase)
     {
-        int lapIndex = static_cast<int>(_laps.size()) - 1 - i;
-        sf::Text lapText;
-        lapText.setFont(this->_data->assets.getFont("Default Font"));
+        case IntervalPhase::Prepare: return static_cast<float>(_prepareSeconds);
+        case IntervalPhase::Work: return static_cast<float>(_workSeconds);
+        case IntervalPhase::Rest: return static_cast<float>(_restSeconds);
+        default: return 0.0f;
+    }
+}
 
-        ostringstream oss;
-        oss << "Lap " << (lapIndex + 1) << ": " << formatTime(_laps[lapIndex]);
-        lapText.setString(oss.str());
-        lapText.setCharacterSize(18);
-        lapText.setFillColor(sf::Color::Yellow);
+void StopwatchState::nextPhase()
+{
+    switch (_phase)
+    {
+        case IntervalPhase::Prepare:
+            _phase = IntervalPhase::Work;
+            _currentTime = static_cast<float>(_workSeconds);
+            break;
 
-        sf::FloatRect bounds = lapText.getLocalBounds();
-        lapText.setOrigin(bounds.width / 2.0f, bounds.height / 2.0f);
-        lapText.setPosition(SCREAN_WIDTH / 2.0f, startY + i * 25.0f);
+        case IntervalPhase::Work:
+            if (_currentRound >= _totalRounds)
+            {
+                _phase = IntervalPhase::Finished;
+                _isRunning = false;
+                _currentTime = 0.0f;
+            }
+            else
+            {
+                _phase = IntervalPhase::Rest;
+                _currentTime = static_cast<float>(_restSeconds);
+            }
+            break;
 
-        _lapTexts.push_back(lapText);
+        case IntervalPhase::Rest:
+            _currentRound++;
+            _phase = IntervalPhase::Work;
+            _currentTime = static_cast<float>(_workSeconds);
+            break;
+
+        default:
+            break;
     }
 }
 
@@ -71,59 +118,59 @@ void StopwatchState::State_Init()
 {
     this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
 
-    // Wyœwietlanie czasu
-    this->_timeDisplay.setFont(this->_data->assets.getFont("Default Font"));
-    this->_timeDisplay.setString("00:00:00.00");
-    this->_timeDisplay.setCharacterSize(72);
-    this->_timeDisplay.setFillColor(sf::Color::White);
+    float centerX = SCREAN_WIDTH / 2.0f;
 
-    sf::FloatRect timeBounds = this->_timeDisplay.getLocalBounds();
-    this->_timeDisplay.setOrigin(timeBounds.width / 2.0f, timeBounds.height / 2.0f);
-    this->_timeDisplay.setPosition(SCREAN_WIDTH / 2.0f, SCREAN_HEIGHT / 3.0f);
+    // Main time display
+    setupText(this->_timeDisplay, "00:05.0", 96, centerX, SCREAN_HEIGHT / 4.0f);
+    _currentTime = static_cast<float>(_prepareSeconds);
 
-    // Label trybu
-    this->_modeLabel.setFont(this->_data->assets.getFont("Default Font"));
-    this->_modeLabel.setString("STOPER");
-    this->_modeLabel.setCharacterSize(28);
-    this->_modeLabel.setFillColor(sf::Color::Cyan);
-    sf::FloatRect modeBounds = this->_modeLabel.getLocalBounds();
-    this->_modeLabel.setOrigin(modeBounds.width / 2.0f, modeBounds.height / 2.0f);
-    this->_modeLabel.setPosition(SCREAN_WIDTH / 2.0f, SCREAN_HEIGHT / 3.0f - 80.0f);
+    // Phase label
+    setupText(this->_phaseLabel, "GET READY", 36, centerX, SCREAN_HEIGHT / 4.0f - 80.0f, sf::Color::Yellow);
 
-    // Pozycje przycisków
-    float buttonY = SCREAN_HEIGHT / 2.0f + 50.0f;
-    float spacing = 100.0f;
+    // Round label
+    setupText(this->_roundLabel, "Round 1 / 8", 28, centerX, SCREAN_HEIGHT / 4.0f + 70.0f, sf::Color::Cyan);
 
-    // Start/Stop
-    setupButton(this->_startStopText, "START", SCREAN_WIDTH / 2.0f - spacing * 1.5f, buttonY);
-    this->_startStopText.setFillColor(sf::Color::Green);
+    // Progress bar
+    float barWidth = 500.0f;
+    float barHeight = 20.0f;
+    float barY = SCREAN_HEIGHT / 4.0f + 110.0f;
 
-    // Reset
-    setupButton(this->_resetText, "RESET", SCREAN_WIDTH / 2.0f - spacing * 0.5f, buttonY);
+    _progressBarBg.setSize(sf::Vector2f(barWidth, barHeight));
+    _progressBarBg.setFillColor(sf::Color(60, 60, 60));
+    _progressBarBg.setPosition(centerX - barWidth / 2.0f, barY);
 
-    // Lap
-    setupButton(this->_lapText, "LAP", SCREAN_WIDTH / 2.0f + spacing * 0.5f, buttonY);
-    this->_lapText.setFillColor(sf::Color::Yellow);
+    _progressBarFill.setSize(sf::Vector2f(barWidth, barHeight));
+    _progressBarFill.setFillColor(sf::Color::Yellow);
+    _progressBarFill.setPosition(centerX - barWidth / 2.0f, barY);
 
-    // Mode switch
-    setupButton(this->_modeText, "TIMER", SCREAN_WIDTH / 2.0f + spacing * 1.5f, buttonY);
-    this->_modeText.setFillColor(sf::Color::Magenta);
+    // Main buttons
+    float buttonY = SCREAN_HEIGHT / 2.0f + 20.0f;
+    setupText(this->_startStopText, "START", 32, centerX - 100.0f, buttonY, sf::Color::Green);
+    setupText(this->_resetText, "RESET", 32, centerX + 100.0f, buttonY);
 
-    // Timer settings
-    float timerY = SCREAN_HEIGHT / 2.0f - 30.0f;
+    // === SETTINGS SECTION ===
+    float settingsY = SCREAN_HEIGHT / 2.0f + 120.0f;
+    float col1 = centerX - 200.0f;
+    float col2 = centerX;
+    float col3 = centerX + 200.0f;
 
-    this->_timerSettingText.setFont(this->_data->assets.getFont("Default Font"));
-    this->_timerSettingText.setString("01:00");
-    this->_timerSettingText.setCharacterSize(32);
-    this->_timerSettingText.setFillColor(sf::Color::White);
-    sf::FloatRect tsBounds = this->_timerSettingText.getLocalBounds();
-    this->_timerSettingText.setOrigin(tsBounds.width / 2.0f, tsBounds.height / 2.0f);
-    this->_timerSettingText.setPosition(SCREAN_WIDTH / 2.0f, timerY);
+    // Work
+    setupText(this->_workLabel, "WORK", 20, col1, settingsY - 40.0f, sf::Color(100, 255, 100));
+    setupText(this->_workTimeText, formatTimeShort(_workSeconds), 28, col1, settingsY);
+    setupText(this->_workPlusText, "+", 28, col1 + 50.0f, settingsY);
+    setupText(this->_workMinusText, "-", 28, col1 - 50.0f, settingsY);
 
-    setupButton(this->_plusMinText, "+M", SCREAN_WIDTH / 2.0f - 80.0f, timerY - 30.0f);
-    setupButton(this->_minusMinText, "-M", SCREAN_WIDTH / 2.0f - 80.0f, timerY + 30.0f);
-    setupButton(this->_plusSecText, "+S", SCREAN_WIDTH / 2.0f + 80.0f, timerY - 30.0f);
-    setupButton(this->_minusSecText, "-S", SCREAN_WIDTH / 2.0f + 80.0f, timerY + 30.0f);
+    // Rest
+    setupText(this->_restLabel, "REST", 20, col2, settingsY - 40.0f, sf::Color(100, 100, 255));
+    setupText(this->_restTimeText, formatTimeShort(_restSeconds), 28, col2, settingsY);
+    setupText(this->_restPlusText, "+", 28, col2 + 50.0f, settingsY);
+    setupText(this->_restMinusText, "-", 28, col2 - 50.0f, settingsY);
+
+    // Rounds
+    setupText(this->_roundsLabel, "ROUNDS", 20, col3, settingsY - 40.0f, sf::Color(255, 200, 100));
+    setupText(this->_roundsText, to_string(_totalRounds), 28, col3, settingsY);
+    setupText(this->_roundsPlusText, "+", 28, col3 + 40.0f, settingsY);
+    setupText(this->_roundsMinusText, "-", 28, col3 - 40.0f, settingsY);
 
     this->_clock.restart();
 }
@@ -132,28 +179,32 @@ void StopwatchState::State_HandleInput(sf::Event& event)
 {
     if (event.type == sf::Event::MouseButtonPressed)
     {
-        sf::Vector2i mousePos = sf::Mouse::getPosition(this->_data->window);
-        sf::Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+        sf::Vector2f mousePos(static_cast<float>(sf::Mouse::getPosition(this->_data->window).x),
+                              static_cast<float>(sf::Mouse::getPosition(this->_data->window).y));
+
+        auto isClicked = [&](sf::Text& text) {
+            sf::FloatRect area = text.getGlobalBounds();
+            area.left -= 15.0f; area.top -= 10.0f;
+            area.width += 30.0f; area.height += 20.0f;
+            return area.contains(mousePos);
+        };
 
         // Start/Stop
-        sf::FloatRect startStopArea = this->_startStopText.getGlobalBounds();
-        startStopArea.left -= 20.0f; startStopArea.top -= 10.0f;
-        startStopArea.width += 40.0f; startStopArea.height += 20.0f;
-
-        if (startStopArea.contains(mousePosF))
+        if (isClicked(this->_startStopText))
         {
-            if (_mode == StopwatchMode::Timer && !_isRunning && _elapsedTime == 0.0f)
+            if (_phase == IntervalPhase::Finished)
             {
-                _timerDuration = static_cast<float>(_timerMinutes * 60 + _timerSeconds);
-                _elapsedTime = _timerDuration;
+                // Reset after completion
+                _phase = IntervalPhase::Prepare;
+                _currentRound = 1;
+                _currentTime = static_cast<float>(_prepareSeconds);
             }
 
             this->_isRunning = !this->_isRunning;
-            _timerFinished = false;
 
             if (this->_isRunning)
             {
-                this->_startStopText.setString("STOP");
+                this->_startStopText.setString("PAUSE");
                 this->_startStopText.setFillColor(sf::Color::Red);
                 this->_clock.restart();
             }
@@ -168,190 +219,155 @@ void StopwatchState::State_HandleInput(sf::Event& event)
         }
 
         // Reset
-        sf::FloatRect resetArea = this->_resetText.getGlobalBounds();
-        resetArea.left -= 20.0f; resetArea.top -= 10.0f;
-        resetArea.width += 40.0f; resetArea.height += 20.0f;
-
-        if (resetArea.contains(mousePosF))
+        if (isClicked(this->_resetText))
         {
-            this->_elapsedTime = 0.0f;
             this->_isRunning = false;
-            this->_timerFinished = false;
-            this->_laps.clear();
-            this->_lapTexts.clear();
+            this->_phase = IntervalPhase::Prepare;
+            this->_currentRound = 1;
+            this->_currentTime = static_cast<float>(_prepareSeconds);
+
             this->_startStopText.setString("START");
             this->_startStopText.setFillColor(sf::Color::Green);
-
             sf::FloatRect bounds = this->_startStopText.getLocalBounds();
             this->_startStopText.setOrigin(bounds.width / 2.0f, bounds.height / 2.0f);
 
-            this->_timeDisplay.setString(formatTime(0.0f));
-            this->_timeDisplay.setFillColor(sf::Color::White);
             this->_clock.restart();
         }
 
-        // Lap (tylko w trybie Stopwatch)
-        if (_mode == StopwatchMode::Stopwatch)
+        // Settings (only when stopped and in prepare phase)
+        if (!_isRunning && _phase == IntervalPhase::Prepare)
         {
-            sf::FloatRect lapArea = this->_lapText.getGlobalBounds();
-            lapArea.left -= 20.0f; lapArea.top -= 10.0f;
-            lapArea.width += 40.0f; lapArea.height += 20.0f;
+            // Work +/-
+            if (isClicked(this->_workPlusText))
+                _workSeconds = min(_workSeconds + 5, 300);
+            if (isClicked(this->_workMinusText))
+                _workSeconds = max(_workSeconds - 5, 5);
 
-            if (lapArea.contains(mousePosF) && _isRunning)
-            {
-                _laps.push_back(_elapsedTime);
-                updateLapDisplay();
-            }
-        }
+            // Rest +/-
+            if (isClicked(this->_restPlusText))
+                _restSeconds = min(_restSeconds + 5, 120);
+            if (isClicked(this->_restMinusText))
+                _restSeconds = max(_restSeconds - 5, 5);
 
-        // Mode switch
-        sf::FloatRect modeArea = this->_modeText.getGlobalBounds();
-        modeArea.left -= 20.0f; modeArea.top -= 10.0f;
-        modeArea.width += 40.0f; modeArea.height += 20.0f;
+            // Rounds +/-
+            if (isClicked(this->_roundsPlusText))
+                _totalRounds = min(_totalRounds + 1, 50);
+            if (isClicked(this->_roundsMinusText))
+                _totalRounds = max(_totalRounds - 1, 1);
 
-        if (modeArea.contains(mousePosF) && !_isRunning)
-        {
-            _elapsedTime = 0.0f;
-            _laps.clear();
-            _lapTexts.clear();
-            _timerFinished = false;
-
-            if (_mode == StopwatchMode::Stopwatch)
-            {
-                _mode = StopwatchMode::Timer;
-                this->_modeLabel.setString("TIMER");
-                this->_modeText.setString("STOPER");
-                this->_lapText.setFillColor(sf::Color(100, 100, 100));
-            }
-            else
-            {
-                _mode = StopwatchMode::Stopwatch;
-                this->_modeLabel.setString("STOPER");
-                this->_modeText.setString("TIMER");
-                this->_lapText.setFillColor(sf::Color::Yellow);
-            }
-
-            sf::FloatRect modeBounds = this->_modeLabel.getLocalBounds();
-            this->_modeLabel.setOrigin(modeBounds.width / 2.0f, modeBounds.height / 2.0f);
-
-            sf::FloatRect modeTextBounds = this->_modeText.getLocalBounds();
-            this->_modeText.setOrigin(modeTextBounds.width / 2.0f, modeTextBounds.height / 2.0f);
-
-            this->_timeDisplay.setString(formatTime(0.0f));
-            this->_timeDisplay.setFillColor(sf::Color::White);
-        }
-
-        // Timer +/- buttons
-        if (_mode == StopwatchMode::Timer && !_isRunning && _elapsedTime == 0.0f)
-        {
-            sf::FloatRect plusMinArea = this->_plusMinText.getGlobalBounds();
-            plusMinArea.left -= 15.0f; plusMinArea.top -= 10.0f;
-            plusMinArea.width += 30.0f; plusMinArea.height += 20.0f;
-            if (plusMinArea.contains(mousePosF))
-                _timerMinutes = min(_timerMinutes + 1, 99);
-
-            sf::FloatRect minusMinArea = this->_minusMinText.getGlobalBounds();
-            minusMinArea.left -= 15.0f; minusMinArea.top -= 10.0f;
-            minusMinArea.width += 30.0f; minusMinArea.height += 20.0f;
-            if (minusMinArea.contains(mousePosF))
-                _timerMinutes = max(_timerMinutes - 1, 0);
-
-            sf::FloatRect plusSecArea = this->_plusSecText.getGlobalBounds();
-            plusSecArea.left -= 15.0f; plusSecArea.top -= 10.0f;
-            plusSecArea.width += 30.0f; plusSecArea.height += 20.0f;
-            if (plusSecArea.contains(mousePosF))
-                _timerSeconds = (_timerSeconds + 5) % 60;
-
-            sf::FloatRect minusSecArea = this->_minusSecText.getGlobalBounds();
-            minusSecArea.left -= 15.0f; minusSecArea.top -= 10.0f;
-            minusSecArea.width += 30.0f; minusSecArea.height += 20.0f;
-            if (minusSecArea.contains(mousePosF))
-                _timerSeconds = (_timerSeconds - 5 + 60) % 60;
-
-            ostringstream oss;
-            oss << std::setfill('0') << std::setw(2) << _timerMinutes << ":"
-                << std::setfill('0') << std::setw(2) << _timerSeconds;
-            this->_timerSettingText.setString(oss.str());
-            sf::FloatRect tsBounds = this->_timerSettingText.getLocalBounds();
-            this->_timerSettingText.setOrigin(tsBounds.width / 2.0f, tsBounds.height / 2.0f);
+            updateSettingsDisplay();
         }
     }
 }
 
 void StopwatchState::State_Update(float dt)
 {
+    // Update round label
+    ostringstream roundOss;
+    roundOss << "Round " << _currentRound << " / " << _totalRounds;
+    this->_roundLabel.setString(roundOss.str());
+    sf::FloatRect rlb = this->_roundLabel.getLocalBounds();
+    this->_roundLabel.setOrigin(rlb.width / 2.0f, rlb.height / 2.0f);
+
+    // Update phase label and color
+    switch (_phase)
+    {
+        case IntervalPhase::Prepare:
+            this->_phaseLabel.setString("GET READY");
+            this->_phaseLabel.setFillColor(sf::Color::Yellow);
+            this->_progressBarFill.setFillColor(sf::Color::Yellow);
+            break;
+        case IntervalPhase::Work:
+            this->_phaseLabel.setString("WORK!");
+            this->_phaseLabel.setFillColor(sf::Color::Green);
+            this->_progressBarFill.setFillColor(sf::Color::Green);
+            break;
+        case IntervalPhase::Rest:
+            this->_phaseLabel.setString("REST");
+            this->_phaseLabel.setFillColor(sf::Color::Cyan);
+            this->_progressBarFill.setFillColor(sf::Color::Cyan);
+            break;
+        case IntervalPhase::Finished:
+            this->_phaseLabel.setString("FINISHED!");
+            this->_phaseLabel.setFillColor(sf::Color::Magenta);
+            this->_progressBarFill.setFillColor(sf::Color::Magenta);
+            break;
+    }
+    sf::FloatRect plb = this->_phaseLabel.getLocalBounds();
+    this->_phaseLabel.setOrigin(plb.width / 2.0f, plb.height / 2.0f);
+
     if (this->_isRunning)
     {
         float delta = this->_clock.restart().asSeconds();
+        this->_currentTime -= delta;
 
-        if (_mode == StopwatchMode::Stopwatch)
+        if (this->_currentTime <= 0.0f)
         {
-            this->_elapsedTime += delta;
+            nextPhase();
+        }
+
+        // Blinking when < 3 seconds
+        if (_currentTime <= 3.0f && _currentTime > 0.0f && _phase != IntervalPhase::Finished)
+        {
+            int blink = static_cast<int>(_currentTime * 4) % 2;
+            this->_timeDisplay.setFillColor(blink ? sf::Color::Red : sf::Color::White);
         }
         else
         {
-            this->_elapsedTime -= delta;
-            if (this->_elapsedTime <= 0.0f)
-            {
-                this->_elapsedTime = 0.0f;
-                this->_isRunning = false;
-                this->_timerFinished = true;
-                this->_startStopText.setString("START");
-                this->_startStopText.setFillColor(sf::Color::Green);
-                sf::FloatRect bounds = this->_startStopText.getLocalBounds();
-                this->_startStopText.setOrigin(bounds.width / 2.0f, bounds.height / 2.0f);
-            }
-        }
-
-        this->_timeDisplay.setString(formatTime(this->_elapsedTime));
-
-        sf::FloatRect timeBounds = this->_timeDisplay.getLocalBounds();
-        this->_timeDisplay.setOrigin(timeBounds.width / 2.0f, timeBounds.height / 2.0f);
-
-        // Miganie gdy timer < 10s
-        if (_mode == StopwatchMode::Timer && _elapsedTime < 10.0f && _elapsedTime > 0.0f)
-        {
-            int blink = static_cast<int>(_elapsedTime * 4) % 2;
-            this->_timeDisplay.setFillColor(blink ? sf::Color::Red : sf::Color::White);
+            this->_timeDisplay.setFillColor(sf::Color::White);
         }
     }
     else
     {
         this->_clock.restart();
-
-        if (_timerFinished)
-        {
-            static float blinkTimer = 0.0f;
-            blinkTimer += dt;
-            int blink = static_cast<int>(blinkTimer * 3) % 2;
-            this->_timeDisplay.setFillColor(blink ? sf::Color::Green : sf::Color::White);
-        }
+        this->_timeDisplay.setFillColor(sf::Color::White);
     }
+
+    // Update time display
+    this->_timeDisplay.setString(formatTime(max(0.0f, _currentTime)));
+    sf::FloatRect timeBounds = this->_timeDisplay.getLocalBounds();
+    this->_timeDisplay.setOrigin(timeBounds.width / 2.0f, timeBounds.height / 2.0f);
+
+    // Progress bar
+    float phaseDuration = getCurrentPhaseDuration();
+    float progress = (phaseDuration > 0.0f) ? (_currentTime / phaseDuration) : 0.0f;
+    progress = max(0.0f, min(1.0f, progress));
+    this->_progressBarFill.setSize(sf::Vector2f(500.0f * progress, 20.0f));
 }
 
 void StopwatchState::State_Draw(float dt)
 {
     this->_data->window.draw(this->_background);
-    this->_data->window.draw(this->_modeLabel);
+
+    // Main elements
+    this->_data->window.draw(this->_phaseLabel);
     this->_data->window.draw(this->_timeDisplay);
+    this->_data->window.draw(this->_roundLabel);
+
+    // Progress bar
+    this->_data->window.draw(this->_progressBarBg);
+    this->_data->window.draw(this->_progressBarFill);
+
+    // Buttons
     this->_data->window.draw(this->_startStopText);
     this->_data->window.draw(this->_resetText);
-    this->_data->window.draw(this->_lapText);
-    this->_data->window.draw(this->_modeText);
 
-    // Timer controls
-    if (_mode == StopwatchMode::Timer && !_isRunning && _elapsedTime == 0.0f)
+    // Settings (visible when stopped and in prepare phase)
+    if (!_isRunning && _phase == IntervalPhase::Prepare)
     {
-        this->_data->window.draw(this->_timerSettingText);
-        this->_data->window.draw(this->_plusMinText);
-        this->_data->window.draw(this->_minusMinText);
-        this->_data->window.draw(this->_plusSecText);
-        this->_data->window.draw(this->_minusSecText);
-    }
+        this->_data->window.draw(this->_workLabel);
+        this->_data->window.draw(this->_workTimeText);
+        this->_data->window.draw(this->_workPlusText);
+        this->_data->window.draw(this->_workMinusText);
 
-    // Lap times
-    for (const auto& lapText : _lapTexts)
-    {
-        this->_data->window.draw(lapText);
+        this->_data->window.draw(this->_restLabel);
+        this->_data->window.draw(this->_restTimeText);
+        this->_data->window.draw(this->_restPlusText);
+        this->_data->window.draw(this->_restMinusText);
+
+        this->_data->window.draw(this->_roundsLabel);
+        this->_data->window.draw(this->_roundsText);
+        this->_data->window.draw(this->_roundsPlusText);
+        this->_data->window.draw(this->_roundsMinusText);
     }
 }
