@@ -556,3 +556,47 @@ bool DatabaseManager::addExerciseToPlan(int planId, int exerciseId, int dayOfWee
     }
     catch (...) { return false; }
 }
+
+bool DatabaseManager::addWorkoutLog(int userId, int exerciseId, const string& date, int setNo, double weight, int reps)
+{
+    try {
+        // Wstawiamy same liczby (ID) + dane treningowe
+        *db << "INSERT INTO workout_logs (user_id, exercise_id, date, set_number, weight, reps) VALUES (?, ?, ?, ?, ?, ?);"
+            << userId << exerciseId << date << setNo << weight << reps;
+        return true;
+    }
+    catch (...) {
+        return false;
+    }
+}
+
+vector<WorkoutLog> DatabaseManager::getWorkoutLogs(int userId)
+{
+    vector<WorkoutLog> logs;
+    try {
+        // Pobieramy wpisy tylko dla ID tego konkretnego u¿ytkownika
+        // Dorzucamy (JOIN) tabelê exercises, ¿eby wiedzieæ, jak nazywa siê æwiczenie o danym ID
+        *db << "SELECT w.id, w.user_id, w.exercise_id, w.date, w.set_number, w.weight, w.reps, e.name "
+            "FROM workout_logs w "
+            "LEFT JOIN exercises e ON w.exercise_id = e.id "
+            "WHERE w.user_id = ? "
+            "ORDER BY w.date DESC, w.set_number ASC;"
+            << userId
+            >> [&](int _id, int _uid, int _eid, string _date, int _set, double _w, int _r, string _name) {
+
+            WorkoutLog log;
+            log.id = _id;
+            log.userId = _uid;      // Twoje ID usera
+            log.exerciseId = _eid;  // Twoje ID æwiczenia
+            log.date = _date;
+            log.setNumber = _set;
+            log.weight = _w;
+            log.reps = _r;
+            log.exerciseNameVal = _name; // Pomocnicza nazwa do wyœwietlania w UI
+
+            logs.push_back(log);
+            };
+    }
+    catch (...) {}
+    return logs;
+}

@@ -57,4 +57,6 @@ struct WorkoutLog {
     int setNumber;
     double weight;
     int reps;
+
+    string exerciseNameVal;
 };

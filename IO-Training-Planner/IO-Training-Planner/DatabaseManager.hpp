@@ -76,4 +76,6 @@ public:
     shared_ptr<TrainingPlan> addTrainingPlan(const string& name);
     shared_ptr<TrainingPlan> getTrainingPlanById(int id);
     bool addExerciseToPlan(int planId, int exerciseId, int dayOfWeek, int orderInDay, std::vector<ResultValue> targets);
+    bool addWorkoutLog(int userId, int exerciseId, const string& date, int setNo, double weight, int reps);
+    vector<WorkoutLog> getWorkoutLogs(int userId);
 };
