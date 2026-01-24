@@ -151,22 +151,21 @@ bool InputManager::typingText(sf::Event& event, string& text, sf::Text& displaye
 	}
 }
 
-//	sugestia geminiego
-//void InputManager::handleScrollEvent(sf::Event& event)
-//{
-//	if (event.type == sf::Event::MouseWheelScrolled)
-//	{
-//		if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
-//		{
-//			this->_scrollDelta = event.mouseWheelScroll.delta;
-//		}
-//	}
-//}
-//
-//void InputManager::resetScroll()
-//{
-//	this->_scrollDelta = 0.0f;
-//}
+void InputManager::handleScrollEvent(sf::Event& event)
+{
+	if (event.type == sf::Event::MouseWheelScrolled)
+	{
+		if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
+		{
+			this->scrollDelta = event.mouseWheelScroll.delta;
+		}
+	}
+}
+
+void InputManager::resetScrollDelta()
+{
+	this->scrollDelta = 0.0f;
+}
 
 void InputManager::updateMousePositions(sf::RenderWindow& window)
 {

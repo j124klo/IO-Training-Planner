@@ -21,6 +21,7 @@ private:
 	sf::Sprite _background;
 
 	//	scroll panel
+	bool _isScrolling;
 	sf::Sprite _scrollEdgeTop;
 	sf::Sprite _scrollEdgeBot;
 	sf::Sprite _scrollTop;

@@ -34,7 +34,7 @@ void ExerciseListState::Exercises_Init()
 		this->_exercises[i]._descriptionText.setFillColor(sf::Color(200, 200, 200));
 
 		this->_exercises[i]._nameText.setPosition(
-			this->_scrollTop.getPosition().x + this->_scrollTop.getGlobalBounds().width * 0.03,
+			this->_scrollTop.getPosition().x + this->_scrollTop.getGlobalBounds().width * 0.03f,
 			currentY
 		);
 		this->_exercises[i]._descriptionText.setPosition(
@@ -66,20 +66,48 @@ void ExerciseListState::ScrollPanel_Init()
 	float menuButtonHeight;
 	sf::Vector2f menuButtonPosition = GetMenuButtonPosition(menuButtonWidth, menuButtonHeight);
 
-	this->_scrollEdgeTop.setPosition( 2 * menuButtonWidth + (SCREAN_WIDTH - 2 * menuButtonWidth - this->_scrollEdgeTop.getGlobalBounds().width) / 2, 0.0f );
-	this->_scrollEdgeBot.setPosition( this->_scrollEdgeTop.getPosition().x, SCREAN_HEIGHT - this->_scrollEdgeBot.getGlobalBounds().height );
-	this->_scrollTop.setPosition( this->_scrollEdgeTop.getPosition().x, this->_scrollEdgeTop.getGlobalBounds().height );
+	this->_scrollEdgeTop.setPosition(2 * menuButtonWidth + (SCREAN_WIDTH - 2 * menuButtonWidth - this->_scrollEdgeTop.getGlobalBounds().width) / 2, 0.0f);
+	this->_scrollEdgeBot.setPosition(this->_scrollEdgeTop.getPosition().x, SCREAN_HEIGHT - this->_scrollEdgeBot.getGlobalBounds().height);
+
+	float halfTopH = this->_scrollTop.getGlobalBounds().height / 2.0f;
+	this->_scrollTop.setPosition(this->_scrollEdgeTop.getPosition().x, this->_scrollEdgeTop.getGlobalBounds().height - halfTopH);
 	this->_scrollTopDestination = this->_scrollTop.getPosition();
-	this->_scrollMid.setPosition( this->_scrollEdgeTop.getPosition().x, 0.0f );
-	this->_scrollBot.setPosition( this->_scrollEdgeTop.getPosition().x, SCREAN_HEIGHT );
+
+	this->_scrollMid.setPosition(this->_scrollEdgeTop.getPosition().x, 0.0f);
+	this->_scrollBot.setPosition(this->_scrollEdgeTop.getPosition().x, SCREAN_HEIGHT);
 }
 void ExerciseListState::ScrollPanel_HandleInput(sf::Event& event)
 {
-
+	this->_data->input.handleScrollEvent(event);
 }
 void ExerciseListState::ScrollPanel_Update(float dt)
 {
+	if (floorf(this->_scrollTopDestination.y) > floorf(this->_scrollEdgeTop.getGlobalBounds().height - this->_scrollTop.getGlobalBounds().height / 2.0f))
+	{
+		this->_scrollTopDestination.y = this->_scrollEdgeTop.getGlobalBounds().height - this->_scrollTop.getGlobalBounds().height / 2.0f;
+	}
+	else
+	{
+		this->_scrollTopDestination.y += this->_data->input.getScrollDelta() * 50.0f;
+	}
 
+	if (floorV2f(this->_scrollTop.getPosition()) != floorV2f(this->_scrollTopDestination))
+	{
+		ObjMoveTo(this->_scrollTop, this->_scrollTopDestination, 500.0f, dt);
+
+		float currentY = this->_scrollTop.getPosition().y + this->_scrollTop.getGlobalBounds().height;
+		for (size_t i = 0; i < this->_exercises.size(); i++)
+		{
+			this->_exercises[i]._nameText.setPosition(this->_exercises[i]._nameText.getPosition().x, currentY);
+			this->_exercises[i]._descriptionText.setPosition(
+				this->_exercises[i]._descriptionText.getPosition().x,
+				this->_exercises[i]._nameText.getPosition().y + this->_exercises[i]._nameText.getGlobalBounds().height + 20.0f
+			);
+			currentY += this->_exercises[i]._nameText.getGlobalBounds().height + this->_exercises[i]._descriptionText.getGlobalBounds().height + 60.0f;
+		}
+
+		this->_data->input.resetScrollDelta();
+	}
 }
 void ExerciseListState::ScrollPanel_Draw(float dt)
 {
@@ -99,11 +127,11 @@ void ExerciseListState::State_Init()
 }
 void ExerciseListState::State_HandleInput(sf::Event& event)
 {
-	
+	ScrollPanel_HandleInput(event);
 }
 void ExerciseListState::State_Update(float dt)
 {
-
+	ScrollPanel_Update(dt);
 }
 void ExerciseListState::State_Draw(float dt)
 {

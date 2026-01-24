@@ -11,8 +11,7 @@ private:
 	sf::Vector2i mousePositionWindow;	//	intiger
 	sf::Vector2f mousePositionView;		//	float
 
-	//	sugestia geminiego
-	//float _scrollDelta = 0.0f;
+	float scrollDelta = 0.0f;
 
 public:
 	InputManager() {}
@@ -24,14 +23,12 @@ public:
 	bool isKeyPressedAndReleased(sf::Keyboard::Key key, bool& isPressed, bool& doUpdate);
 	bool typingText(sf::Event& event, string& text, sf::Text& displayedText, bool& isActive);
 
-	//	sugestia geminiego
-	//void handleScrollEvent(sf::Event& event);
-	//void resetScroll();
-	//inline float getScrollDelta() const { return this->_scrollDelta; }
-
 	void updateMousePositions(sf::RenderWindow& window);
+
+	void handleScrollEvent(sf::Event& event);
+	void resetScrollDelta();
 
 	inline sf::Vector2i getMousePositionWindow() const { return this->mousePositionWindow; }
 	inline sf::Vector2f getMousePositionView() const { return this->mousePositionView; }
-
+	inline float getScrollDelta() const { return this->scrollDelta; }
 };
