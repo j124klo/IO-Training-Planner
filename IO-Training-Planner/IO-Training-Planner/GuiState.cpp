@@ -417,3 +417,10 @@ void GuiState::GUI_Draw(float dt)
 	this->_data->window.draw(this->_progressButton._sprite);
 	this->_data->window.draw(this->_exerciseListButton._sprite);
 }
+
+sf::Vector2f GuiState::GetMenuButtonPosition(float& width, float& height)
+{
+	width = this->_menuButton._sprite.getGlobalBounds().width;
+	height = this->_menuButton._sprite.getGlobalBounds().height;
+	return this->_menuButton._sprite.getPosition();
+}

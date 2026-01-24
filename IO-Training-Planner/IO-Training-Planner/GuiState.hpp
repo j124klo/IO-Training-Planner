@@ -40,6 +40,8 @@ private:
 public:
     GuiState(AppDataRef data);
 
+	sf::Vector2f GetMenuButtonPosition(float& width, float& height);
+
     virtual void Init() override;
     virtual void HandleInput() override;
     virtual void Update(float dt) override;

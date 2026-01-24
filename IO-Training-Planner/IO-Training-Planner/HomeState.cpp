@@ -47,11 +47,21 @@ HomeState::HomeState(AppDataRef data) : GuiState(data)
 
 }
 
+void HomeState::ScrollPanel_Init()
+{
+    this->_data->assets.loadTexture("Scroll Edge", SCROLL_EDGE);
+    this->_data->assets.loadTexture("Scroll Top", SCROLL_TOP);
+    this->_data->assets.loadTexture("Scroll Mid", SCROLL_MID);
+    this->_data->assets.loadTexture("Scroll Bot", SCROLL_BOT);
+}
+
 void HomeState::State_Init()
 {
     // 1. £adowanie zasobów
     this->_data->assets.loadTexture("Default Background", DEFAULT_BACKGROUND_FILEPATH);
     this->_data->assets.loadTexture("Plan Panel", PLAN_PANEL_FILEPATH);
+
+	ScrollPanel_Init();
 
     this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
     this->_planPanel.setTexture(this->_data->assets.getTexture("Plan Panel"));
@@ -139,17 +149,14 @@ void HomeState::State_Init()
         }
     }
 }
-
 void HomeState::State_HandleInput(sf::Event& event)
 {
 
 }
-
 void HomeState::State_Update(float dt)
 {
 
 }
-
 void HomeState::State_Draw(float dt)
 {
     this->_data->window.draw(this->_background);

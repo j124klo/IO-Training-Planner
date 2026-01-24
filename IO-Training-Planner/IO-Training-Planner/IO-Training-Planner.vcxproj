@@ -192,6 +192,10 @@
     <Image Include="Resources\Images\Menu Button.png" />
     <Image Include="Resources\Images\Plan Panel.png" />
     <Image Include="Resources\Images\Progress Button.png" />
+    <Image Include="Resources\Images\Scroll Bot.png" />
+    <Image Include="Resources\Images\Scroll Edge.png" />
+    <Image Include="Resources\Images\Scroll Mid.png" />
+    <Image Include="Resources\Images\Scroll Top.png" />
     <Image Include="Resources\Images\Splash Background.png" />
     <Image Include="Resources\Images\Stopwatch Button.png" />
     <Image Include="Resources\Images\Training Button.png" />

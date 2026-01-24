@@ -8,16 +8,20 @@
 #define DEFAULT_BACKGROUND_FILEPATH "Resources/Images/Default Background.png"
 #define DEFAULT_FONT_FILEPATH "Resources/Fonts/Roboto-VariableFont_wdth,wght.ttf"
 
+// scroll panel
+#define SCROLL_EDGE "Resources/Images/Scroll Edge.png"
+#define SCROLL_TOP "Resources/Images/Scroll Top.png"
+#define SCROLL_MID "Resources/Images/Scroll Mid.png"
+#define SCROLL_BOT "Resources/Images/Scroll Bot.png"
+
+//	other buttons
+#define CONTINUE_BUTTON_FILEPATH "Resources/Images/Continue Button.png"
+
 //	splash state
 #define SPLASH_STATE_SHOW_TIME 1.5
 #define SPLASH_STATE_BACKGROUND_FILEPATH "Resources/Images/Splash Background.png"
 
-//	login state
-//#define LOGIN_STATE_BACKGROUND_FILEPATH "Resources/Images/Login Background.png"
-#define CONTINUE_BUTTON_FILEPATH "Resources/Images/Continue Button.png"
-
 //	home state
-//#define HOME_STATE_BACKGROUND_FILEPATH "Resources/Images/Home Background.png"
 #define PLAN_PANEL_FILEPATH "Resources/Images/Plan Panel.png"
 
 //	GUI

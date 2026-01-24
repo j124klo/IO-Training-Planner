@@ -22,6 +22,8 @@ private:
 public:
 	HomeState(AppDataRef data);
 
+	void ScrollPanel_Init();
+
 	void State_Init();
 	void State_HandleInput(sf::Event& event);
 	void State_Update(float dt);

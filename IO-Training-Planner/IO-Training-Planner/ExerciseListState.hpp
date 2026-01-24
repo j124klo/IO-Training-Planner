@@ -20,6 +20,14 @@ private:
 
 	sf::Sprite _background;
 
+	//	scroll panel
+	sf::Sprite _scrollEdgeTop;
+	sf::Sprite _scrollEdgeBot;
+	sf::Sprite _scrollTop;
+	sf::Sprite _scrollMid;
+	sf::Sprite _scrollBot;
+	sf::Vector2f _scrollTopDestination;
+
 	//	Exercise entries
 	vector<ExerciseItem> _exercises;
 
@@ -28,6 +36,11 @@ public:
 
 	void Exercises_Init();
 	void Exercises_Draw(float dt);
+
+	void ScrollPanel_Init();
+	void ScrollPanel_HandleInput(sf::Event& event);
+	void ScrollPanel_Update(float dt);
+	void ScrollPanel_Draw(float dt);
 
 	void State_Init();
 	void State_HandleInput(sf::Event& event);

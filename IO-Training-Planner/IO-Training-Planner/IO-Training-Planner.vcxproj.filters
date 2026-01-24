@@ -202,5 +202,17 @@
     <Image Include="Resources\Images\Calculator Button.png">
       <Filter>Resource Files\Images</Filter>
     </Image>
+    <Image Include="Resources\Images\Scroll Top.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="Resources\Images\Scroll Bot.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="Resources\Images\Scroll Mid.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="Resources\Images\Scroll Edge.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
   </ItemGroup>
 </Project>
