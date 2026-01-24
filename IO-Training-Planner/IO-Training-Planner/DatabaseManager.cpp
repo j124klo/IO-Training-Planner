@@ -298,6 +298,32 @@ void DatabaseManager::seedData()
         }
     }
 
+    //WORKOUT LOGS
+    if (userA) {
+        // 1. Trening z dnia 20 stycznia (Nogi - Przysiady)
+        if (exSquats) {
+            // ID usera, ID æwiczenia, Data, Nr serii, Ciê¿ar, Powtórzenia
+            addWorkoutLog(userA->id, exSquats->id, "2026-01-20", 1, 60.0, 12); // Rozgrzewka
+            addWorkoutLog(userA->id, exSquats->id, "2026-01-20", 2, 80.0, 8);  // Seria 1
+            addWorkoutLog(userA->id, exSquats->id, "2026-01-20", 3, 90.0, 5);  // Seria 2 (Rekord)
+        }
+
+        // 2. Trening z dnia 22 stycznia (Plecy - Martwy ci¹g)
+        if (exDeadlift) {
+            addWorkoutLog(userA->id, exDeadlift->id, "2026-01-22", 1, 100.0, 5);
+            addWorkoutLog(userA->id, exDeadlift->id, "2026-01-22", 2, 100.0, 5);
+            addWorkoutLog(userA->id, exDeadlift->id, "2026-01-22", 3, 110.0, 3);
+        }
+
+        // 3. Trening dzisiejszy (Klatka - Pompki)
+        if (exPushUps) {
+            addWorkoutLog(userA->id, exPushUps->id, "2026-01-24", 1, 0.0, 20); // 0 kg = masa w³asna
+            addWorkoutLog(userA->id, exPushUps->id, "2026-01-24", 2, 0.0, 18);
+        }
+
+        cout << "[SUCCESS] Historia dla uzytkownika 'a' zostala dodana." << endl;
+    }
+
     cout << "--- [SEED DATA] Done. ---" << endl;
 }
 
@@ -599,4 +625,32 @@ vector<WorkoutLog> DatabaseManager::getWorkoutLogs(int userId)
     }
     catch (...) {}
     return logs;
+}
+
+vector<PersonalRecord> DatabaseManager::getPersonalRecords(int userId)
+{
+    vector<PersonalRecord> records;
+    try {
+        *db << "SELECT e.name, MAX(w.weight), MAX(w.reps), w.date "
+            "FROM workout_logs w "
+            "JOIN exercises e ON w.exercise_id = e.id "
+            "WHERE w.user_id = ? "
+            "GROUP BY w.exercise_id "
+            "ORDER BY e.name ASC;"
+            << userId
+            >> [&](string name, double weight, int reps, string date) {
+
+            PersonalRecord pr;
+            pr.exerciseName = name;
+            pr.maxWeight = weight;
+            pr.maxReps = reps;
+            pr.date = date;
+
+            records.push_back(pr);
+            };
+    }
+    catch (exception& e) {
+        cout << "Get PR Error: " << e.what() << endl;
+    }
+    return records;
 }

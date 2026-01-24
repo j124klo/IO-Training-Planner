@@ -60,3 +60,10 @@ struct WorkoutLog {
 
     string exerciseNameVal;
 };
+
+struct PersonalRecord {
+    string exerciseName;
+    double maxWeight;
+    int maxReps;
+    string date;
+};
