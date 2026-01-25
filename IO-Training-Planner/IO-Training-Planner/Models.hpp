@@ -38,6 +38,7 @@ struct PlanEntry {
 struct TrainingPlan {
     int id;
     string name;
+    int ownerId = 0;  // 0 = publiczny plan, >0 = prywatny plan u¿ytkownika
     vector<PlanEntry> entries;
 };
 
