@@ -298,62 +298,62 @@ void DatabaseManager::seedData()
         }
     }
 
-    //WORKOUT LOGS
-    if (userA) {
-        // --- 1. KATEGORIA SI£A (STRENGTH) ---
-        // Test: Czy wybierze najwiêkszy ciê¿ar? (Powinno wybraæ 90kg)
-        if (exSquats) {
-            addWorkoutLog(userA->id, exSquats->id, "2026-01-10", 1, 80.0, 8);
-            addWorkoutLog(userA->id, exSquats->id, "2026-01-15", 1, 85.0, 5);
-            addWorkoutLog(userA->id, exSquats->id, "2026-01-20", 1, 90.0, 3); // <--- To powinien byæ Twój PR Si³owy
-        }
+    ////WORKOUT LOGS
+    //if (userA) {
+    //    // --- 1. KATEGORIA SI£A (STRENGTH) ---
+    //    // Test: Czy wybierze najwiêkszy ciê¿ar? (Powinno wybraæ 90kg)
+    //    if (exSquats) {
+    //        addWorkoutLog(userA->id, exSquats->id, "2026-01-10", 1, 80.0, 8);
+    //        addWorkoutLog(userA->id, exSquats->id, "2026-01-15", 1, 85.0, 5);
+    //        addWorkoutLog(userA->id, exSquats->id, "2026-01-20", 1, 90.0, 3); // <--- To powinien byæ Twój PR Si³owy
+    //    }
 
-        // Test: Czy poprawnie obs³u¿y inny trening si³owy?
-        if (exDeadlift) {
-            addWorkoutLog(userA->id, exDeadlift->id, "2026-01-22", 1, 100.0, 5);
-            addWorkoutLog(userA->id, exDeadlift->id, "2026-01-22", 2, 120.0, 1); // <--- PR Si³owy
-        }
+    //    // Test: Czy poprawnie obs³u¿y inny trening si³owy?
+    //    if (exDeadlift) {
+    //        addWorkoutLog(userA->id, exDeadlift->id, "2026-01-22", 1, 100.0, 5);
+    //        addWorkoutLog(userA->id, exDeadlift->id, "2026-01-22", 2, 120.0, 1); // <--- PR Si³owy
+    //    }
 
-        // --- 2. KATEGORIA WYTRZYMA£OŒÆ (ENDURANCE) ---
-        // Test: Pompki (typ Reps). Czy wybierze najwiêcej powtórzeñ?
-        if (exPushUps) {
-            addWorkoutLog(userA->id, exPushUps->id, "2026-01-05", 1, 0.0, 20);
-            addWorkoutLog(userA->id, exPushUps->id, "2026-01-10", 1, 0.0, 25); // <--- PR Wytrzyma³oœciowy
-            addWorkoutLog(userA->id, exPushUps->id, "2026-01-15", 1, 0.0, 22); // Gorszy wynik
-        }
+    //    // --- 2. KATEGORIA WYTRZYMA£OŒÆ (ENDURANCE) ---
+    //    // Test: Pompki (typ Reps). Czy wybierze najwiêcej powtórzeñ?
+    //    if (exPushUps) {
+    //        addWorkoutLog(userA->id, exPushUps->id, "2026-01-05", 1, 0.0, 20);
+    //        addWorkoutLog(userA->id, exPushUps->id, "2026-01-10", 1, 0.0, 25); // <--- PR Wytrzyma³oœciowy
+    //        addWorkoutLog(userA->id, exPushUps->id, "2026-01-15", 1, 0.0, 22); // Gorszy wynik
+    //    }
 
-        // Test: Podci¹ganie (za³ó¿my ¿e masz takie æwiczenie, albo dodajmy je wirtualnie do testu na Squatsach jako High Reps)
-        // Ale lepiej dodajmy nowe æwiczenie, ¿eby by³o czysto:
-        auto exPullUps = addExercise("Pull-ups", "Podciaganie na drazku", { ValueType::REPS, ValueType::WEIGHT_KG });
-        if (exPullUps) {
-            addWorkoutLog(userA->id, exPullUps->id, "2026-01-24", 1, 0.0, 8);
-            addWorkoutLog(userA->id, exPullUps->id, "2026-01-24", 2, 0.0, 12); // <--- PR Wytrzyma³oœciowy
-        }
+    //    // Test: Podci¹ganie (za³ó¿my ¿e masz takie æwiczenie, albo dodajmy je wirtualnie do testu na Squatsach jako High Reps)
+    //    // Ale lepiej dodajmy nowe æwiczenie, ¿eby by³o czysto:
+    //    auto exPullUps = addExercise("Pull-ups", "Podciaganie na drazku", { ValueType::REPS, ValueType::WEIGHT_KG });
+    //    if (exPullUps) {
+    //        addWorkoutLog(userA->id, exPullUps->id, "2026-01-24", 1, 0.0, 8);
+    //        addWorkoutLog(userA->id, exPullUps->id, "2026-01-24", 2, 0.0, 12); // <--- PR Wytrzyma³oœciowy
+    //    }
 
-        // --- 3. KATEGORIA CARDIO / CZAS (TIME/DISTANCE) ---
-        // Test: Plank (Deska) - typ TIME. Czy trafi do 3 tabeli?
-        // Uwaga: Czas zapisujemy w polu 'weight' (jako float sekund)
-        if (exPlank) {
-            addWorkoutLog(userA->id, exPlank->id, "2026-01-12", 1, 60.0, 0);  // 60 sekund
-            addWorkoutLog(userA->id, exPlank->id, "2026-01-18", 1, 90.0, 0);  // 90 sekund <--- PR Czasowy
-            addWorkoutLog(userA->id, exPlank->id, "2026-01-20", 1, 75.0, 0);
-        }
+    //    // --- 3. KATEGORIA CARDIO / CZAS (TIME/DISTANCE) ---
+    //    // Test: Plank (Deska) - typ TIME. Czy trafi do 3 tabeli?
+    //    // Uwaga: Czas zapisujemy w polu 'weight' (jako float sekund)
+    //    if (exPlank) {
+    //        addWorkoutLog(userA->id, exPlank->id, "2026-01-12", 1, 60.0, 0);  // 60 sekund
+    //        addWorkoutLog(userA->id, exPlank->id, "2026-01-18", 1, 90.0, 0);  // 90 sekund <--- PR Czasowy
+    //        addWorkoutLog(userA->id, exPlank->id, "2026-01-20", 1, 75.0, 0);
+    //    }
 
-        // Test: Bieganie (Running) - typ DISTANCE + TIME.
-        // Tutaj 'weight' robi za dystans (km) lub czas, zale¿y jak ustalisz. 
-        // Przyjmijmy w seedzie: weight = dystans (km).
-        if (exRunning) {
-            addWorkoutLog(userA->id, exRunning->id, "2026-01-02", 1, 5.0, 0);   // 5 km
-            addWorkoutLog(userA->id, exRunning->id, "2026-01-09", 1, 10.5, 0);  // 10.5 km <--- PR Dystansowy
-        }
+    //    // Test: Bieganie (Running) - typ DISTANCE + TIME.
+    //    // Tutaj 'weight' robi za dystans (km) lub czas, zale¿y jak ustalisz. 
+    //    // Przyjmijmy w seedzie: weight = dystans (km).
+    //    if (exRunning) {
+    //        addWorkoutLog(userA->id, exRunning->id, "2026-01-02", 1, 5.0, 0);   // 5 km
+    //        addWorkoutLog(userA->id, exRunning->id, "2026-01-09", 1, 10.5, 0);  // 10.5 km <--- PR Dystansowy
+    //    }
 
-        // Test: Jazda na rowerze (Cycling)
-        if (exCycling) {
-            addWorkoutLog(userA->id, exCycling->id, "2026-01-15", 1, 20.0, 0); // 20 km
-        }
+    //    // Test: Jazda na rowerze (Cycling)
+    //    if (exCycling) {
+    //        addWorkoutLog(userA->id, exCycling->id, "2026-01-15", 1, 20.0, 0); // 20 km
+    //    }
 
-        cout << "[SUCCESS] Pelna historia testowa dla uzytkownika 'a' zostala dodana." << endl;
-    }
+    //    cout << "[SUCCESS] Pelna historia testowa dla uzytkownika 'a' zostala dodana." << endl;
+    //}
 
     cout << "--- [SEED DATA] Done. ---" << endl;
 }

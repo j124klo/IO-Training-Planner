@@ -210,6 +210,6 @@ void ProgressState::State_Draw(float dt)
 {
     this->_data->window.draw(this->_background);
 
+    PRLogs_Draw(dt);
     ProgressHistoryButton_Draw(dt);
-	PRLogs_Draw(dt);
 }
