@@ -18,28 +18,31 @@ private:
 
     sf::Sprite _background;
 
-	Button _progressHistoryButton;
+    Button _progressHistoryButton;
 
     // ZMIANA: Teraz przechowujemy rekordy, a nie ca³¹ historiê
-    vector<PersonalRecord> _records;
+    vector<PersonalRecord> _weightRecords;
+    vector<PersonalRecord> _repsRecords;
+    vector<PersonalRecord> _timeRecords;
+    vector<PersonalRecord> _distRecords;
 
-    sf::Text _titleText;
+    sf::Text _mainTitle;
 
-    // Zredukowane nag³ówki
-    sf::Text _headerExercise;
-    sf::Text _headerMaxWeight;
-    sf::Text _headerMaxReps;
-    sf::Text _headerDate;
-
-    vector<sf::Text> _logTexts;
+    // Wszystkie teksty (nag³ówki i wiersze) trzymamy tu
+    vector<sf::Text> _allTexts;
 
 public:
     ProgressState(AppDataRef data);
 
-	void ProgressHistoryButton_Init();
-	void ProgressHistoryButton_HandleInput(sf::Event& event);
-	void ProgressHistoryButton_Update(float dt);
-	void ProgressHistoryButton_Draw(float dt);
+	void PRLogs_Init();
+    void PRLogs_HandleInput(sf::Event& event);
+	void PRLogs_Update(float dt);
+	void PRLogs_Draw(float dt);
+
+    void ProgressHistoryButton_Init();
+    void ProgressHistoryButton_HandleInput(sf::Event& event);
+    void ProgressHistoryButton_Update(float dt);
+    void ProgressHistoryButton_Draw(float dt);
 
     void State_Init();
     void State_HandleInput(sf::Event& event);

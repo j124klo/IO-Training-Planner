@@ -10,11 +10,11 @@ void DatabaseManager::seedData()
     addExercise("Running", { ValueType::DISTANCE_KM, ValueType::TIME_SEC });
     addExercise("Deadlift", { ValueType::WEIGHT_KG, ValueType::REPS });
 
-	addTrainingPlan("Beginner Plan");
-	addExerciseToPlan(1, 1, 1, { 20 });
+    addTrainingPlan("Beginner Plan");
+    addExerciseToPlan(1, 1, 1, { 20 });
     addExerciseToPlan(1, 2, 3, { 9.5f, 3600.0f });
-	addExerciseToPlan(1, 3, 5, { 100.0f, 5 });
-	assignPlanToUser(1, 1);
+    addExerciseToPlan(1, 3, 5, { 100.0f, 5 });
+    assignPlanToUser(1, 1);
 }
 
 DatabaseManager::DatabaseManager()
@@ -206,7 +206,7 @@ void DatabaseManager::createTables() {
         "target_val_2 REAL"
         ");";
 
-	// Tabela WorkoutLogs
+    // Tabela WorkoutLogs
     *db << "CREATE TABLE IF NOT EXISTS workout_logs ("
         "id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "user_id INTEGER, "
@@ -245,7 +245,7 @@ void DatabaseManager::seedData()
 
     // 3. PUSTY PLAN TRENINGOWY (tylko sama nazwa)
     // Sprawdzamy czy plan istnieje, jeœli nie - tworzymy go, ale zostawiamy pusty.
-    
+
     string planName = "Full Body Workout";
     int existingPlanId = -1;
 
@@ -274,7 +274,7 @@ void DatabaseManager::seedData()
 
             if (exRunning)   addExerciseToPlan(plan->id, exRunning->id, 1, 1, { 2.0f, 15.0f });
             if (exDeadlift)  addExerciseToPlan(plan->id, exDeadlift->id, 1, 3, { 100.0f, 6 });
-            if (exPushUps)   addExerciseToPlan(plan->id, exPushUps->id, 1, 2, { 10 });   
+            if (exPushUps)   addExerciseToPlan(plan->id, exPushUps->id, 1, 2, { 10 });
 
             // --- ŒRODA (Dzieñ 3) - Nogi i Plecy ---
             // Kolejnoœæ: 1. Przysiady, 2. Martwy ci¹g
@@ -300,28 +300,59 @@ void DatabaseManager::seedData()
 
     //WORKOUT LOGS
     if (userA) {
-        // 1. Trening z dnia 20 stycznia (Nogi - Przysiady)
+        // --- 1. KATEGORIA SI£A (STRENGTH) ---
+        // Test: Czy wybierze najwiêkszy ciê¿ar? (Powinno wybraæ 90kg)
         if (exSquats) {
-            // ID usera, ID æwiczenia, Data, Nr serii, Ciê¿ar, Powtórzenia
-            addWorkoutLog(userA->id, exSquats->id, "2026-01-20", 1, 60.0, 12); // Rozgrzewka
-            addWorkoutLog(userA->id, exSquats->id, "2026-01-20", 2, 80.0, 8);  // Seria 1
-            addWorkoutLog(userA->id, exSquats->id, "2026-01-20", 3, 90.0, 5);  // Seria 2 (Rekord)
+            addWorkoutLog(userA->id, exSquats->id, "2026-01-10", 1, 80.0, 8);
+            addWorkoutLog(userA->id, exSquats->id, "2026-01-15", 1, 85.0, 5);
+            addWorkoutLog(userA->id, exSquats->id, "2026-01-20", 1, 90.0, 3); // <--- To powinien byæ Twój PR Si³owy
         }
 
-        // 2. Trening z dnia 22 stycznia (Plecy - Martwy ci¹g)
+        // Test: Czy poprawnie obs³u¿y inny trening si³owy?
         if (exDeadlift) {
             addWorkoutLog(userA->id, exDeadlift->id, "2026-01-22", 1, 100.0, 5);
-            addWorkoutLog(userA->id, exDeadlift->id, "2026-01-22", 2, 100.0, 5);
-            addWorkoutLog(userA->id, exDeadlift->id, "2026-01-22", 3, 110.0, 3);
+            addWorkoutLog(userA->id, exDeadlift->id, "2026-01-22", 2, 120.0, 1); // <--- PR Si³owy
         }
 
-        // 3. Trening dzisiejszy (Klatka - Pompki)
+        // --- 2. KATEGORIA WYTRZYMA£OŒÆ (ENDURANCE) ---
+        // Test: Pompki (typ Reps). Czy wybierze najwiêcej powtórzeñ?
         if (exPushUps) {
-            addWorkoutLog(userA->id, exPushUps->id, "2026-01-24", 1, 0.0, 20); // 0 kg = masa w³asna
-            addWorkoutLog(userA->id, exPushUps->id, "2026-01-24", 2, 0.0, 18);
+            addWorkoutLog(userA->id, exPushUps->id, "2026-01-05", 1, 0.0, 20);
+            addWorkoutLog(userA->id, exPushUps->id, "2026-01-10", 1, 0.0, 25); // <--- PR Wytrzyma³oœciowy
+            addWorkoutLog(userA->id, exPushUps->id, "2026-01-15", 1, 0.0, 22); // Gorszy wynik
         }
 
-        cout << "[SUCCESS] Historia dla uzytkownika 'a' zostala dodana." << endl;
+        // Test: Podci¹ganie (za³ó¿my ¿e masz takie æwiczenie, albo dodajmy je wirtualnie do testu na Squatsach jako High Reps)
+        // Ale lepiej dodajmy nowe æwiczenie, ¿eby by³o czysto:
+        auto exPullUps = addExercise("Pull-ups", "Podciaganie na drazku", { ValueType::REPS, ValueType::WEIGHT_KG });
+        if (exPullUps) {
+            addWorkoutLog(userA->id, exPullUps->id, "2026-01-24", 1, 0.0, 8);
+            addWorkoutLog(userA->id, exPullUps->id, "2026-01-24", 2, 0.0, 12); // <--- PR Wytrzyma³oœciowy
+        }
+
+        // --- 3. KATEGORIA CARDIO / CZAS (TIME/DISTANCE) ---
+        // Test: Plank (Deska) - typ TIME. Czy trafi do 3 tabeli?
+        // Uwaga: Czas zapisujemy w polu 'weight' (jako float sekund)
+        if (exPlank) {
+            addWorkoutLog(userA->id, exPlank->id, "2026-01-12", 1, 60.0, 0);  // 60 sekund
+            addWorkoutLog(userA->id, exPlank->id, "2026-01-18", 1, 90.0, 0);  // 90 sekund <--- PR Czasowy
+            addWorkoutLog(userA->id, exPlank->id, "2026-01-20", 1, 75.0, 0);
+        }
+
+        // Test: Bieganie (Running) - typ DISTANCE + TIME.
+        // Tutaj 'weight' robi za dystans (km) lub czas, zale¿y jak ustalisz. 
+        // Przyjmijmy w seedzie: weight = dystans (km).
+        if (exRunning) {
+            addWorkoutLog(userA->id, exRunning->id, "2026-01-02", 1, 5.0, 0);   // 5 km
+            addWorkoutLog(userA->id, exRunning->id, "2026-01-09", 1, 10.5, 0);  // 10.5 km <--- PR Dystansowy
+        }
+
+        // Test: Jazda na rowerze (Cycling)
+        if (exCycling) {
+            addWorkoutLog(userA->id, exCycling->id, "2026-01-15", 1, 20.0, 0); // 20 km
+        }
+
+        cout << "[SUCCESS] Pelna historia testowa dla uzytkownika 'a' zostala dodana." << endl;
     }
 
     cout << "--- [SEED DATA] Done. ---" << endl;
@@ -627,30 +658,87 @@ vector<WorkoutLog> DatabaseManager::getWorkoutLogs(int userId)
     return logs;
 }
 
-vector<PersonalRecord> DatabaseManager::getPersonalRecords(int userId)
+// 1. STRENGTH (Si³a) - Exercises without Time or Distance
+vector<PersonalRecord> DatabaseManager::getBestWeights(int userId)
 {
     vector<PersonalRecord> records;
     try {
-        *db << "SELECT e.name, MAX(w.weight), MAX(w.reps), w.date "
+        // Pobieramy æwiczenia, które NIE s¹ czasowe (2) ani dystansowe (3)
+        *db << "SELECT e.name, MAX(w.weight), w.reps, w.date "
+            "FROM workout_logs w "
+            "JOIN exercises e ON w.exercise_id = e.id "
+            "WHERE w.user_id = ? AND w.weight > 0 "
+            "AND e.value_types NOT LIKE '%2%' AND e.value_types NOT LIKE '%3%' "
+            "GROUP BY w.exercise_id "
+            "ORDER BY MAX(w.weight) DESC;"
+            << userId
+            >> [&](string name, double w, int r, string date) {
+            records.push_back({ name, w, r, date });
+            };
+    }
+    catch (...) {}
+    return records;
+}
+
+// 2. ENDURANCE (Wytrzyma³oœæ) - Max Reps
+vector<PersonalRecord> DatabaseManager::getBestReps(int userId)
+{
+    vector<PersonalRecord> records;
+    try {
+        *db << "SELECT e.name, w.weight, MAX(w.reps), w.date "
+            "FROM workout_logs w "
+            "JOIN exercises e ON w.exercise_id = e.id "
+            "WHERE w.user_id = ? AND w.reps > 0 "
+            "GROUP BY w.exercise_id "
+            "ORDER BY MAX(w.reps) DESC;"
+            << userId
+            >> [&](string name, double w, int r, string date) {
+            records.push_back({ name, w, r, date });
+            };
+    }
+    catch (...) {}
+    return records;
+}
+
+/// 3. MAX TIME (Czas) - Typ 2 (TIME_SEC)
+vector<PersonalRecord> DatabaseManager::getBestTimes(int userId)
+{
+    vector<PersonalRecord> records;
+    try {
+        *db << "SELECT e.name, MAX(w.weight), w.date "
             "FROM workout_logs w "
             "JOIN exercises e ON w.exercise_id = e.id "
             "WHERE w.user_id = ? "
+            "AND e.value_types LIKE '%2%' " // Tylko typ CZAS
             "GROUP BY w.exercise_id "
-            "ORDER BY e.name ASC;"
+            "ORDER BY MAX(w.weight) DESC;"
             << userId
-            >> [&](string name, double weight, int reps, string date) {
-
-            PersonalRecord pr;
-            pr.exerciseName = name;
-            pr.maxWeight = weight;
-            pr.maxReps = reps;
-            pr.date = date;
-
-            records.push_back(pr);
+            >> [&](string name, double w, string date) {
+            records.push_back({ name, w, 0, date });
             };
     }
-    catch (exception& e) {
-        cout << "Get PR Error: " << e.what() << endl;
+    catch (...) {}
+    return records;
+}
+
+// 4. MAX DISTANCE (Dystans) - Typ 3 (DISTANCE_KM) - NOWA METODA
+vector<PersonalRecord> DatabaseManager::getBestDistances(int userId)
+{
+    vector<PersonalRecord> records;
+    try {
+        *db << "SELECT e.name, MAX(w.weight), w.date "
+            "FROM workout_logs w "
+            "JOIN exercises e ON w.exercise_id = e.id "
+            "WHERE w.user_id = ? "
+            "AND e.value_types LIKE '%3%' " // Tylko typ DYSTANS
+            "GROUP BY w.exercise_id "
+            "ORDER BY MAX(w.weight) DESC;"
+            << userId
+            >> [&](string name, double w, string date) {
+            // Tutaj w polu 'weight' przechowujemy kilometry
+            records.push_back({ name, w, 0, date });
+            };
     }
+    catch (...) {}
     return records;
 }

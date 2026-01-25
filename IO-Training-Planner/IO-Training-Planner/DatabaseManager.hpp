@@ -25,7 +25,7 @@ public:
 
     shared_ptr<User> addUser(const string& login, const string& pass);
     shared_ptr<User> getUserByLogin(const string& login);
-	shared_ptr<User> getUserById(int id);
+    shared_ptr<User> getUserById(int id);
     bool assignPlanToUser(int userId, int planId);
 
     shared_ptr<Exercise> addExercise(const string& name, vector<ValueType> types);
@@ -33,9 +33,9 @@ public:
     const vector<shared_ptr<Exercise>>& getAllExercises() const;
 
     shared_ptr<TrainingPlan> addTrainingPlan(const string& name);
-	shared_ptr<TrainingPlan> getTrainingPlanById(int id);
+    shared_ptr<TrainingPlan> getTrainingPlanById(int id);
     bool addExerciseToPlan(int planId, int exerciseId, int dayOfWeek, int orderInDay, std::vector<ResultValue> targets);
-    
+
 };*/
 
 #pragma once
@@ -78,5 +78,8 @@ public:
     bool addExerciseToPlan(int planId, int exerciseId, int dayOfWeek, int orderInDay, std::vector<ResultValue> targets);
     bool addWorkoutLog(int userId, int exerciseId, const string& date, int setNo, double weight, int reps);
     vector<WorkoutLog> getWorkoutLogs(int userId);
-    vector<PersonalRecord> getPersonalRecords(int userId);
+    vector<PersonalRecord> getBestWeights(int userId);
+    vector<PersonalRecord> getBestReps(int userId);
+    vector<PersonalRecord> getBestTimes(int userId);
+    vector<PersonalRecord> getBestDistances(int userId);
 };
