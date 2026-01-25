@@ -21,7 +21,10 @@ private:
 	Button _progressHistoryButton;
 
     // ZMIANA: Teraz przechowujemy rekordy, a nie ca³¹ historiê
-    vector<PersonalRecord> _records;
+    vector<PersonalRecord> _weightRecords;
+    vector<PersonalRecord> _repsRecords;
+    vector<PersonalRecord> _timeRecords;
+    vector<PersonalRecord> _distRecords;
 
     sf::Text _mainTitle;
 
