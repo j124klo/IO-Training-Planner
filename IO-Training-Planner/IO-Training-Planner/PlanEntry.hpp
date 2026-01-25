@@ -1,6 +1,9 @@
 #pragma once
 #include <string>
 #include <SFML/Graphics.hpp>
+#include <variant>
+#include <vector>
+#include "Models.hpp"
 
 using namespace std;
 
@@ -15,4 +18,11 @@ struct PlanGUIEntry {
     sf::Text _dayText;
     sf::Text _nameText;
     sf::Text _targetText;
+
+    int _exerciseId;                    // Musimy wiedzieæ co to za æwiczenie
+    vector<ResultValue> _targets;       // Surowe liczby (np. 100.0, 5)
+
+    sf::FloatRect getGlobalBounds() const {
+        return _nameText.getGlobalBounds();
+    }
 };

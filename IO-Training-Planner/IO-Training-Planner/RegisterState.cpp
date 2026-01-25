@@ -191,8 +191,23 @@ void RegisterState::HandleInput()
                 {
                     // Register new user
                     auto newUser = _data->database.addUser(_loginText, _passwordText);
+
                     if (newUser)
                     {
+                        // --- AUTOMATYCZNE PRZYPISANIE PLANU ---
+                        // Pobieramy wszystkie dostêpne plany
+                        auto availablePlans = _data->database.getAllPlanHeaders();
+
+                        // Jeœli w bazie s¹ jakieœ plany, przypisujemy pierwszy (domyœlny)
+                        if (!availablePlans.empty())
+                        {
+                            int defaultPlanId = availablePlans[0].id;
+                            _data->database.assignPlanToUser(newUser->id, defaultPlanId);
+                            // Opcjonalnie: log w konsoli
+                            cout << "[REGISTER] Przypisano plan ID: " << defaultPlanId << " uzytkownikowi: " << _loginText << endl;
+                        }
+                        // ---------------------------------------
+
                         _messageLabel.setString("Rejestracja udana! Mozesz sie zalogowac.");
                         _messageLabel.setFillColor(sf::Color::Green);
                     }

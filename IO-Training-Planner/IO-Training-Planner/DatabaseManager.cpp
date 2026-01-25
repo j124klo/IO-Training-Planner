@@ -1,134 +1,10 @@
-/*#include "DatabaseManager.hpp"
-
-using namespace std;
-
-void DatabaseManager::seedData()
-{
-    addUser("a", "a");
-
-    addExercise("Push-ups", { ValueType::REPS });
-    addExercise("Running", { ValueType::DISTANCE_KM, ValueType::TIME_SEC });
-    addExercise("Deadlift", { ValueType::WEIGHT_KG, ValueType::REPS });
-
-    addTrainingPlan("Beginner Plan");
-    addExerciseToPlan(1, 1, 1, { 20 });
-    addExerciseToPlan(1, 2, 3, { 9.5f, 3600.0f });
-    addExerciseToPlan(1, 3, 5, { 100.0f, 5 });
-    assignPlanToUser(1, 1);
-}
-
-DatabaseManager::DatabaseManager()
-{
-    seedData();
-}
-
-shared_ptr<User> DatabaseManager::addUser(const string& login, const string& pass)
-{
-    auto newUser = make_shared<User>();
-    newUser->id = nextUserId++;
-    newUser->login = login;
-    newUser->password = pass;
-    users.push_back(newUser);
-    return newUser;
-}
-
-shared_ptr<User> DatabaseManager::getUserByLogin(const string& login)
-{
-    for (auto& u : users) {
-        if (u->login == login) return u;
-    }
-    return nullptr;
-}
-
-shared_ptr<User> DatabaseManager::getUserById(int id)
-{
-    for (auto& u : users) {
-        if (u->id == id) return u;
-    }
-    return nullptr;
-}
-
-bool DatabaseManager::assignPlanToUser(int userId, int planId)
-{
-    for (auto& u : users) {
-        if (u->id == userId) {
-            // SprawdŸ czy plan istnieje
-            if (getTrainingPlanById(planId)) {
-                u->currentPlanId = planId;
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-
-shared_ptr<Exercise> DatabaseManager::addExercise(const string& name, vector<ValueType> types)
-{
-    auto ex = make_shared<Exercise>();
-    ex->id = nextExId++;
-    ex->name = name;
-    ex->valueTypes = types;
-    ex->isPublic = true;
-    exercises.push_back(ex);
-    return ex;
-}
-
-shared_ptr<Exercise> DatabaseManager::getExerciseById(int id)
-{
-    for (auto& e : exercises) {
-        if (e->id == id) return e;
-    }
-    return nullptr;
-}
-
-const vector<shared_ptr<Exercise>>& DatabaseManager::getAllExercises() const
-{
-    return exercises;
-}
-
-
-shared_ptr<TrainingPlan> DatabaseManager::addTrainingPlan(const string& name)
-{
-    auto plan = make_shared<TrainingPlan>();
-    plan->id = nextPlanId++;
-    plan->name = name;
-    plans.push_back(plan);
-    return plan;
-}
-
-shared_ptr<TrainingPlan> DatabaseManager::getTrainingPlanById(int id)
-{
-    for (auto& p : plans) {
-        if (p->id == id) return p;
-    }
-    return nullptr;
-}
-
-bool DatabaseManager::addExerciseToPlan(int planId, int exerciseId, int dayOfWeek, vector<ResultValue> targets)
-{
-    auto plan = getTrainingPlanById(planId);
-    auto exercise = getExerciseById(exerciseId);
-
-    if (plan && exercise) {
-        PlanEntry entry;
-        entry.exerciseId = exerciseId;
-        entry.dayOfWeek = dayOfWeek;
-        entry.targetValues = targets;
-
-        plan->entries.push_back(entry);
-        return true;
-    }
-    return false;
-}*/
-
-#include "DatabaseManager.hpp"
-#include <sstream> // Do budowania stringów (np. typy wartoœci)
+ï»¿#include "DatabaseManager.hpp"
+#include <sstream> // Do budowania stringÃ³w (np. typy wartoÅ›ci)
 
 using namespace std;
 using namespace sqlite;
 
-// Helper: zamienia wektor enumów na string (np. "0,1") do bazy
+// Helper: zamienia wektor enumÃ³w na string (np. "0,1") do bazy
 string serializeTypes(const vector<ValueType>& types) {
     stringstream ss;
     for (size_t i = 0; i < types.size(); ++i) {
@@ -158,7 +34,7 @@ DatabaseManager::DatabaseManager()
         // Konfigurujemy tabele
         createTables();
 
-        // Sprawdzamy czy s¹ jacyœ userzy, jak nie - dodajemy dane startowe
+        // Sprawdzamy czy sÄ… jacyÅ› userzy, jak nie - dodajemy dane startowe
         //int count = 0;
         //*db << "SELECT count(*) FROM users;" >> count;
         //if (count == 0) {
@@ -192,10 +68,11 @@ void DatabaseManager::createTables() {
     // Tabela Plans
     *db << "CREATE TABLE IF NOT EXISTS plans ("
         "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-        "name TEXT"
+        "name TEXT, "
+        "owner_id INTEGER DEFAULT 0"  // 0 = publiczny, >0 = prywatny dla uï¿½ytkownika
         ");";
 
-    // Tabela PlanEntries (relacja plan <-> æwiczenie)
+    // Tabela PlanEntries (relacja plan <-> Ä‡wiczenie)
     *db << "CREATE TABLE IF NOT EXISTS plan_entries ("
         "id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "plan_id INTEGER, "
@@ -221,17 +98,15 @@ void DatabaseManager::createTables() {
 void DatabaseManager::seedData()
 {
     cout << "Seeding database..." << endl;
-    addUser("admin", "admin");
-    addUser("b", "b");
-    addUser("wiktor", "2137");
-    auto userA = addUser("a", "a");
+    
+    // Tworzymy tylko jednego uÅ¼ytkownika - admin
+    auto admin = addUser("admin", "admin");
 
     auto exPushUps = addExercise("Push-ups", "Klasyczne pompki na klatke piersiowa", { ValueType::REPS });
     auto exRunning = addExercise("Running", "Bieganie w terenie lub na biezni", { ValueType::DISTANCE_KM, ValueType::TIME_SEC });
     auto exDeadlift = addExercise("Deadlift", "Martwy ciag ze sztanga", { ValueType::WEIGHT_KG, ValueType::REPS });
 
-
-    // Nowe (mo¿esz tu dopisywaæ kolejne w dowolnym momencie)
+    // Nowe Ä‡wiczenia
     auto exSquats = addExercise("Squats", "Przysiady ze sztanga", { ValueType::WEIGHT_KG, ValueType::REPS });
     auto exPlank = addExercise("Plank", "Deska - wzmacnianie brzucha", { ValueType::TIME_SEC });
     auto exCycling = addExercise("Cycling", "Jazda na rowerku-maszynie", { ValueType::DISTANCE_KM, ValueType::TIME_SEC });
@@ -239,13 +114,11 @@ void DatabaseManager::seedData()
     addExercise("Jumping Jacks", "Pajacyki - cwiczenie cardio", { ValueType::REPS });
     addExercise("Burpees", "Burpees - cwiczenie calego ciala", { ValueType::REPS });
     auto exBenchPress = addExercise("Bench Press", "Wyciskanie sztangi na lawce", { ValueType::WEIGHT_KG, ValueType::REPS });
-    addExercise("Pull-ups", "Podciaganie na dr¹¿ku", { ValueType::REPS });
+    addExercise("Pull-ups", "Podciaganie na drazku", { ValueType::REPS });
     addExercise("Lunges", "Wykroki z hantlami", { ValueType::WEIGHT_KG, ValueType::REPS });
     addExercise("Sit-ups", "Brzuszki klasyczne", { ValueType::REPS });
 
-    // 3. PUSTY PLAN TRENINGOWY (tylko sama nazwa)
-    // Sprawdzamy czy plan istnieje, jeœli nie - tworzymy go, ale zostawiamy pusty.
-
+    // --- PLAN 1: Full Body Workout ---
     string planName = "Full Body Workout";
     int existingPlanId = -1;
 
@@ -260,128 +133,59 @@ void DatabaseManager::seedData()
         cout << "[INFO] Plan '" << planName << "' juz istnieje. Pomijam." << endl;
     }
     else {
-        //addTrainingPlan(planName);
-        //cout << "[INFO] Utworzono pusty plan: " << planName << endl;
-
-        // UWAGA: Na Twoj¹ proœbê usun¹³em tutaj addExerciseToPlan oraz assignPlanToUser.
-        // Plan jest teraz pust¹ teczk¹, która czeka na póŸniej.
-
-        auto plan = addTrainingPlan(planName);
+        auto plan = addTrainingPlan(planName, 0);  // 0 = publiczny plan
         if (plan) {
+            existingPlanId = plan->id;
             cout << "[INFO] Ukladanie harmonogramu dla: " << planName << endl;
 
-            // --- PONIEDZIA£EK (Dzieñ 1) - Klatka i Rozgrzewka ---
-
+            // PONIEDZIAÅEK (DzieÅ„ 1)
             if (exRunning)   addExerciseToPlan(plan->id, exRunning->id, 1, 1, { 2.0f, 15.0f });
             if (exDeadlift)  addExerciseToPlan(plan->id, exDeadlift->id, 1, 3, { 100.0f, 6 });
             if (exPushUps)   addExerciseToPlan(plan->id, exPushUps->id, 1, 2, { 10 });
 
-            // --- ŒRODA (Dzieñ 3) - Nogi i Plecy ---
-            // Kolejnoœæ: 1. Przysiady, 2. Martwy ci¹g
+            // ÅšRODA (DzieÅ„ 3)
+            if (exDeadlift)  addExerciseToPlan(plan->id, exDeadlift->id, 3, 2, { 100.0f, 5 });
+            if (exSquats)    addExerciseToPlan(plan->id, exSquats->id, 3, 1, { 80.0f, 8 });
 
-            if (exDeadlift)     addExerciseToPlan(plan->id, exDeadlift->id, 3, 2, { 100.0f, 5 });   // 100kg x 5
-            if (exSquats)       addExerciseToPlan(plan->id, exSquats->id, 3, 1, { 80.0f, 8 });    // 80kg x 8
-
-            // --- PI¥TEK (Dzieñ 5) - Cardio i Brzuch ---
-            // Kolejnoœæ: 1. Rower, 2. Deska
-
-            if (exCycling)      addExerciseToPlan(plan->id, exCycling->id, 5, 1, { 15.0f, 45.0f }); // 15km w 45min
-            if (exPlank)        addExerciseToPlan(plan->id, exPlank->id, 5, 2, { 90.0f });        // 90 sekund
+            // PIÄ„TEK (DzieÅ„ 5)
+            if (exCycling)   addExerciseToPlan(plan->id, exCycling->id, 5, 1, { 15.0f, 45.0f });
+            if (exPlank)     addExerciseToPlan(plan->id, exPlank->id, 5, 2, { 90.0f });
         }
     }
 
-    if (userA && existingPlanId != -1) {
-        // Opcjonalnie: SprawdŸ czy user ju¿ ma ten plan, ¿eby nie robiæ UPDATE niepotrzebnie
-        if (userA->currentPlanId != existingPlanId) {
-            assignPlanToUser(userA->id, existingPlanId);
-            cout << "[SUCCESS] Przypisano plan ID " << existingPlanId << " do uzytkownika 'a'." << endl;
-        }
-    }
-
+    // --- PLAN 2: Push Pull Legs ---
     string planName2 = "Push Pull Legs";
     int planId2 = -1;
 
-    // SprawdŸ czy istnieje
     try { *db << "SELECT id FROM plans WHERE name = ?;" << planName2 >> planId2; }
     catch (...) {}
 
-    /////
     if (planId2 == -1) {
-        auto plan2 = addTrainingPlan(planName2);
+        auto plan2 = addTrainingPlan(planName2, 0);  // 0 = publiczny plan
         if (plan2) {
             planId2 = plan2->id;
-            // Dodajmy przyk³adowe æwiczenia (korzystamy z tych co ju¿ doda³eœ wczeœniej)
-            // Push (Poniedzia³ek)
+            
+            // Push (PoniedziaÅ‚ek)
             if (exBenchPress) addExerciseToPlan(planId2, exBenchPress->id, 1, 1, { 80.0f, 8 });
             if (exPushUps)    addExerciseToPlan(planId2, exPushUps->id, 1, 2, { 15 });
 
-            // Pull (Œroda)
+            // Pull (Åšroda)
             if (exDeadlift)   addExerciseToPlan(planId2, exDeadlift->id, 3, 1, { 120.0f, 3 });
 
-            // Legs (Pi¹tek)
+            // Legs (PiÄ…tek)
             if (exSquats)     addExerciseToPlan(planId2, exSquats->id, 5, 1, { 100.0f, 5 });
 
             cout << "[INFO] Utworzono drugi plan: " << planName2 << endl;
         }
     }
-    /////
 
-    ////WORKOUT LOGS
-    //if (userA) {
-    //    // --- 1. KATEGORIA SI£A (STRENGTH) ---
-    //    // Test: Czy wybierze najwiêkszy ciê¿ar? (Powinno wybraæ 90kg)
-    //    if (exSquats) {
-    //        addWorkoutLog(userA->id, exSquats->id, "2026-01-10", 1, 80.0, 8);
-    //        addWorkoutLog(userA->id, exSquats->id, "2026-01-15", 1, 85.0, 5);
-    //        addWorkoutLog(userA->id, exSquats->id, "2026-01-20", 1, 90.0, 3); // <--- To powinien byæ Twój PR Si³owy
-    //    }
-
-    //    // Test: Czy poprawnie obs³u¿y inny trening si³owy?
-    //    if (exDeadlift) {
-    //        addWorkoutLog(userA->id, exDeadlift->id, "2026-01-22", 1, 100.0, 5);
-    //        addWorkoutLog(userA->id, exDeadlift->id, "2026-01-22", 2, 120.0, 1); // <--- PR Si³owy
-    //    }
-
-    //    // --- 2. KATEGORIA WYTRZYMA£OŒÆ (ENDURANCE) ---
-    //    // Test: Pompki (typ Reps). Czy wybierze najwiêcej powtórzeñ?
-    //    if (exPushUps) {
-    //        addWorkoutLog(userA->id, exPushUps->id, "2026-01-05", 1, 0.0, 20);
-    //        addWorkoutLog(userA->id, exPushUps->id, "2026-01-10", 1, 0.0, 25); // <--- PR Wytrzyma³oœciowy
-    //        addWorkoutLog(userA->id, exPushUps->id, "2026-01-15", 1, 0.0, 22); // Gorszy wynik
-    //    }
-
-    //    // Test: Podci¹ganie (za³ó¿my ¿e masz takie æwiczenie, albo dodajmy je wirtualnie do testu na Squatsach jako High Reps)
-    //    // Ale lepiej dodajmy nowe æwiczenie, ¿eby by³o czysto:
-    //    auto exPullUps = addExercise("Pull-ups", "Podciaganie na drazku", { ValueType::REPS, ValueType::WEIGHT_KG });
-    //    if (exPullUps) {
-    //        addWorkoutLog(userA->id, exPullUps->id, "2026-01-24", 1, 0.0, 8);
-    //        addWorkoutLog(userA->id, exPullUps->id, "2026-01-24", 2, 0.0, 12); // <--- PR Wytrzyma³oœciowy
-    //    }
-
-    //    // --- 3. KATEGORIA CARDIO / CZAS (TIME/DISTANCE) ---
-    //    // Test: Plank (Deska) - typ TIME. Czy trafi do 3 tabeli?
-    //    // Uwaga: Czas zapisujemy w polu 'weight' (jako float sekund)
-    //    if (exPlank) {
-    //        addWorkoutLog(userA->id, exPlank->id, "2026-01-12", 1, 60.0, 0);  // 60 sekund
-    //        addWorkoutLog(userA->id, exPlank->id, "2026-01-18", 1, 90.0, 0);  // 90 sekund <--- PR Czasowy
-    //        addWorkoutLog(userA->id, exPlank->id, "2026-01-20", 1, 75.0, 0);
-    //    }
-
-    //    // Test: Bieganie (Running) - typ DISTANCE + TIME.
-    //    // Tutaj 'weight' robi za dystans (km) lub czas, zale¿y jak ustalisz. 
-    //    // Przyjmijmy w seedzie: weight = dystans (km).
-    //    if (exRunning) {
-    //        addWorkoutLog(userA->id, exRunning->id, "2026-01-02", 1, 5.0, 0);   // 5 km
-    //        addWorkoutLog(userA->id, exRunning->id, "2026-01-09", 1, 10.5, 0);  // 10.5 km <--- PR Dystansowy
-    //    }
-
-    //    // Test: Jazda na rowerze (Cycling)
-    //    if (exCycling) {
-    //        addWorkoutLog(userA->id, exCycling->id, "2026-01-15", 1, 20.0, 0); // 20 km
-    //    }
-
-    //    cout << "[SUCCESS] Pelna historia testowa dla uzytkownika 'a' zostala dodana." << endl;
-    //}
+    // Przypisz pierwszy plan (Full Body Workout) do admina
+    if (admin && existingPlanId != -1) {
+        if (!admin->currentPlanId.has_value() || admin->currentPlanId.value() != existingPlanId) {
+            assignPlanToUser(admin->id, existingPlanId);
+            cout << "[SUCCESS] Przypisano plan '" << planName << "' do uzytkownika 'admin'." << endl;
+        }
+    }
 
     cout << "--- [SEED DATA] Done. ---" << endl;
 }
@@ -403,20 +207,20 @@ void DatabaseManager::seedData()
 
 shared_ptr<User> DatabaseManager::addUser(const string& login, const string& pass)
 {
-    // KROK 1: SprawdŸ, czy u¿ytkownik o takim loginie ju¿ istnieje
-    // Wykorzystujemy Twoj¹ gotow¹ metodê pomocnicz¹
+    // KROK 1: SprawdÅº, czy uÅ¼ytkownik o takim loginie juÅ¼ istnieje
+    // Wykorzystujemy TwojÄ… gotowÄ… metodÄ™ pomocniczÄ…
     auto existingUser = getUserByLogin(login);
 
     if (existingUser != nullptr) {
-        // U¿ytkownik znaleziony!
-        // Nie dodajemy duplikatu, po prostu zwracamy istniej¹cego.
+        // UÅ¼ytkownik znaleziony!
+        // Nie dodajemy duplikatu, po prostu zwracamy istniejÄ…cego.
         return existingUser;
     }
 
-    // KROK 2: Jeœli nie znaleziono (existingUser == nullptr), to dodajemy nowego
+    // KROK 2: JeÅ›li nie znaleziono (existingUser == nullptr), to dodajemy nowego
     try {
         *db << "INSERT INTO users (login, password) VALUES (?, ?);"
-            << login << pass; // Pamiêtaj o haszowaniu, jeœli je ju¿ wdro¿y³eœ!
+            << login << pass; // PamiÄ™taj o haszowaniu, jeÅ›li je juÅ¼ wdroÅ¼yÅ‚eÅ›!
 
         int id = db->last_insert_rowid();
 
@@ -434,7 +238,7 @@ shared_ptr<User> DatabaseManager::getUserByLogin(const string& login)
     auto user = make_shared<User>();
     bool found = false;
 
-    // Pobieramy nullable int dla planu, bo w bazie mo¿e byæ NULL
+    // Pobieramy nullable int dla planu, bo w bazie moÅ¼e byÄ‡ NULL
     int id, planId = 0;
     string log, pass;
 
@@ -500,36 +304,36 @@ bool DatabaseManager::assignPlanToUser(int userId, int planId)
 
 shared_ptr<Exercise> DatabaseManager::addExercise(const string& name, const string& description, vector<ValueType> types)
 {
-    // KROK 1: Sprawdzenie, czy æwiczenie ju¿ istnieje
+    // KROK 1: Sprawdzenie, czy Ä‡wiczenie juÅ¼ istnieje
     int existingId = -1;
 
     try {
-        // Próbujemy pobraæ ID æwiczenia o takiej samej nazwie
+        // PrÃ³bujemy pobraÄ‡ ID Ä‡wiczenia o takiej samej nazwie
         *db << "SELECT id FROM exercises WHERE name = ?;"
             << name
             >> existingId;
     }
     catch (exception& e) {
-        // Jeœli nie znaleziono, sqlite mo¿e rzuciæ wyj¹tek lub po prostu nie zmieniæ existingId
+        // JeÅ›li nie znaleziono, sqlite moÅ¼e rzuciÄ‡ wyjÄ…tek lub po prostu nie zmieniÄ‡ existingId
         // Ignorujemy to, bo -1 oznacza "nie znaleziono"
     }
 
     // KROK 2: Decyzja
     if (existingId != -1) {
-        // Æwiczenie ju¿ jest! Nie dublujemy go.
-        // Zwracamy wskaŸnik do tego, które ju¿ siedzi w bazie.
-        // (Opcjonalnie: móg³byœ tu zrobiæ UPDATE, ¿eby zaktualizowaæ opis, jeœli siê zmieni³)
+        // Ä†wiczenie juÅ¼ jest! Nie dublujemy go.
+        // Zwracamy wskaÅºnik do tego, ktÃ³re juÅ¼ siedzi w bazie.
+        // (Opcjonalnie: mÃ³gÅ‚byÅ› tu zrobiÄ‡ UPDATE, Å¼eby zaktualizowaÄ‡ opis, jeÅ›li siÄ™ zmieniÅ‚)
         return getExerciseById(existingId);
     }
 
-    // KROK 3: Dodawanie (tylko jeœli nie znaleziono)
+    // KROK 3: Dodawanie (tylko jeÅ›li nie znaleziono)
     try {
         string typesStr = serializeTypes(types);
         *db << "INSERT INTO exercises (name, description, value_types) VALUES (?, ?, ?);"
             << name << description << typesStr;
 
         int newId = db->last_insert_rowid();
-        cout << "[INFO] Dodano nowe cwiczenie: " << name << endl; // Log dla Twojej wiadomoœci
+        cout << "[INFO] Dodano nowe cwiczenie: " << name << endl; // Log dla Twojej wiadomoÅ›ci
         return getExerciseById(newId);
     }
     catch (exception& e) {
@@ -579,30 +383,33 @@ vector<shared_ptr<Exercise>> DatabaseManager::getAllExercises()
     return list;
 }
 
+/* STARA WERSJA - USUNIï¿½TA (uï¿½ywamy wersji z ownerId)
 shared_ptr<TrainingPlan> DatabaseManager::addTrainingPlan(const string& name)
 {
     *db << "INSERT INTO plans (name) VALUES (?);" << name;
     int id = db->last_insert_rowid();
     return getTrainingPlanById(id);
 }
+*/
 
 shared_ptr<TrainingPlan> DatabaseManager::getTrainingPlanById(int id)
 {
     auto plan = make_shared<TrainingPlan>();
     bool found = false;
 
-    // 1. Pobierz nag³ówek planu
-    *db << "SELECT id, name FROM plans WHERE id = ?;"
+    // 1. Pobierz nagÅ‚Ã³wek planu z owner_id
+    *db << "SELECT id, name, IFNULL(owner_id, 0) FROM plans WHERE id = ?;"
         << id
-        >> [&](int _id, string _n) {
+        >> [&](int _id, string _n, int _ownerId) {
         plan->id = _id;
         plan->name = _n;
+        plan->ownerId = _ownerId;
         found = true;
         };
 
     if (!found) return nullptr;
 
-    // 2. Pobierz wpisy (æwiczenia w planie) SORTOWANE po order_in_day
+    // 2. Pobierz wpisy (Ä‡wiczenia w planie) SORTOWANE po order_in_day
     *db << "SELECT exercise_id, day_of_week, order_in_day, target_val_1, target_val_2 FROM plan_entries WHERE plan_id = ? ORDER BY day_of_week ASC, order_in_day ASC;"
         << id
         >> [&](int exId, int day, int orderInDay, double v1, double v2) {
@@ -620,11 +427,11 @@ shared_ptr<TrainingPlan> DatabaseManager::getTrainingPlanById(int id)
 
 bool DatabaseManager::addExerciseToPlan(int planId, int exerciseId, int dayOfWeek, int orderInDay, std::vector<ResultValue> targets)
 {
-    // Uproszczenie: zapisujemy max 2 wartoœci celu do kolumn target_val_1 i 2
-    // W pe³nej wersji mo¿na by to robiæ w osobnej tabeli, ale na start wystarczy
+    // Uproszczenie: zapisujemy max 2 wartoÅ›ci celu do kolumn target_val_1 i 2
+    // W peÅ‚nej wersji moÅ¼na by to robiÄ‡ w osobnej tabeli, ale na start wystarczy
     float v1 = 0, v2 = 0;
 
-    // Wyci¹gamy wartoœci z varianta (zak³adamy int lub float)
+    // WyciÄ…gamy wartoÅ›ci z varianta (zakÅ‚adamy int lub float)
     if (targets.size() > 0) {
         if (holds_alternative<int>(targets[0])) v1 = get<int>(targets[0]);
         else v1 = get<float>(targets[0]);
@@ -659,8 +466,8 @@ vector<WorkoutLog> DatabaseManager::getWorkoutLogs(int userId)
 {
     vector<WorkoutLog> logs;
     try {
-        // Pobieramy wpisy tylko dla ID tego konkretnego u¿ytkownika
-        // Dorzucamy (JOIN) tabelê exercises, ¿eby wiedzieæ, jak nazywa siê æwiczenie o danym ID
+        // Pobieramy wpisy tylko dla ID tego konkretnego uÅ¼ytkownika
+        // Dorzucamy (JOIN) tabelÄ™ exercises, Å¼eby wiedzieÄ‡, jak nazywa siÄ™ Ä‡wiczenie o danym ID
         *db << "SELECT w.id, w.user_id, w.exercise_id, w.date, w.set_number, w.weight, w.reps, e.name "
             "FROM workout_logs w "
             "LEFT JOIN exercises e ON w.exercise_id = e.id "
@@ -672,12 +479,12 @@ vector<WorkoutLog> DatabaseManager::getWorkoutLogs(int userId)
             WorkoutLog log;
             log.id = _id;
             log.userId = _uid;      // Twoje ID usera
-            log.exerciseId = _eid;  // Twoje ID æwiczenia
+            log.exerciseId = _eid;  // Twoje ID Ä‡wiczenia
             log.date = _date;
             log.setNumber = _set;
             log.weight = _w;
             log.reps = _r;
-            log.exerciseNameVal = _name; // Pomocnicza nazwa do wyœwietlania w UI
+            log.exerciseNameVal = _name; // Pomocnicza nazwa do wyÅ›wietlania w UI
 
             logs.push_back(log);
             };
@@ -686,12 +493,12 @@ vector<WorkoutLog> DatabaseManager::getWorkoutLogs(int userId)
     return logs;
 }
 
-// 1. STRENGTH (Si³a) - Exercises without Time or Distance
+// 1. STRENGTH (SiÅ‚a) - Exercises without Time or Distance
 vector<PersonalRecord> DatabaseManager::getBestWeights(int userId)
 {
     vector<PersonalRecord> records;
     try {
-        // Pobieramy æwiczenia, które NIE s¹ czasowe (2) ani dystansowe (3)
+        // Pobieramy Ä‡wiczenia, ktÃ³re NIE sÄ… czasowe (2) ani dystansowe (3)
         *db << "SELECT e.name, MAX(w.weight), w.reps, w.date "
             "FROM workout_logs w "
             "JOIN exercises e ON w.exercise_id = e.id "
@@ -708,7 +515,7 @@ vector<PersonalRecord> DatabaseManager::getBestWeights(int userId)
     return records;
 }
 
-// 2. ENDURANCE (Wytrzyma³oœæ) - Max Reps
+// 2. ENDURANCE (WytrzymaÅ‚oÅ›Ä‡) - Max Reps
 vector<PersonalRecord> DatabaseManager::getBestReps(int userId)
 {
     vector<PersonalRecord> records;
@@ -718,8 +525,8 @@ vector<PersonalRecord> DatabaseManager::getBestReps(int userId)
             "JOIN exercises e ON w.exercise_id = e.id "
             "WHERE w.user_id = ? AND w.reps > 0 "
             // --- POPRAWKA TUTAJ ---
-            // Ignorujemy æwiczenia, które s¹ Czasowe (2) lub Dystansowe (3)
-            // Dziêki temu "minuty" z biegania nie wpadn¹ jako "powtórzenia"
+            // Ignorujemy Ä‡wiczenia, ktÃ³re sÄ… Czasowe (2) lub Dystansowe (3)
+            // DziÄ™ki temu "minuty" z biegania nie wpadnÄ… jako "powtÃ³rzenia"
             "AND e.value_types NOT LIKE '%2%' AND e.value_types NOT LIKE '%3%' "
             // ----------------------
             "GROUP BY w.exercise_id "
@@ -776,7 +583,6 @@ vector<PersonalRecord> DatabaseManager::getBestDistances(int userId)
     return records;
 }
 
-
 vector<PlanHeader> DatabaseManager::getAllPlanHeaders()
 {
     vector<PlanHeader> headers;
@@ -788,6 +594,77 @@ vector<PlanHeader> DatabaseManager::getAllPlanHeaders()
     }
     catch (exception& e) {
         cout << "Get All Plans Error: " << e.what() << endl;
+    }
+    return headers;
+}
+
+bool DatabaseManager::updatePlanEntries(int planId, const std::vector<PlanGUIEntry>& newEntries)
+{
+    try {
+        *db << "BEGIN TRANSACTION;";
+
+        // 1. WyczyÅ›Ä‡ stare wpisy dla tego planu
+        *db << "DELETE FROM plan_entries WHERE plan_id = ?;" << planId;
+
+        // 2. Wstaw nowe wpisy (zaktualizowane)
+        // Musimy przeliczyÄ‡ order_in_day, Å¼eby zachowaÄ‡ kolejnoÅ›Ä‡ z GUI
+
+        // Grupujemy liczniki order_in_day dla kaÅ¼dego dnia (1->1, 1->2, 3->1 etc.)
+        std::map<int, int> dayCounters;
+
+        for (const auto& entry : newEntries) {
+            int currentDay = entry._dayId;
+            int order = ++dayCounters[currentDay]; // ZwiÄ™ksz licznik dla tego dnia
+
+            float v1 = 0.0f, v2 = 0.0f;
+            if (entry._targets.size() > 0) {
+                if (std::holds_alternative<int>(entry._targets[0])) v1 = (float)std::get<int>(entry._targets[0]);
+                else v1 = std::get<float>(entry._targets[0]);
+            }
+            if (entry._targets.size() > 1) {
+                if (std::holds_alternative<int>(entry._targets[1])) v2 = (float)std::get<int>(entry._targets[1]);
+                else v2 = std::get<float>(entry._targets[1]);
+            }
+
+            *db << "INSERT INTO plan_entries (plan_id, exercise_id, day_of_week, order_in_day, target_val_1, target_val_2) VALUES (?, ?, ?, ?, ?, ?);"
+                << planId
+                << entry._exerciseId
+                << currentDay
+                << order      // Nowy, przeliczony order_in_day
+                << v1 << v2;
+        }
+
+        *db << "COMMIT;";
+        cout << "[DB] Zapisano " << newEntries.size() << " wpisow do planu ID " << planId << endl;
+        return true;
+    }
+    catch (std::exception& e) {
+        std::cout << "Update Plan Error: " << e.what() << std::endl;
+        *db << "ROLLBACK;"; // Cofnij zmiany w razie bÅ‚Ä™du
+        return false;
+    }
+}
+
+shared_ptr<TrainingPlan> DatabaseManager::addTrainingPlan(const string& name, int ownerId)
+{
+    *db << "INSERT INTO plans (name, owner_id) VALUES (?, ?);" << name << ownerId;
+    int id = db->last_insert_rowid();
+    return getTrainingPlanById(id);
+}
+
+vector<PlanHeader> DatabaseManager::getPlansForUser(int userId)
+{
+    vector<PlanHeader> headers;
+    try {
+        // Pobierz plany publiczne (owner_id = 0) ORAZ prywatne plany tego uï¿½ytkownika
+        *db << "SELECT id, name FROM plans WHERE owner_id = 0 OR owner_id = ?;"
+            << userId
+            >> [&](int id, string name) {
+            headers.push_back({ id, name });
+            };
+    }
+    catch (exception& e) {
+        cout << "Get Plans For User Error: " << e.what() << endl;
     }
     return headers;
 }
