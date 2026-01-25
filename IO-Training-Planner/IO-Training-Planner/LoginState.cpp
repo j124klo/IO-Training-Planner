@@ -1,6 +1,7 @@
 #include "DEFINITIONS.hpp"
 #include "LoginState.hpp"
 #include "HomeState.hpp"
+#include "RegisterState.hpp"
 
 using namespace std;
 
@@ -78,6 +79,17 @@ void LoginState::Button_Init()
 		SCREAN_WIDTH / 2 - this->_continueButton._sprite.getGlobalBounds().width / 2,
 		this->_passwordBounds.getPosition().y + this->_continueButton._sprite.getGlobalBounds().height * 2
 	);
+
+	this->_registerButton._sprite.setTexture(this->_data->assets.getTexture("Placeholder Short Button"));
+	this->_registerButton._pressed = false;
+	this->_registerButton._update = false;
+	this->_registerButton._rect = sf::IntRect(0, 0, 800, 300);
+	this->_registerButton._sprite.setTextureRect(this->_registerButton._rect);
+	this->_registerButton._sprite.setScale(0.2f, 0.2f);
+	this->_registerButton._sprite.setPosition(
+		SCREAN_WIDTH / 2 - this->_registerButton._sprite.getGlobalBounds().width / 2,
+		this->_continueButton._sprite.getPosition().y + 100.0f
+	);
 }
 
 void LoginState::Init()
@@ -85,6 +97,7 @@ void LoginState::Init()
 	this->_data->assets.loadTexture("Default Background", DEFAULT_BACKGROUND_FILEPATH);
 	this->_data->assets.loadFont("Default Font", DEFAULT_FONT_FILEPATH);
 	this->_data->assets.loadTexture("Continue Button", CONTINUE_BUTTON_FILEPATH);
+	this->_data->assets.loadTexture("Placeholder Short Button", PLACEHOLDER_SHORT_BUTTON_FILEPATH);
 
 	this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
 	
@@ -110,6 +123,11 @@ void LoginState::HandleInput()
 				this->_data->currentUser = user;
 				this->_data->machine.AddState(StateRef(new HomeState(this->_data)), true);
 			}
+		}
+
+		if (this->_data->input.isSpriteClickedAndReleased(this->_registerButton._sprite, sf::Mouse::Left, this->_data->window, this->_registerButton._pressed, this->_registerButton._update))
+		{
+			this->_data->machine.AddState(StateRef(new RegisterState(this->_data)), true);
 		}
 
 		if (this->_data->input.isRectangleShapeClicked(this->_loginBounds, sf::Mouse::Left, this->_data->window))
@@ -187,6 +205,7 @@ void LoginState::Draw(float dt)
 	this->_data->window.draw(this->_password);
 
 	this->_data->window.draw(this->_continueButton._sprite);
+	this->_data->window.draw(this->_registerButton._sprite);
 
 	this->_data->window.display();
 }

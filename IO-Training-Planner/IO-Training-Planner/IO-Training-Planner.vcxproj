@@ -144,6 +144,7 @@
     <ClCompile Include="CalculatorState.cpp" />
     <ClCompile Include="ProgressHistoryState.cpp" />
     <ClCompile Include="ProgressState.cpp" />
+    <ClCompile Include="RegisterState.cpp" />
     <ClCompile Include="RepPercentageState.cpp" />
     <ClCompile Include="StopwatchState.cpp" />
     <ClCompile Include="TrainingState.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="PlanState.hpp" />
     <ClInclude Include="ProgressHistoryState.hpp" />
     <ClInclude Include="ProgressState.hpp" />
+    <ClInclude Include="RegisterState.hpp" />
     <ClInclude Include="RepPercentageState.hpp" />
     <ClInclude Include="StateMachine.hpp" />
     <ClInclude Include="StopwatchState.hpp" />

@@ -29,6 +29,7 @@ private:
 	bool _isPasswordActive;
 
 	Button _continueButton;
+	Button _registerButton;
 
 public:
 	LoginState(AppDataRef data);
