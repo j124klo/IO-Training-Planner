@@ -61,6 +61,8 @@ struct WorkoutLog {
     string exerciseNameVal;
 };
 
+
+
 struct PersonalRecord {
     string exerciseName;
     double weight;  // G³ówny wynik (kg, sekundy lub km)
