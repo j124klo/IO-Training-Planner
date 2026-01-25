@@ -229,10 +229,10 @@
     <Image Include="Resources\Images\Placeholder Short Button.png">
       <Filter>Resource Files\Images</Filter>
     </Image>
-    <Image Include="..\..\..\..\..\Downloads\LogoutButton.png">
+    <Image Include="..\..\..\..\..\Downloads\RegisterButton.png">
       <Filter>Resource Files\Images</Filter>
     </Image>
-    <Image Include="..\..\..\..\..\Downloads\RegisterButton.png">
+    <Image Include="..\..\..\..\..\Downloads\LogoutButton.png">
       <Filter>Resource Files\Images</Filter>
     </Image>
   </ItemGroup>
