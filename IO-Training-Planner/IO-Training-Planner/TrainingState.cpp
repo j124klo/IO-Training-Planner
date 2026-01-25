@@ -27,7 +27,7 @@ void TrainingState::State_Init()
 }
 
 // ==========================================
-//              EKRAN WYBORU DNIA
+//              DAY SELECTION SCREEN
 // ==========================================
 void TrainingState::InitDaySelection()
 {
@@ -36,7 +36,7 @@ void TrainingState::InitDaySelection()
     _dayButtonIndices.clear();
 
     _titleSelectDay.setFont(_font);
-    _titleSelectDay.setString("WYBIERZ DZIEN TRENINGOWY");
+    _titleSelectDay.setString("SELECT WORKOUT DAY"); // EN
     _titleSelectDay.setCharacterSize(35);
     _titleSelectDay.setFillColor(sf::Color::White);
 
@@ -44,70 +44,98 @@ void TrainingState::InitDaySelection()
     _titleSelectDay.setOrigin(b.left + b.width / 2.0f, b.top + b.height / 2.0f);
     _titleSelectDay.setPosition(SCREAN_WIDTH / 2.0f + 100.0f, 80.0f);
 
-    if (!_currentPlan) {
-        _titleSelectDay.setString("BRAK AKTYWNEGO PLANU");
-        return;
-    }
-
-    vector<int> days;
-    for (const auto& entry : _currentPlan->entries) {
-        bool exists = false;
-        for (int d : days) if (d == entry.dayOfWeek) exists = true;
-        if (!exists) days.push_back(entry.dayOfWeek);
-    }
-    std::sort(days.begin(), days.end());
-
     float startY = 180.0f;
     float startX = 450.0f;
 
-    for (int day : days) {
-        sf::RectangleShape btn;
-        btn.setSize(sf::Vector2f(400.0f, 60.0f));
-        btn.setFillColor(sf::Color::Transparent);
-        btn.setOutlineColor(sf::Color::Cyan);
-        btn.setOutlineThickness(2.0f);
-        btn.setPosition(startX, startY);
+    // 1. Generate buttons for planned days
+    if (_currentPlan) {
+        vector<int> days;
+        for (const auto& entry : _currentPlan->entries) {
+            bool exists = false;
+            for (int d : days) if (d == entry.dayOfWeek) exists = true;
+            if (!exists) days.push_back(entry.dayOfWeek);
+        }
+        std::sort(days.begin(), days.end());
 
-        sf::Text label;
-        label.setFont(_font);
-        label.setString(getDayName(day));
-        label.setCharacterSize(24);
-        label.setFillColor(sf::Color::White);
+        for (int day : days) {
+            sf::RectangleShape btn;
+            btn.setSize(sf::Vector2f(400.0f, 60.0f));
+            btn.setFillColor(sf::Color::Transparent);
+            btn.setOutlineColor(sf::Color::Cyan);
+            btn.setOutlineThickness(2.0f);
+            btn.setPosition(startX, startY);
 
-        sf::FloatRect lb = label.getLocalBounds();
-        label.setOrigin(lb.left + lb.width / 2.0f, lb.top + lb.height / 2.0f);
-        label.setPosition(
-            btn.getPosition().x + btn.getSize().x / 2.0f,
-            btn.getPosition().y + btn.getSize().y / 2.0f - 5.0f
-        );
+            sf::Text label;
+            label.setFont(_font);
+            label.setString(getDayName(day));
+            label.setCharacterSize(24);
+            label.setFillColor(sf::Color::White);
 
-        _dayButtonsShapes.push_back(btn);
-        _dayLabels.push_back(label);
-        _dayButtonIndices.push_back(day);
+            sf::FloatRect lb = label.getLocalBounds();
+            label.setOrigin(lb.left + lb.width / 2.0f, lb.top + lb.height / 2.0f);
+            label.setPosition(
+                btn.getPosition().x + btn.getSize().x / 2.0f,
+                btn.getPosition().y + btn.getSize().y / 2.0f - 5.0f
+            );
 
-        startY += 80.0f;
+            _dayButtonsShapes.push_back(btn);
+            _dayLabels.push_back(label);
+            _dayButtonIndices.push_back(day);
+
+            startY += 80.0f;
+        }
     }
+    else {
+        _titleSelectDay.setString("NO ACTIVE PLAN"); // EN
+    }
+
+    // 2. ADD "EMPTY WORKOUT" BUTTON (Always at the bottom)
+    startY += 20.0f;
+
+    _emptyWorkoutBtn.setSize(sf::Vector2f(400.0f, 60.0f));
+    _emptyWorkoutBtn.setFillColor(sf::Color(50, 50, 50, 150));
+    _emptyWorkoutBtn.setOutlineColor(sf::Color::White);
+    _emptyWorkoutBtn.setOutlineThickness(2.0f);
+    _emptyWorkoutBtn.setPosition(startX, startY);
+
+    _emptyWorkoutLabel.setFont(_font);
+    _emptyWorkoutLabel.setString("START EMPTY WORKOUT"); // EN
+    _emptyWorkoutLabel.setCharacterSize(24);
+    _emptyWorkoutLabel.setFillColor(sf::Color::White);
+
+    sf::FloatRect eb = _emptyWorkoutLabel.getLocalBounds();
+    _emptyWorkoutLabel.setOrigin(eb.left + eb.width / 2.0f, eb.top + eb.height / 2.0f);
+    _emptyWorkoutLabel.setPosition(
+        _emptyWorkoutBtn.getPosition().x + _emptyWorkoutBtn.getSize().x / 2.0f,
+        _emptyWorkoutBtn.getPosition().y + _emptyWorkoutBtn.getSize().y / 2.0f - 5.0f
+    );
 }
 
 // ==========================================
-//              EKRAN TRENINGU
+//              WORKOUT SESSION SCREEN
 // ==========================================
 void TrainingState::InitWorkoutSession(int dayOfWeek)
 {
     _sessionExercises.clear();
 
     _titleWorkout.setFont(_font);
-    _titleWorkout.setString(getDayName(dayOfWeek));
     _titleWorkout.setCharacterSize(40);
     _titleWorkout.setFillColor(sf::Color::Yellow);
     _titleWorkout.setPosition(350.0f, 40.0f);
+
+    if (dayOfWeek == -1) {
+        _titleWorkout.setString("EMPTY WORKOUT"); // EN
+    }
+    else {
+        _titleWorkout.setString(getDayName(dayOfWeek));
+    }
 
     _backButtonShape.setSize(sf::Vector2f(100.0f, 40.0f));
     _backButtonShape.setFillColor(sf::Color(100, 100, 100));
     _backButtonShape.setPosition(SCREAN_WIDTH - 150.0f, 40.0f);
 
     _backButtonLabel.setFont(_font);
-    _backButtonLabel.setString("Wroc");
+    _backButtonLabel.setString("Back"); // EN
     _backButtonLabel.setCharacterSize(20);
     _backButtonLabel.setFillColor(sf::Color::White);
     _backButtonLabel.setPosition(SCREAN_WIDTH - 135.0f, 45.0f);
@@ -115,11 +143,12 @@ void TrainingState::InitWorkoutSession(int dayOfWeek)
     _addExerciseBtn.setSize(sf::Vector2f(250.0f, 50.0f));
     _addExerciseBtn.setFillColor(sf::Color(0, 100, 200));
     _addExerciseLabel.setFont(_font);
-    _addExerciseLabel.setString("+ DODAJ CWICZENIE");
+    _addExerciseLabel.setString("+ ADD EXERCISE"); // EN
     _addExerciseLabel.setCharacterSize(20);
     _addExerciseLabel.setFillColor(sf::Color::White);
 
-    if (_currentPlan) {
+    // Load exercises from plan ONLY if a specific day is selected
+    if (dayOfWeek != -1 && _currentPlan) {
         for (const auto& entry : _currentPlan->entries) {
             if (entry.dayOfWeek == dayOfWeek) {
                 AddExerciseToSession(entry.exerciseId);
@@ -139,12 +168,10 @@ void TrainingState::AddExerciseToSession(int exerciseId)
     activeEx.exerciseId = exerciseId;
     activeEx.name = exData->name;
 
-    // --- AUTOMATYCZNE WYKRYWANIE JEDNOSTEK ---
-    // Domyœlne: Si³a
+    // --- UNIT DETECTION ---
     string u1 = "kg";
     string u2 = "rep";
 
-    // Sprawdzamy typy w bazie
     bool hasDist = false;
     bool hasTime = false;
     for (auto vt : exData->valueTypes) {
@@ -153,19 +180,16 @@ void TrainingState::AddExerciseToSession(int exerciseId)
     }
 
     if (hasDist) {
-        // Bieganie, Rower itp.
         u1 = "km";
-        u2 = "min"; // Drugie pole to czas
+        u2 = "min";
     }
     else if (hasTime) {
-        // Plank itp. (tylko czas)
         u1 = "s";
-        u2 = ""; // Drugie pole puste/ukryte
+        u2 = "";
     }
 
     activeEx.unit1 = u1;
     activeEx.unit2 = u2;
-    // -----------------------------------------
 
     activeEx.addSetBtn.setSize(sf::Vector2f(120.0f, 30.0f));
     activeEx.addSetBtn.setFillColor(sf::Color(50, 50, 50));
@@ -173,7 +197,7 @@ void TrainingState::AddExerciseToSession(int exerciseId)
     activeEx.addSetBtn.setOutlineThickness(1.0f);
 
     activeEx.addSetLabel.setFont(_font);
-    activeEx.addSetLabel.setString("+ Seria");
+    activeEx.addSetLabel.setString("+ Set"); // EN
     activeEx.addSetLabel.setCharacterSize(16);
     activeEx.addSetLabel.setFillColor(sf::Color::White);
 
@@ -187,13 +211,13 @@ void TrainingState::AddSetToExercise(ActiveExercise& ex)
     row.setNumber = ex.sets.size() + 1;
     row.isSaved = false;
 
-    // Input 1 (kg / km / s)
+    // Input 1
     row.input1.shape.setSize(sf::Vector2f(80.0f, 35.0f));
     row.input1.shape.setFillColor(sf::Color(20, 20, 20));
     row.input1.shape.setOutlineColor(sf::Color(100, 100, 100));
     row.input1.shape.setOutlineThickness(1.0f);
     row.input1.text.setFont(_font);
-    row.input1.text.setString(ex.unit1); // Placeholder dynamiczny
+    row.input1.text.setString(ex.unit1);
     row.input1.text.setCharacterSize(20);
     row.input1.text.setFillColor(sf::Color(150, 150, 150));
 
@@ -201,7 +225,7 @@ void TrainingState::AddSetToExercise(ActiveExercise& ex)
     row.input1.placeholder = ex.unit1;
     row.input1.isVisible = true;
 
-    // Input 2 (rep / min / brak)
+    // Input 2
     row.input2.shape.setSize(sf::Vector2f(80.0f, 35.0f));
     row.input2.shape.setFillColor(sf::Color(20, 20, 20));
     row.input2.shape.setOutlineColor(sf::Color(100, 100, 100));
@@ -214,7 +238,6 @@ void TrainingState::AddSetToExercise(ActiveExercise& ex)
     row.input2.valueString = "";
     row.input2.placeholder = ex.unit2;
 
-    // Jeœli unit2 jest pusty (np. Plank), ukrywamy pole
     if (ex.unit2.empty()) {
         row.input2.isVisible = false;
     }
@@ -222,11 +245,11 @@ void TrainingState::AddSetToExercise(ActiveExercise& ex)
         row.input2.isVisible = true;
     }
 
-    // Przycisk Zapisz
+    // Save Button
     row.saveButton.setSize(sf::Vector2f(80.0f, 35.0f));
     row.saveButton.setFillColor(sf::Color(0, 100, 0));
     row.saveLabel.setFont(_font);
-    row.saveLabel.setString("OK");
+    row.saveLabel.setString("OK"); // EN
     row.saveLabel.setCharacterSize(18);
     row.saveLabel.setFillColor(sf::Color::White);
 
@@ -247,11 +270,9 @@ void TrainingState::RecalculateLayout()
             float x1 = 550.0f;
             float x2 = 650.0f;
 
-            // Input 1
             row.input1.shape.setPosition(x1, currentY);
             row.input1.text.setPosition(x1 + 5, currentY + 5);
 
-            // Input 2 (tylko jeœli widoczny)
             if (row.input2.isVisible) {
                 row.input2.shape.setPosition(x2, currentY);
                 row.input2.text.setPosition(x2 + 5, currentY + 5);
@@ -290,7 +311,7 @@ void TrainingState::InitExercisePicker()
     catch (exception& e) {}
 
     _titlePicker.setFont(_font);
-    _titlePicker.setString("DODAJ CWICZENIE");
+    _titlePicker.setString("ADD EXERCISE"); // EN
     _titlePicker.setCharacterSize(35);
     _titlePicker.setFillColor(sf::Color::White);
     _titlePicker.setPosition(400.0f, 50.0f);
@@ -300,7 +321,7 @@ void TrainingState::InitExercisePicker()
     _cancelPickerBtn.setPosition(SCREAN_WIDTH - 150.0f, 50.0f);
 
     _cancelPickerLabel.setFont(_font);
-    _cancelPickerLabel.setString("ANULUJ");
+    _cancelPickerLabel.setString("CANCEL"); // EN
     _cancelPickerLabel.setCharacterSize(18);
     _cancelPickerLabel.setFillColor(sf::Color::White);
     _cancelPickerLabel.setPosition(SCREAN_WIDTH - 140.0f, 58.0f);
@@ -338,7 +359,7 @@ void TrainingState::InitExercisePicker()
 // INPUT HELPERS
 void TrainingState::handleInputBoxClick(InputBox& box, sf::Vector2i mousePos)
 {
-    if (!box.isVisible) return; // Klikanie w ukryte nic nie robi
+    if (!box.isVisible) return;
 
     if (box.shape.getGlobalBounds().contains((float)mousePos.x, (float)mousePos.y)) {
         box.isSelected = true;
@@ -374,14 +395,14 @@ void TrainingState::handleTyping(InputBox& box, sf::Uint32 unicode)
 
 string TrainingState::getDayName(int day) {
     switch (day) {
-    case 1: return "PONIEDZIALEK";
-    case 2: return "WTOREK";
-    case 3: return "SRODA";
-    case 4: return "CZWARTEK";
-    case 5: return "PIATEK";
-    case 6: return "SOBOTA";
-    case 7: return "NIEDZIELA";
-    default: return "DZIEN " + to_string(day);
+    case 1: return "MONDAY";
+    case 2: return "TUESDAY";
+    case 3: return "WEDNESDAY";
+    case 4: return "THURSDAY";
+    case 5: return "FRIDAY";
+    case 6: return "SATURDAY";
+    case 7: return "SUNDAY";
+    default: return "DAY " + to_string(day);
     }
 }
 
@@ -404,6 +425,7 @@ void TrainingState::State_HandleInput(sf::Event& event)
     if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
 
         if (_currentMode == TrainingMode::DAY_SELECTION) {
+            // Select Day from Plan
             for (size_t i = 0; i < _dayButtonsShapes.size(); i++) {
                 if (_dayButtonsShapes[i].getGlobalBounds().contains((float)mousePos.x, (float)mousePos.y)) {
                     _selectedDay = _dayButtonIndices[i];
@@ -411,6 +433,13 @@ void TrainingState::State_HandleInput(sf::Event& event)
                     InitWorkoutSession(_selectedDay);
                     return;
                 }
+            }
+            // Select Empty Workout
+            if (_emptyWorkoutBtn.getGlobalBounds().contains((float)mousePos.x, (float)mousePos.y)) {
+                _selectedDay = -1; // -1 means empty workout
+                _currentMode = TrainingMode::WORKOUT_SESSION;
+                InitWorkoutSession(-1);
+                return;
             }
         }
         else if (_currentMode == TrainingMode::WORKOUT_SESSION) {
@@ -442,15 +471,11 @@ void TrainingState::State_HandleInput(sf::Event& event)
                         string val1 = row.input1.valueString;
                         string val2 = row.input2.valueString;
 
-                        // Jeœli pole 2 jest ukryte, uznajemy ¿e jest OK (wartoœæ 0)
                         if (row.input2.isVisible && val2.empty()) continue;
                         if (val1.empty()) continue;
 
-                        float v1 = stof(val1); // kg lub km lub s
-                        int v2 = (val2.empty()) ? 0 : stoi(val2); // reps lub min
-
-                        // LOGIKA ZAPISU (Running: v1=km, v2=min)
-                        // Baza przyjmuje weight (float) i reps (int)
+                        float v1 = stof(val1);
+                        int v2 = (val2.empty()) ? 0 : stoi(val2);
 
                         this->_data->database.addWorkoutLog(
                             this->_data->currentUser->id,
@@ -499,6 +524,10 @@ void TrainingState::State_Draw(float dt)
         this->_data->window.draw(_titleSelectDay);
         for (const auto& s : _dayButtonsShapes) this->_data->window.draw(s);
         for (const auto& l : _dayLabels) this->_data->window.draw(l);
+
+        // Draw Empty Workout Button
+        this->_data->window.draw(_emptyWorkoutBtn);
+        this->_data->window.draw(_emptyWorkoutLabel);
     }
     else if (_currentMode == TrainingMode::WORKOUT_SESSION) {
         this->_data->window.draw(_titleWorkout);
