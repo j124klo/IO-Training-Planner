@@ -238,7 +238,7 @@ void DatabaseManager::seedData()
 
     addExercise("Jumping Jacks", "Pajacyki - cwiczenie cardio", { ValueType::REPS });
     addExercise("Burpees", "Burpees - cwiczenie calego ciala", { ValueType::REPS });
-    addExercise("Bench Press", "Wyciskanie sztangi na lawce", { ValueType::WEIGHT_KG, ValueType::REPS });
+    auto exBenchPress = addExercise("Bench Press", "Wyciskanie sztangi na lawce", { ValueType::WEIGHT_KG, ValueType::REPS });
     addExercise("Pull-ups", "Podciaganie na dr¹¿ku", { ValueType::REPS });
     addExercise("Lunges", "Wykroki z hantlami", { ValueType::WEIGHT_KG, ValueType::REPS });
     addExercise("Sit-ups", "Brzuszki klasyczne", { ValueType::REPS });
@@ -297,6 +297,34 @@ void DatabaseManager::seedData()
             cout << "[SUCCESS] Przypisano plan ID " << existingPlanId << " do uzytkownika 'a'." << endl;
         }
     }
+
+    string planName2 = "Push Pull Legs";
+    int planId2 = -1;
+
+    // SprawdŸ czy istnieje
+    try { *db << "SELECT id FROM plans WHERE name = ?;" << planName2 >> planId2; }
+    catch (...) {}
+
+    /////
+    if (planId2 == -1) {
+        auto plan2 = addTrainingPlan(planName2);
+        if (plan2) {
+            planId2 = plan2->id;
+            // Dodajmy przyk³adowe æwiczenia (korzystamy z tych co ju¿ doda³eœ wczeœniej)
+            // Push (Poniedzia³ek)
+            if (exBenchPress) addExerciseToPlan(planId2, exBenchPress->id, 1, 1, { 80.0f, 8 });
+            if (exPushUps)    addExerciseToPlan(planId2, exPushUps->id, 1, 2, { 15 });
+
+            // Pull (Œroda)
+            if (exDeadlift)   addExerciseToPlan(planId2, exDeadlift->id, 3, 1, { 120.0f, 3 });
+
+            // Legs (Pi¹tek)
+            if (exSquats)     addExerciseToPlan(planId2, exSquats->id, 5, 1, { 100.0f, 5 });
+
+            cout << "[INFO] Utworzono drugi plan: " << planName2 << endl;
+        }
+    }
+    /////
 
     ////WORKOUT LOGS
     //if (userA) {
@@ -689,6 +717,11 @@ vector<PersonalRecord> DatabaseManager::getBestReps(int userId)
             "FROM workout_logs w "
             "JOIN exercises e ON w.exercise_id = e.id "
             "WHERE w.user_id = ? AND w.reps > 0 "
+            // --- POPRAWKA TUTAJ ---
+            // Ignorujemy æwiczenia, które s¹ Czasowe (2) lub Dystansowe (3)
+            // Dziêki temu "minuty" z biegania nie wpadn¹ jako "powtórzenia"
+            "AND e.value_types NOT LIKE '%2%' AND e.value_types NOT LIKE '%3%' "
+            // ----------------------
             "GROUP BY w.exercise_id "
             "ORDER BY MAX(w.reps) DESC;"
             << userId
@@ -741,4 +774,20 @@ vector<PersonalRecord> DatabaseManager::getBestDistances(int userId)
     }
     catch (...) {}
     return records;
+}
+
+
+vector<PlanHeader> DatabaseManager::getAllPlanHeaders()
+{
+    vector<PlanHeader> headers;
+    try {
+        *db << "SELECT id, name FROM plans;"
+            >> [&](int id, string name) {
+            headers.push_back({ id, name });
+            };
+    }
+    catch (exception& e) {
+        cout << "Get All Plans Error: " << e.what() << endl;
+    }
+    return headers;
 }

@@ -82,4 +82,5 @@ public:
     vector<PersonalRecord> getBestReps(int userId);
     vector<PersonalRecord> getBestTimes(int userId);
     vector<PersonalRecord> getBestDistances(int userId);
+    vector<PlanHeader> getAllPlanHeaders();
 };

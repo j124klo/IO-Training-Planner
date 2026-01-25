@@ -25,6 +25,15 @@ private:
 	string getDayName(int dayId);
 	vector<PlanGUIEntry> _planEntries;
 
+	vector<PlanHeader> _availablePlans;
+	vector<sf::Text> _availablePlansTexts;
+	sf::Text _availablePlansTitle;
+
+	vector<sf::RectangleShape> _planButtons;
+
+	// Metoda pomocnicza do ³adowania listy
+	void LoadAvailablePlans();
+
 public:
 	PlanState(AppDataRef data);
 

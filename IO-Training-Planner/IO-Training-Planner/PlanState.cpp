@@ -141,6 +141,8 @@ void PlanState::Plan_Init()
 		entry._targetText.setFillColor(sf::Color(200, 200, 200)); // Szary
 		entry._targetText.setPosition(startX_Target, currentY + 5.0f); // Lekka korekta Y
 	}
+
+	LoadAvailablePlans();
 }
 
 void PlanState::Plan_Draw(float dt)
@@ -159,9 +161,46 @@ void PlanState::State_Init()
 	this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
 	Plan_Init();
 }
+
 void PlanState::State_HandleInput(sf::Event& event)
 {
-	// Obs³uga powrotu do menu itp.
+	// 1. Obs³uga zamkniêcia okna (Standard)
+	if (event.type == sf::Event::Closed) {
+		this->_data->window.close();
+	}
+
+	// 2. Obs³uga Klikniêcia Lewym Przyciskiem Myszy
+	if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+	{
+		// Pobieramy pozycjê myszy bezpoœrednio z eventu (to bezpieczniejsze ni¿ getPosition)
+		sf::Vector2f mousePos(static_cast<float>(event.mouseButton.x), static_cast<float>(event.mouseButton.y));
+
+		// --- A. LOGIKA WYBORU PLANU (Choose Plan) ---
+		// Iterujemy po liœcie tekstów wyœwietlonych po prawej stronie
+		for (size_t i = 0; i < _planButtons.size(); ++i) // Zmieniamy iteracjê na przyciski
+		{
+			// Sprawdzamy czy myszka jest wewn¹trz prostok¹ta przycisku
+			if (_planButtons[i].getGlobalBounds().contains(mousePos))
+			{
+				int newPlanId = _availablePlans[i].id;
+
+				// Reszta logiki bez zmian...
+				if (this->_data->currentUser->currentPlanId == newPlanId) return;
+
+				cout << "[INFO] Zmiana planu na ID: " << newPlanId << endl;
+				this->_data->database.assignPlanToUser(this->_data->currentUser->id, newPlanId);
+				this->_data->currentUser->currentPlanId = newPlanId;
+
+				Plan_Init();
+				return;
+			}
+		}
+
+		// --- B. Tutaj mo¿esz dodaæ obs³ugê innych przycisków (np. Save, Edit) ---
+		/*
+		if (buttonSave.isClicked(mousePos)) { ... }
+		*/
+	}
 }
 
 void PlanState::State_Update(float dt)
@@ -172,9 +211,91 @@ void PlanState::State_Update(float dt)
 void PlanState::State_Draw(float dt)
 {
 	this->_data->window.draw(this->_background);
+	Plan_Draw(dt); // Rysuje tabelê æwiczeñ
 
-	// Rysowanie GUI (Menu boczne) - pamiêtaj ¿eby wywo³aæ metodê z GuiState jeœli jej u¿ywasz
-	// Gui_Draw(dt); 
+	// --- RYSOWANIE MENU BOCZNEGO ---
+	this->_data->window.draw(_availablePlansTitle);
 
-	Plan_Draw(dt);
+	// Najpierw rysujemy ramki
+	for (const auto& btn : _planButtons) {
+		this->_data->window.draw(btn);
+	}
+	// Potem tekst na nich
+	for (const auto& txt : _availablePlansTexts) {
+		this->_data->window.draw(txt);
+	}
+}
+
+void PlanState::LoadAvailablePlans()
+{
+	// 1. Pobierz dane
+	this->_availablePlans = this->_data->database.getAllPlanHeaders();
+	this->_availablePlansTexts.clear();
+	this->_planButtons.clear(); // Czyœcimy te¿ przyciski
+
+	// 2. Ustawienia pozycji (Po prawej stronie)
+	// Zak³adamy, ¿e przycisk ma 220px szerokoœci. 
+	// Ustawiamy go 250px od prawej krawêdzi ekranu.
+	float buttonWidth = 220.0f;
+	float buttonHeight = 50.0f;
+	float startX = SCREAN_WIDTH - 250.0f;
+	float startY = 150.0f;
+
+	// Kolor z Twojego screenshota (Steel Blue)
+	sf::Color steelBlue(77, 153, 204);
+
+	// 3. Tytu³ "CHOOSE PLAN"
+	_availablePlansTitle.setFont(this->_data->assets.getFont("Default Font"));
+	_availablePlansTitle.setString("CHOOSE PLAN:");
+	_availablePlansTitle.setCharacterSize(22);
+	_availablePlansTitle.setFillColor(sf::Color::Yellow);
+
+	// Wyœrodkuj tytu³ wzglêdem przycisków
+	sf::FloatRect titleBounds = _availablePlansTitle.getLocalBounds();
+	_availablePlansTitle.setPosition(startX + (buttonWidth - titleBounds.width) / 2.0f, startY - 40.0f);
+
+
+	// 4. Pêtla tworz¹ca przyciski
+	for (const auto& header : _availablePlans) {
+
+		// --- A. TWORZENIE RAMKI (PRZYCISKU) ---
+		sf::RectangleShape button;
+		button.setSize(sf::Vector2f(buttonWidth, buttonHeight));
+		button.setPosition(startX, startY);
+
+		// Styl ramki
+		button.setOutlineThickness(2.0f);
+		button.setOutlineColor(steelBlue); // Twój b³êkitny kolor
+		button.setFillColor(sf::Color::Transparent); // Œrodek przezroczysty (¿eby by³o widaæ t³o)
+
+		// Logika podœwietlenia aktywnego planu (opcjonalnie: wype³nienie kolorem)
+		if (this->_data->currentUser->currentPlanId == header.id) {
+			// Jeœli aktywny, np. lekko podœwietl œrodek na zielono albo ramkê na zielono
+			button.setOutlineColor(sf::Color::Green);
+		}
+
+		// --- B. TWORZENIE TEKSTU ---
+		sf::Text text;
+		text.setFont(this->_data->assets.getFont("Default Font"));
+		text.setString(header.name);
+		text.setCharacterSize(18);
+
+		if (this->_data->currentUser->currentPlanId == header.id) {
+			text.setFillColor(sf::Color::Green);
+		}
+		else {
+			text.setFillColor(sf::Color::White);
+		}
+
+		// Centrowanie tekstu wewn¹trz przycisku
+		sf::FloatRect textRect = text.getLocalBounds();
+		text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
+		text.setPosition(startX + buttonWidth / 2.0f, startY + buttonHeight / 2.0f);
+
+		// --- C. DODANIE DO WEKTORÓW ---
+		_planButtons.push_back(button);
+		_availablePlansTexts.push_back(text);
+
+		startY += (buttonHeight + 15.0f); // Odstêp miêdzy przyciskami
+	}
 }

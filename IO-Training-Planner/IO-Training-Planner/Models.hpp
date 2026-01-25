@@ -62,10 +62,14 @@ struct WorkoutLog {
 };
 
 
-
 struct PersonalRecord {
     string exerciseName;
     double weight;  // G³ówny wynik (kg, sekundy lub km)
     int reps;       // Powtórzenia (dla cardio bêdzie 0)
     string date;
+};
+
+struct PlanHeader {
+    int id;
+    std::string name;
 };
