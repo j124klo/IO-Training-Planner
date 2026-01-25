@@ -35,3 +35,5 @@
 #define CALCULATOR_BUTTON_FILEPATH "Resources/Images/Calculator Button.png"
 #define PROGRESS_BUTTON_FILEPATH "Resources/Images/Progress Button.png"
 #define EXERCISE_LIST_BUTTON_FILEPATH "Resources/Images/Exercise List Button.png"
+#define LOGOUT_BUTTON_FILEPATH "Resources/Images/LogoutButton.png"
+#define REGISTER_BUTTON_FILEPATH "Resources/Images/RegisterButton.png"

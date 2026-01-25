@@ -187,6 +187,8 @@
     <ClInclude Include="State.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\..\..\..\Downloads\LogoutButton.png" />
+    <Image Include="..\..\..\..\..\Downloads\RegisterButton.png" />
     <Image Include="Resources\Images\Calculator Button.png" />
     <Image Include="Resources\Images\Continue Button.png" />
     <Image Include="Resources\Images\Default Background.png" />
