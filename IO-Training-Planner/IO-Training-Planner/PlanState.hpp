@@ -34,6 +34,17 @@ private:
 	// Metoda pomocnicza do ³adowania listy
 	void LoadAvailablePlans();
 
+	// --- NOWE PRZYCISKI (Edit & Save) ---
+	sf::RectangleShape _editButton;
+	sf::Text _editText;
+
+	sf::RectangleShape _saveButton;
+	sf::Text _saveText;
+
+	// --- LOGIKA EDYCJI ---
+	bool _isEditMode = false; // Flaga: czy edytujemy?
+	void InitSideMenuButtons(); // Funkcja inicjalizuj¹ca te przyciski
+
 public:
 	PlanState(AppDataRef data);
 

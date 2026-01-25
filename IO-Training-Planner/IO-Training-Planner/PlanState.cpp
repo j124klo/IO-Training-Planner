@@ -143,6 +143,7 @@ void PlanState::Plan_Init()
 	}
 
 	LoadAvailablePlans();
+	InitSideMenuButtons();
 }
 
 void PlanState::Plan_Draw(float dt)
@@ -196,10 +197,32 @@ void PlanState::State_HandleInput(sf::Event& event)
 			}
 		}
 
-		// --- B. Tutaj mo¿esz dodaæ obs³ugê innych przycisków (np. Save, Edit) ---
-		/*
-		if (buttonSave.isClicked(mousePos)) { ... }
-		*/
+		// 2. KLIKNIÊCIE "EDIT PLAN"
+		if (_editButton.getGlobalBounds().contains(mousePos))
+		{
+			this->_isEditMode = !this->_isEditMode; // Prze³¹cznik (ON/OFF)
+
+			cout << "[INFO] Tryb edycji: " << (_isEditMode ? "WLACZONY" : "WYLACZONY") << endl;
+
+			// Prze³adowujemy przyciski, ¿eby zmieniæ kolor napisu i ramki
+			InitSideMenuButtons();
+			return;
+		}
+
+		// 3. KLIKNIÊCIE "SAVE PLAN"
+		if (_saveButton.getGlobalBounds().contains(mousePos))
+		{
+			cout << "[INFO] Zapisywanie zmian w planie..." << endl;
+
+			// Tutaj w przysz³oœci wywo³asz: this->_data->database.updatePlan(...);
+
+			// Efekt wizualny: Wy³¹czamy tryb edycji po zapisie
+			if (_isEditMode) {
+				_isEditMode = false;
+				InitSideMenuButtons();
+			}
+			return;
+		}
 	}
 }
 
@@ -211,19 +234,19 @@ void PlanState::State_Update(float dt)
 void PlanState::State_Draw(float dt)
 {
 	this->_data->window.draw(this->_background);
-	Plan_Draw(dt); // Rysuje tabelê æwiczeñ
+	Plan_Draw(dt); // Rysuje tabelê
 
-	// --- RYSOWANIE MENU BOCZNEGO ---
+	// Rysowanie listy planów (Twoja pêtla)
 	this->_data->window.draw(_availablePlansTitle);
+	for (const auto& btn : _planButtons) this->_data->window.draw(btn);
+	for (const auto& txt : _availablePlansTexts) this->_data->window.draw(txt);
 
-	// Najpierw rysujemy ramki
-	for (const auto& btn : _planButtons) {
-		this->_data->window.draw(btn);
-	}
-	// Potem tekst na nich
-	for (const auto& txt : _availablePlansTexts) {
-		this->_data->window.draw(txt);
-	}
+	// --- RYSOWANIE BUTTONÓW EDIT / SAVE ---
+	this->_data->window.draw(_editButton);
+	this->_data->window.draw(_editText);
+
+	this->_data->window.draw(_saveButton);
+	this->_data->window.draw(_saveText);
 }
 
 void PlanState::LoadAvailablePlans()
@@ -298,4 +321,63 @@ void PlanState::LoadAvailablePlans()
 
 		startY += (buttonHeight + 15.0f); // Odstêp miêdzy przyciskami
 	}
+}
+
+void PlanState::InitSideMenuButtons()
+{
+	// Konfiguracja wymiarów (takie same jak przyciski planów)
+	float buttonWidth = 220.0f;
+	float buttonHeight = 50.0f;
+	float startX = SCREAN_WIDTH - 250.0f;
+
+	// Ustalamy pozycjê Y pod list¹ planów. 
+	// Listê planów zaczynaliœmy od 150.0f. Za³ó¿my, ¿e s¹ max 3-4 plany, 
+	// wiêc bezpiecznie damy przyciski funkcyjne na dole ekranu.
+	float editY = 600.0f;
+	float saveY = 670.0f;
+
+	sf::Font& font = this->_data->assets.getFont("Default Font");
+
+	// --- PRZYCISK EDIT ---
+	_editButton.setSize(sf::Vector2f(buttonWidth, buttonHeight));
+	_editButton.setPosition(startX, editY);
+	_editButton.setOutlineThickness(2.0f);
+	_editButton.setFillColor(sf::Color::Transparent);
+
+	// Logika koloru Edit: Jeœli jesteœmy w trybie edycji, guzik œwieci
+	if (_isEditMode) {
+		_editButton.setOutlineColor(sf::Color(255, 165, 0)); // Pomarañczowy
+		_editText.setFillColor(sf::Color(255, 165, 0));
+		_editText.setString("EDIT MODE ON");
+	}
+	else {
+		_editButton.setOutlineColor(sf::Color::White);
+		_editText.setFillColor(sf::Color::White);
+		_editText.setString("EDIT PLAN");
+	}
+
+	_editText.setFont(font);
+	_editText.setCharacterSize(20);
+	// Centrowanie tekstu
+	sf::FloatRect editRect = _editText.getLocalBounds();
+	_editText.setOrigin(editRect.left + editRect.width / 2.0f, editRect.top + editRect.height / 2.0f);
+	_editText.setPosition(startX + buttonWidth / 2.0f, editY + buttonHeight / 2.0f);
+
+
+	// --- PRZYCISK SAVE ---
+	_saveButton.setSize(sf::Vector2f(buttonWidth, buttonHeight));
+	_saveButton.setPosition(startX, saveY);
+	_saveButton.setOutlineThickness(2.0f);
+	_saveButton.setOutlineColor(sf::Color::Green); // Zielony zawsze
+	_saveButton.setFillColor(sf::Color::Transparent);
+
+	_saveText.setFont(font);
+	_saveText.setString("SAVE PLAN");
+	_saveText.setCharacterSize(20);
+	_saveText.setFillColor(sf::Color::Green);
+
+	// Centrowanie tekstu
+	sf::FloatRect saveRect = _saveText.getLocalBounds();
+	_saveText.setOrigin(saveRect.left + saveRect.width / 2.0f, saveRect.top + saveRect.height / 2.0f);
+	_saveText.setPosition(startX + buttonWidth / 2.0f, saveY + buttonHeight / 2.0f);
 }
