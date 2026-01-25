@@ -17,15 +17,15 @@ struct InputBox {
     sf::RectangleShape shape;
     sf::Text text;
     string valueString;
-    string placeholder; // Np. "kg", "km", "min"
+    string placeholder; // e.g. "kg", "km", "min"
     bool isSelected = false;
-    bool isVisible = true; // Czy pole jest widoczne? (dla æwiczeñ tylko na czas)
+    bool isVisible = true;
 };
 
 struct SetRow {
     int setNumber;
-    InputBox input1; // Dawniej weightInput (teraz uniwersalne)
-    InputBox input2; // Dawniej repsInput (teraz uniwersalne)
+    InputBox input1;
+    InputBox input2;
     sf::RectangleShape saveButton;
     sf::Text saveLabel;
     bool isSaved = false;
@@ -35,9 +35,9 @@ struct ActiveExercise {
     int exerciseId;
     string name;
 
-    // NOWE POLA: Jednostki dla tego æwiczenia
-    string unit1; // np. "kg" lub "km" lub "s"
-    string unit2; // np. "rep" lub "min" lub "" (puste)
+    // Units for this exercise
+    string unit1;
+    string unit2;
 
     vector<SetRow> sets;
 
@@ -57,13 +57,17 @@ private:
     shared_ptr<TrainingPlan> _currentPlan;
     int _selectedDay;
 
-    // EKRAN WYBORU DNIA
+    // --- DAY SELECTION SCREEN ---
     sf::Text _titleSelectDay;
     vector<sf::RectangleShape> _dayButtonsShapes;
     vector<sf::Text> _dayLabels;
     vector<int> _dayButtonIndices;
 
-    // EKRAN TRENINGU
+    // NEW: Empty Workout Button
+    sf::RectangleShape _emptyWorkoutBtn;
+    sf::Text _emptyWorkoutLabel;
+
+    // --- WORKOUT SESSION SCREEN ---
     sf::Text _titleWorkout;
     sf::RectangleShape _backButtonShape;
     sf::Text _backButtonLabel;
@@ -73,7 +77,7 @@ private:
     sf::RectangleShape _addExerciseBtn;
     sf::Text _addExerciseLabel;
 
-    // PICKER
+    // --- EXERCISE PICKER SCREEN ---
     sf::Text _titlePicker;
     sf::RectangleShape _cancelPickerBtn;
     sf::Text _cancelPickerLabel;
@@ -83,7 +87,7 @@ private:
     vector<sf::Text> _pickerLabels;
     vector<int> _pickerExerciseIds;
 
-    // METODY
+    // --- METHODS ---
     void InitDaySelection();
     void InitWorkoutSession(int dayOfWeek);
     void InitExercisePicker();

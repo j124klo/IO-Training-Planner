@@ -1,7 +1,7 @@
 #include "DEFINITIONS.hpp"
 #include "ProgressHistoryState.hpp"
 #include "ProgressState.hpp"
-#include <iomanip> // Do formatowania dat/liczb
+#include <iomanip>
 
 using namespace std;
 
@@ -9,129 +9,147 @@ ProgressHistoryState::ProgressHistoryState(AppDataRef data) : GuiState(data)
 {
 }
 
-void ProgressHistoryState::ProgressButton_Init()
-{
-    // NAPRAWA B£ÊDU: Najpierw ³adujemy teksturê, potem jej u¿ywamy.
-    // U¿ywamy PLACEHOLDER_SHORT_BUTTON_FILEPATH lub innej grafiki dla przycisku "Wstecz"
-    this->_data->assets.loadTexture("Back Button", PLACEHOLDER_SHORT_BUTTON_FILEPATH);
-    this->_backToProgressButton._sprite.setTexture(this->_data->assets.getTexture("Back Button"));
-
-    // Ustawiamy pozycjê (lewy dolny róg, tak jak w menu)
-    float menuButtonWidth;
-    float menuButtonHeight;
-    sf::Vector2f menuButtonPosition = GetMenuButtonPosition(menuButtonWidth, menuButtonHeight);
-
-    this->_backToProgressButton._pressed = false;
-    this->_backToProgressButton._update = false;
-    this->_backToProgressButton._rect = sf::IntRect(0, 0, 300, 300);
-    this->_backToProgressButton._sprite.setTextureRect(this->_backToProgressButton._rect);
-    this->_backToProgressButton._sprite.setScale(0.35f, 0.35f);
-
-    // Pozycja przycisku powrotu (np. lewy dolny róg)
-    this->_backToProgressButton._sprite.setPosition(menuButtonPosition.x, SCREAN_HEIGHT - this->_backToProgressButton._sprite.getGlobalBounds().height - 20.0f);
-}
-
-void ProgressHistoryState::ProgressButton_HandleInput(sf::Event& event)
-{
-    if (this->_data->input.isSpriteClickedAndReleased(this->_backToProgressButton._sprite, sf::Mouse::Left, this->_data->window, this->_backToProgressButton._pressed, this->_backToProgressButton._update))
-    {
-        // Wracamy do ProgressState (zastêpujemy obecny stan)
-        this->_data->machine.AddState(StateRef(new ProgressState(this->_data)), true);
-    }
-}
-
-void ProgressHistoryState::ProgressButton_Update(float dt)
-{
-    if (this->_backToProgressButton._update)
-    {
-        this->_backToProgressButton._update = false;
-        if (this->_backToProgressButton._pressed) {
-            this->_backToProgressButton._rect.left = 300;
-        }
-        else {
-            this->_backToProgressButton._rect.left = 0;
-        }
-        this->_backToProgressButton._sprite.setTextureRect(this->_backToProgressButton._rect);
-    }
-}
-
-void ProgressHistoryState::ProgressButton_Draw(float dt)
-{
-    this->_data->window.draw(this->_backToProgressButton._sprite);
-}
-
 void ProgressHistoryState::State_Init()
 {
     this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
+    _font = this->_data->assets.getFont("Default Font");
 
-    // Inicjalizacja przycisku powrotu
-    ProgressButton_Init();
+    // 1. Przycisk Wstecz - PRZESUNIÊTY NA PRAW¥ STRONÊ
+    _backButtonShape.setSize(sf::Vector2f(100.0f, 40.0f));
+    _backButtonShape.setFillColor(sf::Color(100, 100, 100)); // Szary
+    _backButtonShape.setPosition(SCREAN_WIDTH - 150.0f, 40.0f); // Prawy górny róg
 
-    // --- WYŒWIETLANIE HISTORII ---
-    const sf::Font& font = this->_data->assets.getFont("Default Font");
+    _backButtonLabel.setFont(_font);
+    _backButtonLabel.setString("Back");
+    _backButtonLabel.setCharacterSize(20);
+    _backButtonLabel.setFillColor(sf::Color::White);
+    // Centrowanie napisu na przycisku
+    _backButtonLabel.setPosition(SCREAN_WIDTH - 135.0f, 48.0f);
 
-    // 1. Tytu³
-    _title.setFont(font);
-    _title.setString("PELNA HISTORIA TRENINGOW");
+    // 2. Tytu³ - Przesuniêty bardziej w prawo
+    _title.setFont(_font);
+    _title.setString("TRAINING HISTORY");
     _title.setCharacterSize(35);
     _title.setFillColor(sf::Color::White);
-    _title.setPosition(300.0f, 30.0f); // Przesuniête w prawo, ¿eby nie wchodzi³o na menu
+    _title.setPosition(400.0f, 40.0f); // X=400, ¿eby omin¹æ menu
 
-    // 2. Pobranie danych
+    // 3. Pobranie danych
     if (this->_data->currentUser) {
-        // U¿ywamy metody getWorkoutLogs, któr¹ stworzyliœmy wczeœniej
         this->_logs = this->_data->database.getWorkoutLogs(this->_data->currentUser->id);
     }
 
-    // 3. Generowanie listy (prosta tabela na start)
-    float currentY = 100.0f;
-    float startX = 280.0f; // ¯eby omin¹æ pasek boczny
+    // 4. Budowanie tabeli - POPRAWIONE POZYCJE X (odsuniête od lewego menu)
+    float currentY = 120.0f;
 
-    // Nag³ówki
-    auto addText = [&](string s, float x, float y, sf::Color c, int size = 20) {
+    // Przesuwamy wszystko o ok. 80-100 pikseli w prawo wzglêdem starej wersji
+    float colDate = 280.0f;  // By³o 200
+    float colName = 480.0f;  // By³o 400
+    float colSet = 750.0f;   // By³o 700
+    float colRes = 850.0f;   // By³o 800
+
+    auto addText = [&](string s, float x, float y, sf::Color c, int size = 20, bool bold = false) {
         sf::Text t;
-        t.setFont(font);
+        t.setFont(_font);
         t.setString(s);
         t.setCharacterSize(size);
         t.setFillColor(c);
         t.setPosition(x, y);
+        if (bold) t.setStyle(sf::Text::Bold);
         _logTexts.push_back(t);
         };
 
-    addText("Data", startX, currentY, sf::Color::Yellow);
-    addText("Cwiczenie", startX + 150, currentY, sf::Color::Yellow);
-    addText("Set", startX + 450, currentY, sf::Color::Yellow);
-    addText("Wynik", startX + 520, currentY, sf::Color::Yellow);
+    // Nag³ówki
+    addText("Date", colDate, currentY, sf::Color::Cyan, 22, true);
+    addText("Exercise", colName, currentY, sf::Color::Cyan, 22, true);
+    addText("Set", colSet, currentY, sf::Color::Cyan, 22, true);
+    addText("Result", colRes, currentY, sf::Color::Cyan, 22, true);
 
     currentY += 40.0f;
 
     // Wiersze
     for (const auto& log : _logs) {
-        // Jeœli lista jest bardzo d³uga, wyjdzie poza ekran (na razie bez scrolla)
+        // Data
+        addText(log.date, colDate, currentY, sf::Color(200, 200, 200));
 
-        addText(log.date, startX, currentY, sf::Color(200, 200, 200));
-        addText(log.exerciseNameVal, startX + 150, currentY, sf::Color::White); // Nazwa z JOINa
-        addText(to_string(log.setNumber), startX + 460, currentY, sf::Color::Cyan);
+        // Nazwa
+        addText(log.exerciseNameVal, colName, currentY, sf::Color::White);
 
-        // Formatowanie wyniku: "100kg x 5" lub "Czas: 60s"
-        stringstream ss;
-        if (log.weight > 0) ss << log.weight << "kg x " << log.reps;
-        else ss << log.reps << " reps"; // Dla pompek itp.
+        // Numer serii (centrujemy lekko)
+        addText(to_string(log.setNumber), colSet + 10.0f, currentY, sf::Color(150, 150, 150));
 
-        addText(ss.str(), startX + 520, currentY, sf::Color::Green);
+        // Wynik (Inteligentne formatowanie)
+        string resultStr = formatLogResult(log);
+        addText(resultStr, colRes, currentY, sf::Color::Green);
 
         currentY += 30.0f;
     }
 }
 
+string ProgressHistoryState::formatLogResult(const WorkoutLog& log)
+{
+    // Pobieramy æwiczenie, ¿eby znaæ typ
+    auto ex = this->_data->database.getExerciseById(log.exerciseId);
+
+    if (!ex) {
+        stringstream ss;
+        ss << log.weight << " - " << log.reps;
+        return ss.str();
+    }
+
+    bool hasDist = false;
+    bool hasTime = false;
+    for (auto vt : ex->valueTypes) {
+        if (vt == ValueType::DISTANCE_KM) hasDist = true;
+        if (vt == ValueType::TIME_SEC) hasTime = true;
+    }
+
+    stringstream ss;
+    if (hasDist) {
+        // Bieganie: km / min
+        ss << log.weight << "km / " << log.reps << "min";
+    }
+    else if (hasTime) {
+        // Plank: s
+        ss << log.weight << "s";
+    }
+    else {
+        // Si³ownia
+        if (log.weight > 0) {
+            ss << log.weight << "kg x " << log.reps;
+        }
+        else {
+            // Jeœli ciê¿ar 0 (np. pompki), wyœwietl tylko powtórzenia
+            ss << log.reps << " reps";
+        }
+    }
+
+    return ss.str();
+}
+
 void ProgressHistoryState::State_HandleInput(sf::Event& event)
 {
-    ProgressButton_HandleInput(event);
+    if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
+        sf::Vector2i mousePos = sf::Mouse::getPosition(this->_data->window);
+
+        // Obs³uga przycisku Wstecz
+        if (_backButtonShape.getGlobalBounds().contains((float)mousePos.x, (float)mousePos.y)) {
+            // Wracamy do ProgressState
+            this->_data->machine.AddState(StateRef(new ProgressState(this->_data)), true);
+        }
+    }
 }
 
 void ProgressHistoryState::State_Update(float dt)
 {
-    ProgressButton_Update(dt);
+    // Hover effect
+    sf::Vector2i mousePos = sf::Mouse::getPosition(this->_data->window);
+    if (_backButtonShape.getGlobalBounds().contains((float)mousePos.x, (float)mousePos.y)) {
+        _backButtonShape.setOutlineColor(sf::Color::White);
+        _backButtonShape.setOutlineThickness(1.0f);
+    }
+    else {
+        _backButtonShape.setOutlineThickness(0.0f);
+    }
 }
 
 void ProgressHistoryState::State_Draw(float dt)
@@ -139,10 +157,10 @@ void ProgressHistoryState::State_Draw(float dt)
     this->_data->window.draw(this->_background);
     this->_data->window.draw(this->_title);
 
-    // Rysowanie tabeli
+    this->_data->window.draw(this->_backButtonShape);
+    this->_data->window.draw(this->_backButtonLabel);
+
     for (const auto& txt : _logTexts) {
         this->_data->window.draw(txt);
     }
-
-    ProgressButton_Draw(dt);
 }
