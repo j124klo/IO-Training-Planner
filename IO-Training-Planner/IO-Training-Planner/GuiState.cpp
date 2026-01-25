@@ -71,7 +71,7 @@ void GuiState::GUI_Init()
 	this->_exerciseListButton._sprite.setTexture(this->_data->assets.getTexture("Exercise List Button"));
 
 
-
+	//	GUI BAR
 	this->_guiBarDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 0.9;
 	this->_guiBarDestination.y = 0.0f;
 	this->_guiBar.setPosition(0 - this->_guiBar.getGlobalBounds().width * 0.9, 0);

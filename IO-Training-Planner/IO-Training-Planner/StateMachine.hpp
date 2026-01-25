@@ -20,7 +20,7 @@ private:
 	bool _isReplacing;
 
 public:
-	StateMachine() {}
+	StateMachine() : _isRemoving(false), _isAdding(false), _isReplacing(false) {}
 	~StateMachine() {}
 
 	void AddState(StateRef newState, bool isReplacing = true);
