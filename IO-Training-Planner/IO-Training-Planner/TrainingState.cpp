@@ -96,14 +96,12 @@ void TrainingState::InitWorkoutSession(int dayOfWeek)
 {
     _sessionExercises.clear();
 
-    // Tytu³
     _titleWorkout.setFont(_font);
     _titleWorkout.setString(getDayName(dayOfWeek));
     _titleWorkout.setCharacterSize(40);
     _titleWorkout.setFillColor(sf::Color::Yellow);
     _titleWorkout.setPosition(350.0f, 40.0f);
 
-    // Przycisk Wstecz
     _backButtonShape.setSize(sf::Vector2f(100.0f, 40.0f));
     _backButtonShape.setFillColor(sf::Color(100, 100, 100));
     _backButtonShape.setPosition(SCREAN_WIDTH - 150.0f, 40.0f);
@@ -114,7 +112,6 @@ void TrainingState::InitWorkoutSession(int dayOfWeek)
     _backButtonLabel.setFillColor(sf::Color::White);
     _backButtonLabel.setPosition(SCREAN_WIDTH - 135.0f, 45.0f);
 
-    // Przycisk Dodaj Æwiczenie
     _addExerciseBtn.setSize(sf::Vector2f(250.0f, 50.0f));
     _addExerciseBtn.setFillColor(sf::Color(0, 100, 200));
     _addExerciseLabel.setFont(_font);
@@ -122,7 +119,6 @@ void TrainingState::InitWorkoutSession(int dayOfWeek)
     _addExerciseLabel.setCharacterSize(20);
     _addExerciseLabel.setFillColor(sf::Color::White);
 
-    // 1. Dodaj æwiczenia z planu
     if (_currentPlan) {
         for (const auto& entry : _currentPlan->entries) {
             if (entry.dayOfWeek == dayOfWeek) {
@@ -131,7 +127,6 @@ void TrainingState::InitWorkoutSession(int dayOfWeek)
         }
     }
 
-    // 2. Przelicz uk³ad
     RecalculateLayout();
 }
 
@@ -144,7 +139,34 @@ void TrainingState::AddExerciseToSession(int exerciseId)
     activeEx.exerciseId = exerciseId;
     activeEx.name = exData->name;
 
-    // Przycisk "Dodaj Seriê"
+    // --- AUTOMATYCZNE WYKRYWANIE JEDNOSTEK ---
+    // Domyœlne: Si³a
+    string u1 = "kg";
+    string u2 = "rep";
+
+    // Sprawdzamy typy w bazie
+    bool hasDist = false;
+    bool hasTime = false;
+    for (auto vt : exData->valueTypes) {
+        if (vt == ValueType::DISTANCE_KM) hasDist = true;
+        if (vt == ValueType::TIME_SEC) hasTime = true;
+    }
+
+    if (hasDist) {
+        // Bieganie, Rower itp.
+        u1 = "km";
+        u2 = "min"; // Drugie pole to czas
+    }
+    else if (hasTime) {
+        // Plank itp. (tylko czas)
+        u1 = "s";
+        u2 = ""; // Drugie pole puste/ukryte
+    }
+
+    activeEx.unit1 = u1;
+    activeEx.unit2 = u2;
+    // -----------------------------------------
+
     activeEx.addSetBtn.setSize(sf::Vector2f(120.0f, 30.0f));
     activeEx.addSetBtn.setFillColor(sf::Color(50, 50, 50));
     activeEx.addSetBtn.setOutlineColor(sf::Color::White);
@@ -156,8 +178,6 @@ void TrainingState::AddExerciseToSession(int exerciseId)
     activeEx.addSetLabel.setFillColor(sf::Color::White);
 
     _sessionExercises.push_back(activeEx);
-
-    // Dodaj jedn¹ pust¹ seriê na start
     AddSetToExercise(_sessionExercises.back());
 }
 
@@ -167,35 +187,44 @@ void TrainingState::AddSetToExercise(ActiveExercise& ex)
     row.setNumber = ex.sets.size() + 1;
     row.isSaved = false;
 
-    // Input Waga
-    row.weightInput.shape.setSize(sf::Vector2f(80.0f, 35.0f));
-    row.weightInput.shape.setFillColor(sf::Color(20, 20, 20));
-    row.weightInput.shape.setOutlineColor(sf::Color(100, 100, 100));
-    row.weightInput.shape.setOutlineThickness(1.0f);
-    row.weightInput.text.setFont(_font);
-    row.weightInput.text.setString("kg");
-    row.weightInput.text.setCharacterSize(20);
-    row.weightInput.text.setFillColor(sf::Color(150, 150, 150));
+    // Input 1 (kg / km / s)
+    row.input1.shape.setSize(sf::Vector2f(80.0f, 35.0f));
+    row.input1.shape.setFillColor(sf::Color(20, 20, 20));
+    row.input1.shape.setOutlineColor(sf::Color(100, 100, 100));
+    row.input1.shape.setOutlineThickness(1.0f);
+    row.input1.text.setFont(_font);
+    row.input1.text.setString(ex.unit1); // Placeholder dynamiczny
+    row.input1.text.setCharacterSize(20);
+    row.input1.text.setFillColor(sf::Color(150, 150, 150));
 
-    row.weightInput.valueString = "";
-    row.weightInput.placeholder = "kg";
+    row.input1.valueString = "";
+    row.input1.placeholder = ex.unit1;
+    row.input1.isVisible = true;
 
-    // Input Reps
-    row.repsInput.shape.setSize(sf::Vector2f(80.0f, 35.0f));
-    row.repsInput.shape.setFillColor(sf::Color(20, 20, 20));
-    row.repsInput.shape.setOutlineColor(sf::Color(100, 100, 100));
-    row.repsInput.shape.setOutlineThickness(1.0f);
-    row.repsInput.text.setFont(_font);
-    row.repsInput.text.setString("rep");
-    row.repsInput.text.setCharacterSize(20);
-    row.repsInput.text.setFillColor(sf::Color(150, 150, 150));
+    // Input 2 (rep / min / brak)
+    row.input2.shape.setSize(sf::Vector2f(80.0f, 35.0f));
+    row.input2.shape.setFillColor(sf::Color(20, 20, 20));
+    row.input2.shape.setOutlineColor(sf::Color(100, 100, 100));
+    row.input2.shape.setOutlineThickness(1.0f);
+    row.input2.text.setFont(_font);
+    row.input2.text.setString(ex.unit2);
+    row.input2.text.setCharacterSize(20);
+    row.input2.text.setFillColor(sf::Color(150, 150, 150));
 
-    row.repsInput.valueString = "";
-    row.repsInput.placeholder = "rep";
+    row.input2.valueString = "";
+    row.input2.placeholder = ex.unit2;
+
+    // Jeœli unit2 jest pusty (np. Plank), ukrywamy pole
+    if (ex.unit2.empty()) {
+        row.input2.isVisible = false;
+    }
+    else {
+        row.input2.isVisible = true;
+    }
 
     // Przycisk Zapisz
     row.saveButton.setSize(sf::Vector2f(80.0f, 35.0f));
-    row.saveButton.setFillColor(sf::Color(0, 100, 0)); // Zielony
+    row.saveButton.setFillColor(sf::Color(0, 100, 0));
     row.saveLabel.setFont(_font);
     row.saveLabel.setString("OK");
     row.saveLabel.setCharacterSize(18);
@@ -215,14 +244,18 @@ void TrainingState::RecalculateLayout()
         currentY += 40.0f;
 
         for (auto& row : ex.sets) {
-            float xWeight = 550.0f;
-            float xReps = 650.0f;
+            float x1 = 550.0f;
+            float x2 = 650.0f;
 
-            row.weightInput.shape.setPosition(xWeight, currentY);
-            row.weightInput.text.setPosition(xWeight + 5, currentY + 5);
+            // Input 1
+            row.input1.shape.setPosition(x1, currentY);
+            row.input1.text.setPosition(x1 + 5, currentY + 5);
 
-            row.repsInput.shape.setPosition(xReps, currentY);
-            row.repsInput.text.setPosition(xReps + 5, currentY + 5);
+            // Input 2 (tylko jeœli widoczny)
+            if (row.input2.isVisible) {
+                row.input2.shape.setPosition(x2, currentY);
+                row.input2.text.setPosition(x2 + 5, currentY + 5);
+            }
 
             row.saveButton.setPosition(xBtn, currentY);
 
@@ -247,19 +280,14 @@ void TrainingState::RecalculateLayout()
     );
 }
 
-// ==========================================
-//              PICKER (WYBÓR ÆWICZENIA)
-// ==========================================
+// PICKER
 void TrainingState::InitExercisePicker()
 {
     _allExercises.clear();
-
     try {
         _allExercises = this->_data->database.getAllExercises();
     }
-    catch (exception& e) {
-        cout << "Error fetching exercises: " << e.what() << endl;
-    }
+    catch (exception& e) {}
 
     _titlePicker.setFont(_font);
     _titlePicker.setString("DODAJ CWICZENIE");
@@ -294,7 +322,6 @@ void TrainingState::InitExercisePicker()
 
         sf::Text txt;
         txt.setFont(_font);
-        // ZMIANA TUTAJ: u¿ywamy strza³ki -> bo ex to wskaŸnik
         txt.setString(ex->name);
         txt.setCharacterSize(22);
         txt.setFillColor(sf::Color::White);
@@ -302,32 +329,27 @@ void TrainingState::InitExercisePicker()
 
         _pickerButtons.push_back(btn);
         _pickerLabels.push_back(txt);
-
-        // ZMIANA TUTAJ: u¿ywamy strza³ki -> bo ex to wskaŸnik
         _pickerExerciseIds.push_back(ex->id);
 
         py += 60.0f;
     }
 }
 
-
-// --- INPUT HELPERS ---
+// INPUT HELPERS
 void TrainingState::handleInputBoxClick(InputBox& box, sf::Vector2i mousePos)
 {
+    if (!box.isVisible) return; // Klikanie w ukryte nic nie robi
+
     if (box.shape.getGlobalBounds().contains((float)mousePos.x, (float)mousePos.y)) {
         box.isSelected = true;
         box.shape.setOutlineColor(sf::Color::Yellow);
         box.shape.setOutlineThickness(2.0f);
-
-        if (box.valueString.empty()) {
-            box.text.setString("");
-        }
+        if (box.valueString.empty()) box.text.setString("");
     }
     else {
         box.isSelected = false;
         box.shape.setOutlineColor(sf::Color(100, 100, 100));
         box.shape.setOutlineThickness(1.0f);
-
         if (box.valueString.empty()) {
             box.text.setString(box.placeholder);
             box.text.setFillColor(sf::Color(150, 150, 150));
@@ -337,9 +359,9 @@ void TrainingState::handleInputBoxClick(InputBox& box, sf::Vector2i mousePos)
 
 void TrainingState::handleTyping(InputBox& box, sf::Uint32 unicode)
 {
-    if (!box.isSelected) return;
+    if (!box.isSelected || !box.isVisible) return;
 
-    if (unicode == 8) { // Backspace
+    if (unicode == 8) {
         if (!box.valueString.empty()) box.valueString.pop_back();
     }
     else if ((unicode >= 48 && unicode <= 57) || unicode == 46) {
@@ -363,26 +385,22 @@ string TrainingState::getDayName(int day) {
     }
 }
 
-// ==========================================
-//              HANDLE INPUT
-// ==========================================
+// HANDLE INPUT
 void TrainingState::State_HandleInput(sf::Event& event)
 {
     sf::Vector2i mousePos = sf::Mouse::getPosition(this->_data->window);
 
-    // 1. PISANIE
     if (event.type == sf::Event::TextEntered && _currentMode == TrainingMode::WORKOUT_SESSION) {
         for (auto& ex : _sessionExercises) {
             for (auto& row : ex.sets) {
                 if (!row.isSaved) {
-                    handleTyping(row.weightInput, event.text.unicode);
-                    handleTyping(row.repsInput, event.text.unicode);
+                    handleTyping(row.input1, event.text.unicode);
+                    handleTyping(row.input2, event.text.unicode);
                 }
             }
         }
     }
 
-    // 2. KLIKNIÊCIA
     if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
 
         if (_currentMode == TrainingMode::DAY_SELECTION) {
@@ -417,33 +435,37 @@ void TrainingState::State_HandleInput(sf::Event& event)
                 for (auto& row : ex.sets) {
                     if (row.isSaved) continue;
 
-                    handleInputBoxClick(row.weightInput, mousePos);
-                    handleInputBoxClick(row.repsInput, mousePos);
+                    handleInputBoxClick(row.input1, mousePos);
+                    handleInputBoxClick(row.input2, mousePos);
 
                     if (row.saveButton.getGlobalBounds().contains((float)mousePos.x, (float)mousePos.y)) {
-                        string wStr = row.weightInput.valueString;
-                        string rStr = row.repsInput.valueString;
+                        string val1 = row.input1.valueString;
+                        string val2 = row.input2.valueString;
 
-                        if (wStr.empty() || rStr.empty()) continue;
+                        // Jeœli pole 2 jest ukryte, uznajemy ¿e jest OK (wartoœæ 0)
+                        if (row.input2.isVisible && val2.empty()) continue;
+                        if (val1.empty()) continue;
 
-                        float weight = stof(wStr);
-                        int reps = stoi(rStr);
+                        float v1 = stof(val1); // kg lub km lub s
+                        int v2 = (val2.empty()) ? 0 : stoi(val2); // reps lub min
 
-                        string today = "2026-01-25";
+                        // LOGIKA ZAPISU (Running: v1=km, v2=min)
+                        // Baza przyjmuje weight (float) i reps (int)
+
                         this->_data->database.addWorkoutLog(
                             this->_data->currentUser->id,
                             ex.exerciseId,
-                            today,
+                            "2026-01-25",
                             row.setNumber,
-                            weight,
-                            reps
+                            v1,
+                            v2
                         );
 
                         row.isSaved = true;
                         row.saveButton.setFillColor(sf::Color(100, 100, 100));
                         row.saveLabel.setString("V");
-                        row.weightInput.shape.setOutlineColor(sf::Color::Green);
-                        row.repsInput.shape.setOutlineColor(sf::Color::Green);
+                        row.input1.shape.setOutlineColor(sf::Color::Green);
+                        row.input2.shape.setOutlineColor(sf::Color::Green);
                     }
                 }
             }
@@ -466,6 +488,7 @@ void TrainingState::State_HandleInput(sf::Event& event)
     }
 }
 
+// DRAW
 void TrainingState::State_Update(float dt) {}
 
 void TrainingState::State_Draw(float dt)
@@ -498,13 +521,16 @@ void TrainingState::State_Draw(float dt)
                 setNo.setString(to_string(row.setNumber) + ".");
                 setNo.setCharacterSize(20);
                 setNo.setFillColor(sf::Color(180, 180, 180));
-                setNo.setPosition(220.0f, row.weightInput.shape.getPosition().y + 5.0f);
+                setNo.setPosition(220.0f, row.input1.shape.getPosition().y + 5.0f);
                 this->_data->window.draw(setNo);
 
-                this->_data->window.draw(row.weightInput.shape);
-                this->_data->window.draw(row.weightInput.text);
-                this->_data->window.draw(row.repsInput.shape);
-                this->_data->window.draw(row.repsInput.text);
+                this->_data->window.draw(row.input1.shape);
+                this->_data->window.draw(row.input1.text);
+
+                if (row.input2.isVisible) {
+                    this->_data->window.draw(row.input2.shape);
+                    this->_data->window.draw(row.input2.text);
+                }
 
                 this->_data->window.draw(row.saveButton);
                 this->_data->window.draw(row.saveLabel);

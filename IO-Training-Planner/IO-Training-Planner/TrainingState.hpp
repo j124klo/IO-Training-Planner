@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include <memory> // Wa¿ne dla shared_ptr
+#include <memory>
 #include <SFML/Graphics.hpp>
 #include "GuiState.hpp"
 #include "AppPlanner.hpp"
@@ -13,29 +13,31 @@ using namespace std;
 
 enum class TrainingMode { DAY_SELECTION, WORKOUT_SESSION, EXERCISE_PICKER };
 
-// Struktura pola tekstowego
 struct InputBox {
     sf::RectangleShape shape;
     sf::Text text;
     string valueString;
-    string placeholder;
+    string placeholder; // Np. "kg", "km", "min"
     bool isSelected = false;
+    bool isVisible = true; // Czy pole jest widoczne? (dla æwiczeñ tylko na czas)
 };
 
-// Struktura reprezentuj¹ca JEDN¥ SERIÊ
 struct SetRow {
     int setNumber;
-    InputBox weightInput;
-    InputBox repsInput;
+    InputBox input1; // Dawniej weightInput (teraz uniwersalne)
+    InputBox input2; // Dawniej repsInput (teraz uniwersalne)
     sf::RectangleShape saveButton;
     sf::Text saveLabel;
     bool isSaved = false;
 };
 
-// Struktura reprezentuj¹ca CA£E ÆWICZENIE w sesji
 struct ActiveExercise {
     int exerciseId;
     string name;
+
+    // NOWE POLA: Jednostki dla tego æwiczenia
+    string unit1; // np. "kg" lub "km" lub "s"
+    string unit2; // np. "rep" lub "min" lub "" (puste)
 
     vector<SetRow> sets;
 
@@ -55,13 +57,13 @@ private:
     shared_ptr<TrainingPlan> _currentPlan;
     int _selectedDay;
 
-    // --- EKRAN WYBORU DNIA ---
+    // EKRAN WYBORU DNIA
     sf::Text _titleSelectDay;
     vector<sf::RectangleShape> _dayButtonsShapes;
     vector<sf::Text> _dayLabels;
     vector<int> _dayButtonIndices;
 
-    // --- EKRAN TRENINGU ---
+    // EKRAN TRENINGU
     sf::Text _titleWorkout;
     sf::RectangleShape _backButtonShape;
     sf::Text _backButtonLabel;
@@ -71,19 +73,17 @@ private:
     sf::RectangleShape _addExerciseBtn;
     sf::Text _addExerciseLabel;
 
-    // --- EKRAN WYBORU ÆWICZENIA (PICKER) ---
+    // PICKER
     sf::Text _titlePicker;
     sf::RectangleShape _cancelPickerBtn;
     sf::Text _cancelPickerLabel;
 
-    // ZMIANA TUTAJ: vector<shared_ptr<Exercise>> zamiast vector<Exercise>
     vector<shared_ptr<Exercise>> _allExercises;
-
     vector<sf::RectangleShape> _pickerButtons;
     vector<sf::Text> _pickerLabels;
     vector<int> _pickerExerciseIds;
 
-    // --- METODY ---
+    // METODY
     void InitDaySelection();
     void InitWorkoutSession(int dayOfWeek);
     void InitExercisePicker();
