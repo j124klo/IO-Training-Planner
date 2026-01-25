@@ -78,5 +78,8 @@ public:
     bool addExerciseToPlan(int planId, int exerciseId, int dayOfWeek, int orderInDay, std::vector<ResultValue> targets);
     bool addWorkoutLog(int userId, int exerciseId, const string& date, int setNo, double weight, int reps);
     vector<WorkoutLog> getWorkoutLogs(int userId);
-    vector<PersonalRecord> getPersonalRecords(int userId);
+    vector<PersonalRecord> getBestWeights(int userId);
+    vector<PersonalRecord> getBestReps(int userId);
+    vector<PersonalRecord> getBestTimes(int userId);
+    vector<PersonalRecord> getBestDistances(int userId);
 };

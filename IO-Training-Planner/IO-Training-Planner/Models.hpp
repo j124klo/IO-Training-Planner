@@ -61,9 +61,11 @@ struct WorkoutLog {
     string exerciseNameVal;
 };
 
+
+
 struct PersonalRecord {
     string exerciseName;
-    double maxWeight;
-    int maxReps;
+    double weight;  // G³ówny wynik (kg, sekundy lub km)
+    int reps;       // Powtórzenia (dla cardio bêdzie 0)
     string date;
 };
