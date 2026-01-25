@@ -1,11 +1,58 @@
+#include "DEFINITIONS.hpp"
 #include "ProgressState.hpp"
-#include <sstream>
-#include <iomanip> 
+#include "ProgressHistoryState.hpp"
 
 using namespace std;
 
 ProgressState::ProgressState(AppDataRef data) : GuiState(data)
 {
+
+}
+
+void ProgressState::ProgressHistoryButton_Init()
+{
+    this->_data->assets.loadTexture("Progress History Button", PLACEHOLDER_SHORT_BUTTON_FILEPATH);
+	this->_progressHistoryButton._sprite.setTexture(this->_data->assets.getTexture("Progress History Button"));
+
+    float menuButtonWidth;
+    float menuButtonHeight;
+    sf::Vector2f menuButtonPosition = GetMenuButtonPosition(menuButtonWidth, menuButtonHeight);
+
+	this->_progressHistoryButton._pressed = false;
+	this->_progressHistoryButton._update = false;
+	this->_progressHistoryButton._rect = sf::IntRect(0, 0, 300, 300);
+	this->_progressHistoryButton._sprite.setTextureRect(this->_progressHistoryButton._rect);
+	this->_progressHistoryButton._sprite.setScale(0.35f, 0.35f);
+    this->_progressHistoryButton._sprite.setPosition( menuButtonPosition.x, SCREAN_HEIGHT - this->_progressHistoryButton._sprite.getGlobalBounds().height - 20.0f );
+}
+void ProgressState::ProgressHistoryButton_HandleInput(sf::Event& event)
+{
+    if (this->_data->input.isSpriteClickedAndReleased(this->_progressHistoryButton._sprite, sf::Mouse::Left, this->_data->window, this->_progressHistoryButton._pressed, this->_progressHistoryButton._update))
+    {
+        this->_data->machine.AddState(StateRef(new ProgressHistoryState(this->_data)), true);
+    }
+}
+void ProgressState::ProgressHistoryButton_Update(float dt)
+{
+    if (this->_progressHistoryButton._update)
+    {
+        this->_progressHistoryButton._update = false;
+
+        if (this->_progressHistoryButton._pressed)
+        {
+            this->_progressHistoryButton._rect.left = 300;
+            this->_progressHistoryButton._sprite.setTextureRect(this->_progressHistoryButton._rect);
+        }
+        else
+        {
+            this->_progressHistoryButton._rect.left = 0;
+            this->_progressHistoryButton._sprite.setTextureRect(this->_progressHistoryButton._rect);
+        }
+    }
+}
+void ProgressState::ProgressHistoryButton_Draw(float dt)
+{
+    this->_data->window.draw(this->_progressHistoryButton._sprite);
 }
 
 void ProgressState::State_Init()
@@ -14,6 +61,9 @@ void ProgressState::State_Init()
     const sf::Font& font = this->_data->assets.getFont("Default Font");
 
     // 1. POBIERANIE DANYCH (4 Kategorie)
+    ProgressHistoryButton_Init();
+
+    // 1. Pobieranie REKORDÓW z bazy
     if (this->_data->currentUser != nullptr) {
         int uid = this->_data->currentUser->id;
         this->_weightRecords = this->_data->database.getBestWeights(uid);
@@ -114,12 +164,29 @@ void ProgressState::State_Init()
             }
             currentY += 30.0f;
         };
+        // --- Kolumna 4: Data (Szara) ---
+        sf::Text txtDate;
+        txtDate.setFont(font);
+        txtDate.setString(rec.date);
+        txtDate.setCharacterSize(20);
+        txtDate.setFillColor(sf::Color(180, 180, 180));
+        txtDate.setPosition(col4_X, rowY + 8.0f);
+        _logTexts.push_back(txtDate);
+    }
+}
+void ProgressState::State_HandleInput(sf::Event& event)
+{
+	ProgressHistoryButton_HandleInput(event);
+}
 
     // Generowanie 4 tabel
     createTable("MAX STRENGTH", _weightRecords, 0, sf::Color::Cyan);       // Si³a
     createTable("MAX ENDURANCE", _repsRecords, 1, sf::Color::Green);      // Wytrzyma³oœæ
     createTable("MAX TIME", _timeRecords, 2, sf::Color(255, 165, 0));     // Czas (Orange)
     createTable("MAX DISTANCE", _distRecords, 3, sf::Color::Magenta);     // Dystans (Magenta)
+void ProgressState::State_Update(float dt)
+{
+	ProgressHistoryButton_Update(dt);
 }
 
 void ProgressState::State_HandleInput(sf::Event& event) {}
@@ -128,7 +195,15 @@ void ProgressState::State_Update(float dt) {}
 void ProgressState::State_Draw(float dt)
 {
     this->_data->window.draw(this->_background);
-    this->_data->window.draw(this->_mainTitle);
+
+    ProgressHistoryButton_Draw(dt);
+
+    this->_data->window.draw(this->_titleText);
+
+    this->_data->window.draw(_headerExercise);
+    this->_data->window.draw(_headerMaxWeight);
+    this->_data->window.draw(_headerMaxReps);
+    this->_data->window.draw(_headerDate);
 
     for (const auto& txt : _allTexts) {
         this->_data->window.draw(txt);

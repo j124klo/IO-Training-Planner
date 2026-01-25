@@ -147,8 +147,8 @@ bool InputManager::typingText(sf::Event& event, string& text, sf::Text& displaye
 			displayedText.setString(text);
 			return true;
 		}
-		else	return false;
 	}
+	return false;
 }
 
 void InputManager::handleScrollEvent(sf::Event& event)

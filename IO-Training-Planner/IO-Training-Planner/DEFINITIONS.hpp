@@ -7,6 +7,7 @@
 //	miscellaneous
 #define DEFAULT_BACKGROUND_FILEPATH "Resources/Images/Default Background.png"
 #define DEFAULT_FONT_FILEPATH "Resources/Fonts/Roboto-VariableFont_wdth,wght.ttf"
+#define PLACEHOLDER_SHORT_BUTTON_FILEPATH "Resources/Images/Placeholder Short Button.png"
 
 // scroll panel
 #define SCROLL_EDGE "Resources/Images/Scroll Edge.png"

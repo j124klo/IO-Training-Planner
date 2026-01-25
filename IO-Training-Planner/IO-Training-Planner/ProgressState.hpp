@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <vector>
+#include <sstream>
+#include <iomanip>
 #include <SFML/Graphics.hpp>
 #include "GuiState.hpp"
 #include "AppPlanner.hpp"
@@ -12,13 +14,14 @@ using namespace std;
 class ProgressState : public GuiState
 {
 private:
+    sf::Clock _clock;
+
     sf::Sprite _background;
 
-    // ZMIANA: 3 osobne kontenery na dane
-    vector<PersonalRecord> _weightRecords;
-    vector<PersonalRecord> _repsRecords;
-    vector<PersonalRecord> _timeRecords;
-    vector<PersonalRecord> _distRecords;
+	Button _progressHistoryButton;
+
+    // ZMIANA: Teraz przechowujemy rekordy, a nie ca³¹ historiê
+    vector<PersonalRecord> _records;
 
     sf::Text _mainTitle;
 
@@ -27,6 +30,11 @@ private:
 
 public:
     ProgressState(AppDataRef data);
+
+	void ProgressHistoryButton_Init();
+	void ProgressHistoryButton_HandleInput(sf::Event& event);
+	void ProgressHistoryButton_Update(float dt);
+	void ProgressHistoryButton_Draw(float dt);
 
     void State_Init();
     void State_HandleInput(sf::Event& event);
