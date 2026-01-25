@@ -187,18 +187,18 @@
     <ClInclude Include="State.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\..\..\Downloads\LogoutButton.png" />
-    <Image Include="..\..\..\..\..\Downloads\RegisterButton.png" />
     <Image Include="Resources\Images\Calculator Button.png" />
     <Image Include="Resources\Images\Continue Button.png" />
     <Image Include="Resources\Images\Default Background.png" />
     <Image Include="Resources\Images\Exercise List Button.png" />
     <Image Include="Resources\Images\GUI Bar.png" />
     <Image Include="Resources\Images\Home Button.png" />
+    <Image Include="Resources\Images\Logout Button.png" />
     <Image Include="Resources\Images\Menu Button.png" />
     <Image Include="Resources\Images\Placeholder Short Button.png" />
     <Image Include="Resources\Images\Plan Panel.png" />
     <Image Include="Resources\Images\Progress Button.png" />
+    <Image Include="Resources\Images\Register Button.png" />
     <Image Include="Resources\Images\Scroll Bot.png" />
     <Image Include="Resources\Images\Scroll Edge.png" />
     <Image Include="Resources\Images\Scroll Mid.png" />

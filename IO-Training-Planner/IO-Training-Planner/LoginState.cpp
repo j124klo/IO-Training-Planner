@@ -66,113 +66,109 @@ void LoginState::Password_Init()
 		this->_passwordBounds.getPosition().y - this->_passwordLabel.getGlobalBounds().height - 20.0f
 	);
 }
-void LoginState::Button_Init()
+void LoginState::TextFields_HandleInput(sf::Event& event)
 {
+	if (this->_data->input.isRectangleShapeClicked(this->_loginBounds, sf::Mouse::Left, this->_data->window))
+	{
+		this->_isLoginActive = true;
+		this->_isPasswordActive = false;
+		this->_loginBounds.setOutlineColor(sf::Color::Blue);
+		this->_loginBounds.setOutlineThickness(2.0f);
+		this->_passwordBounds.setOutlineThickness(0.0f);
+	}
+	else if (this->_data->input.isRectangleShapeClicked(this->_passwordBounds, sf::Mouse::Left, this->_data->window))
+	{
+		this->_isLoginActive = false;
+		this->_isPasswordActive = true;
+		this->_passwordBounds.setOutlineColor(sf::Color::Blue);
+		this->_passwordBounds.setOutlineThickness(2.0f);
+		this->_loginBounds.setOutlineThickness(0.0f);
+	}
+	else if (this->_data->input.isSpriteClicked(this->_background, sf::Mouse::Left, this->_data->window))
+	{
+		this->_isLoginActive = false;
+		this->_isPasswordActive = false;
+		this->_loginBounds.setOutlineThickness(0.0f);
+		this->_passwordBounds.setOutlineThickness(0.0f);
+	}
+
+	if (this->_data->input.typingText(event, this->_loginText, this->_login, this->_isLoginActive))
+	{
+		this->_login.setOrigin(this->_login.getGlobalBounds().width / 2, this->_login.getGlobalBounds().height / 2);
+		this->_login.setPosition(
+			this->_loginBounds.getPosition().x + this->_loginBounds.getSize().x / 2,
+			this->_loginBounds.getPosition().y + this->_loginBounds.getSize().y / 2
+		);
+	}
+	else if (this->_data->input.typingText(event, this->_passwordText, this->_password, this->_isPasswordActive))
+	{
+		this->_password.setOrigin(this->_password.getGlobalBounds().width / 2, this->_password.getGlobalBounds().height / 2);
+		this->_password.setPosition(
+			this->_passwordBounds.getPosition().x + this->_passwordBounds.getSize().x / 2,
+			this->_passwordBounds.getPosition().y + this->_passwordBounds.getSize().y / 2
+		);
+	}
+}
+void LoginState::TextFields_Update(float dt)
+{
+
+}
+void LoginState::TextFields_Draw(float dt)
+{
+	this->_data->window.draw(this->_loginLabel);
+	this->_data->window.draw(this->_loginBounds);
+	this->_data->window.draw(this->_login);
+
+	this->_data->window.draw(this->_passwordLabel);
+	this->_data->window.draw(this->_passwordBounds);
+	this->_data->window.draw(this->_password);
+}
+
+void LoginState::Buttons_Init()
+{
+	this->_data->assets.loadTexture("Continue Button", CONTINUE_BUTTON_FILEPATH);
+	this->_data->assets.loadTexture("Register Button", REGISTER_BUTTON_FILEPATH);
+
 	this->_continueButton._sprite.setTexture(this->_data->assets.getTexture("Continue Button"));
+	this->_registerButton._sprite.setTexture(this->_data->assets.getTexture("Register Button"));
 
 	this->_continueButton._pressed = false;
 	this->_continueButton._update = false;
 	this->_continueButton._rect = sf::IntRect(0, 0, 800, 300);
 	this->_continueButton._sprite.setTextureRect(this->_continueButton._rect);
-	this->_continueButton._sprite.setScale(0.25f, 0.25f);
+	this->_continueButton._sprite.setScale(0.35f, 0.35f);
 	this->_continueButton._sprite.setPosition(
 		SCREAN_WIDTH / 2 - this->_continueButton._sprite.getGlobalBounds().width / 2,
-		this->_passwordBounds.getPosition().y + this->_continueButton._sprite.getGlobalBounds().height * 2
+		this->_passwordBounds.getPosition().y + this->_passwordBounds.getGlobalBounds().height + 40.0f
 	);
 
-	this->_registerButton._sprite.setTexture(this->_data->assets.getTexture("Placeholder Short Button"));
 	this->_registerButton._pressed = false;
 	this->_registerButton._update = false;
 	this->_registerButton._rect = sf::IntRect(0, 0, 800, 300);
 	this->_registerButton._sprite.setTextureRect(this->_registerButton._rect);
-	this->_registerButton._sprite.setScale(0.2f, 0.2f);
+	this->_registerButton._sprite.setScale(0.35f, 0.35f);
 	this->_registerButton._sprite.setPosition(
 		SCREAN_WIDTH / 2 - this->_registerButton._sprite.getGlobalBounds().width / 2,
-		this->_continueButton._sprite.getPosition().y + 100.0f
+		this->_continueButton._sprite.getPosition().y + this->_continueButton._sprite.getGlobalBounds().height + 40.0f
 	);
 }
-
-void LoginState::Init()
+void LoginState::Buttons_HandleInput(sf::Event& event)
 {
-	this->_data->assets.loadTexture("Default Background", DEFAULT_BACKGROUND_FILEPATH);
-	this->_data->assets.loadFont("Default Font", DEFAULT_FONT_FILEPATH);
-	this->_data->assets.loadTexture("Continue Button", CONTINUE_BUTTON_FILEPATH);
-	this->_data->assets.loadTexture("Placeholder Short Button", PLACEHOLDER_SHORT_BUTTON_FILEPATH);
-
-	this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
-	
-	Login_Init();
-	Password_Init();
-	Button_Init();
-}
-void LoginState::HandleInput()
-{
-	sf::Event event;
-
-	while (this->_data->window.pollEvent(event))
+	if (this->_data->input.isSpriteClickedAndReleased(this->_continueButton._sprite, sf::Mouse::Left, this->_data->window, this->_continueButton._pressed, this->_continueButton._update))
 	{
-		if (event.type == sf::Event::Closed)
-		{
-			this->_data->window.close();
-		}
-
-		if (this->_data->input.isSpriteClickedAndReleased(this->_continueButton._sprite, sf::Mouse::Left, this->_data->window, this->_continueButton._pressed, this->_continueButton._update))
-		{
-			auto user = this->_data->database.getUserByLogin(this->_login.getString());
-			if (user && user->password == this->_password.getString()) {
-				this->_data->currentUser = user;
-				this->_data->machine.AddState(StateRef(new HomeState(this->_data)), true);
-			}
-		}
-
-		if (this->_data->input.isSpriteClickedAndReleased(this->_registerButton._sprite, sf::Mouse::Left, this->_data->window, this->_registerButton._pressed, this->_registerButton._update))
-		{
-			this->_data->machine.AddState(StateRef(new RegisterState(this->_data)), true);
-		}
-
-		if (this->_data->input.isRectangleShapeClicked(this->_loginBounds, sf::Mouse::Left, this->_data->window))
-		{
-			this->_isLoginActive = true;
-			this->_isPasswordActive = false;
-			this->_loginBounds.setOutlineColor(sf::Color::Blue);
-			this->_loginBounds.setOutlineThickness(2.0f);
-			this->_passwordBounds.setOutlineThickness(0.0f);
-		}
-		else if (this->_data->input.isRectangleShapeClicked(this->_passwordBounds, sf::Mouse::Left, this->_data->window))
-		{
-			this->_isLoginActive = false;
-			this->_isPasswordActive = true;
-			this->_passwordBounds.setOutlineColor(sf::Color::Blue);
-			this->_passwordBounds.setOutlineThickness(2.0f);
-			this->_loginBounds.setOutlineThickness(0.0f);
-		}
-		else if (this->_data->input.isSpriteClicked(this->_background, sf::Mouse::Left, this->_data->window))
-		{
-			this->_isLoginActive = false;
-			this->_isPasswordActive = false;
-			this->_loginBounds.setOutlineThickness(0.0f);
-			this->_passwordBounds.setOutlineThickness(0.0f);
-		}
-
-		if (this->_data->input.typingText(event, this->_loginText, this->_login, this->_isLoginActive))
-		{
-			this->_login.setOrigin(this->_login.getGlobalBounds().width / 2, this->_login.getGlobalBounds().height / 2);
-			this->_login.setPosition(
-				this->_loginBounds.getPosition().x + this->_loginBounds.getSize().x / 2,
-				this->_loginBounds.getPosition().y + this->_loginBounds.getSize().y / 2
-			);
-		}
-		else if (this->_data->input.typingText(event, this->_passwordText, this->_password, this->_isPasswordActive))
-		{
-			this->_password.setOrigin(this->_password.getGlobalBounds().width / 2, this->_password.getGlobalBounds().height / 2);
-			this->_password.setPosition(
-				this->_passwordBounds.getPosition().x + this->_passwordBounds.getSize().x / 2,
-				this->_passwordBounds.getPosition().y + this->_passwordBounds.getSize().y / 2
-			);
+		auto user = this->_data->database.getUserByLogin(this->_login.getString());
+		if (user && user->password == this->_password.getString()) {
+			this->_data->currentUser = user;
+			this->_data->machine.AddState(StateRef(new HomeState(this->_data)), true);
 		}
 	}
+
+	if (this->_data->input.isSpriteClickedAndReleased(this->_registerButton._sprite, sf::Mouse::Left, this->_data->window, this->_registerButton._pressed, this->_registerButton._update))
+	{
+		this->_data->machine.AddState(StateRef(new RegisterState(this->_data)), true);
+	}
 }
-void LoginState::Update(float dt)
+void LoginState::Buttons_Update(float dt)
 {
 	if (this->_continueButton._update)
 	{
@@ -189,6 +185,60 @@ void LoginState::Update(float dt)
 			this->_continueButton._sprite.setTextureRect(this->_continueButton._rect);
 		}
 	}
+
+	if (this->_registerButton._update)
+	{
+		this->_registerButton._update = false;
+
+		if (this->_registerButton._pressed)
+		{
+			this->_registerButton._rect.left = 800;
+			this->_registerButton._sprite.setTextureRect(this->_registerButton._rect);
+		}
+		else
+		{
+			this->_registerButton._rect.left = 0;
+			this->_registerButton._sprite.setTextureRect(this->_registerButton._rect);
+		}
+	}
+}
+void LoginState::Buttons_Draw(float dt)
+{
+	this->_data->window.draw(this->_continueButton._sprite);
+	this->_data->window.draw(this->_registerButton._sprite);
+}
+
+void LoginState::Init()
+{
+	this->_data->assets.loadTexture("Default Background", DEFAULT_BACKGROUND_FILEPATH);
+	this->_data->assets.loadFont("Default Font", DEFAULT_FONT_FILEPATH);
+
+	this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
+	
+	Login_Init();
+	Password_Init();
+
+	Buttons_Init();
+}
+void LoginState::HandleInput()
+{
+	sf::Event event;
+
+	while (this->_data->window.pollEvent(event))
+	{
+		if (event.type == sf::Event::Closed)
+		{
+			this->_data->window.close();
+		}
+
+		Buttons_HandleInput(event);
+		TextFields_HandleInput(event);
+	}
+}
+void LoginState::Update(float dt)
+{
+	Buttons_Update(dt);
+	TextFields_Update(dt);
 }
 void LoginState::Draw(float dt)
 {
@@ -196,16 +246,8 @@ void LoginState::Draw(float dt)
 
 	this->_data->window.draw(this->_background);
 
-	this->_data->window.draw(this->_loginLabel);
-	this->_data->window.draw(this->_loginBounds);
-	this->_data->window.draw(this->_login);
-
-	this->_data->window.draw(this->_passwordLabel);
-	this->_data->window.draw(this->_passwordBounds);
-	this->_data->window.draw(this->_password);
-
-	this->_data->window.draw(this->_continueButton._sprite);
-	this->_data->window.draw(this->_registerButton._sprite);
+	TextFields_Draw(dt);
+	Buttons_Draw(dt);
 
 	this->_data->window.display();
 }

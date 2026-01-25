@@ -6,6 +6,7 @@ using namespace std;
 
 RegisterState::RegisterState(AppDataRef data) : _data(data)
 {
+
 }
 
 void RegisterState::Login_Init()
@@ -36,7 +37,6 @@ void RegisterState::Login_Init()
         _loginBounds.getPosition().y - _loginLabel.getGlobalBounds().height - 20.0f
     );
 }
-
 void RegisterState::Password_Init()
 {
     _password.setFont(_data->assets.getFont("Default Font"));
@@ -65,7 +65,6 @@ void RegisterState::Password_Init()
         _passwordBounds.getPosition().y - _passwordLabel.getGlobalBounds().height - 20.0f
     );
 }
-
 void RegisterState::ConfirmPassword_Init()
 {
     _confirmPassword.setFont(_data->assets.getFont("Default Font"));
@@ -94,7 +93,6 @@ void RegisterState::ConfirmPassword_Init()
         _confirmPasswordBounds.getPosition().y - _confirmPasswordLabel.getGlobalBounds().height - 20.0f
     );
 }
-
 void RegisterState::Buttons_Init()
 {
     // Register button
@@ -118,7 +116,6 @@ void RegisterState::Buttons_Init()
     _backButton._sprite.setScale(0.2f, 0.2f);
     _backButton._sprite.setPosition(50.0f, 50.0f);
 }
-
 void RegisterState::Message_Init()
 {
     _messageLabel.setFont(_data->assets.getFont("Default Font"));
@@ -146,7 +143,6 @@ void RegisterState::Init()
     Buttons_Init();
     Message_Init();
 }
-
 void RegisterState::HandleInput()
 {
     sf::Event event;
@@ -290,7 +286,6 @@ void RegisterState::HandleInput()
         }
     }
 }
-
 void RegisterState::Update(float dt)
 {
     if (_registerButton._update)
@@ -307,7 +302,6 @@ void RegisterState::Update(float dt)
         _backButton._sprite.setTextureRect(_backButton._rect);
     }
 }
-
 void RegisterState::Draw(float dt)
 {
     _data->window.clear(sf::Color::Black);
