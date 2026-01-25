@@ -84,6 +84,24 @@ private:
     void HideNewPlanPopup();
     void InitNewPlanPopup();
     void CreateNewPlan();
+    
+    // --- USUWANIE PLANU ---
+    bool _showDeleteConfirmPopup = false;
+    sf::RectangleShape _deleteConfirmBg;
+    sf::Text _deleteConfirmTitle;
+    sf::Text _deleteConfirmMessage;
+    sf::RectangleShape _deleteYesButton;
+    sf::Text _deleteYesText;
+    sf::RectangleShape _deleteNoButton;
+    sf::Text _deleteNoText;
+    sf::RectangleShape _deletePlanButton;   // Przycisk "DELETE PLAN" w side menu
+    sf::Text _deletePlanButtonText;
+    
+    void ShowDeleteConfirmPopup();
+    void HideDeleteConfirmPopup();
+    void InitDeleteConfirmPopup();
+    void DeleteCurrentPlan();
+    bool CanDeleteCurrentPlan();  // Sprawdza czy aktualny plan mo¿na usun¹æ
 
     // --- BOCZNE MENU (plany) ---
     vector<PlanHeader> _availablePlans;

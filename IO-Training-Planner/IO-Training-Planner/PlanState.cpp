@@ -169,6 +169,7 @@ void PlanState::State_Init()
 {
 	this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
 	InitNewPlanPopup();
+	InitDeleteConfirmPopup();
 	Plan_Init();
 }
 
@@ -273,6 +274,26 @@ void PlanState::State_HandleInput(sf::Event& event)
 			}
 			return;
 		}
+		
+		// --- POPUP: Potwierdzenie usuniêcia planu ---
+		if (_showDeleteConfirmPopup)
+		{
+			// Klikniêcie na YES - usuñ plan
+			if (_deleteYesButton.getGlobalBounds().contains(mousePos))
+			{
+				DeleteCurrentPlan();
+				return;
+			}
+			
+			// Klikniêcie na NO lub poza popup - zamknij
+			if (_deleteNoButton.getGlobalBounds().contains(mousePos) ||
+				!_deleteConfirmBg.getGlobalBounds().contains(mousePos))
+			{
+				HideDeleteConfirmPopup();
+				return;
+			}
+			return;
+		}
 
 		// --- A. LOGIKA WYBORU PLANU (Choose Plan) ---
 		for (size_t i = 0; i < _planButtons.size(); ++i)
@@ -338,6 +359,18 @@ void PlanState::State_HandleInput(sf::Event& event)
 			ShowNewPlanPopup();
 			return;
 		}
+		
+		// --- NEW: KLIKNIÊCIE "DELETE PLAN" ---
+		if (_deletePlanButton.getGlobalBounds().contains(mousePos))
+		{
+			if (CanDeleteCurrentPlan()) {
+                cout << "[INFO] Otwieranie okna potwierdzenia usuniecia..." << endl;
+                ShowDeleteConfirmPopup();
+            } else {
+                ShowError("Cannot delete public plans!");
+            }
+            return;
+		}
 
 		// --- D. KLIKNIÊCIE NA PRZYCISKI [+] (tylko w trybie edycji) ---
 		if (_isEditMode)
@@ -392,9 +425,12 @@ void PlanState::State_Draw(float dt)
 	for (const auto& btn : _planButtons) this->_data->window.draw(btn);
 	for (const auto& txt : _availablePlansTexts) this->_data->window.draw(txt);
 
-	// --- RYSOWANIE PRZYCISKÓW NEW PLAN / EDIT / SAVE ---
+	// --- RYSOWANIE PRZYCISKÓW NEW PLAN / DELETE / EDIT / SAVE ---
 	this->_data->window.draw(_newPlanButton);
 	this->_data->window.draw(_newPlanButtonText);
+	
+	this->_data->window.draw(_deletePlanButton);
+	this->_data->window.draw(_deletePlanButtonText);
 	
 	this->_data->window.draw(_editButton);
 	this->_data->window.draw(_editText);
@@ -432,6 +468,18 @@ void PlanState::State_Draw(float dt)
 		this->_data->window.draw(_newPlanCreateButton);
 		this->_data->window.draw(_newPlanCreateText);
 	}
+    
+    // --- POPUP POTWIERDZENIA USUNIÊCIA ---
+    if (_showDeleteConfirmPopup)
+    {
+        this->_data->window.draw(_deleteConfirmBg);
+        this->_data->window.draw(_deleteConfirmTitle);
+        this->_data->window.draw(_deleteConfirmMessage);
+        this->_data->window.draw(_deleteYesButton);
+        this->_data->window.draw(_deleteYesText);
+        this->_data->window.draw(_deleteNoButton);
+        this->_data->window.draw(_deleteNoText);
+    }
 }
 
 void PlanState::LoadAvailablePlans()
@@ -510,7 +558,8 @@ void PlanState::InitSideMenuButtons()
 	// Ustalamy pozycjê Y pod list¹ planów. 
 	// Listê planów zaczynaliœmy od 150.0f. Za³ó¿my, ¿e s¹ max 3-4 plany, 
 	// wiêc bezpiecznie damy przyciski funkcyjne na dole ekranu.
-	float newPlanY = 530.0f;
+	float newPlanY = 460.0f;
+	float deletePlanY = 530.0f;
 	float editY = 600.0f;
 	float saveY = 670.0f;
 
@@ -530,6 +579,28 @@ void PlanState::InitSideMenuButtons()
 	sf::FloatRect newPlanRect = _newPlanButtonText.getLocalBounds();
 	_newPlanButtonText.setOrigin(newPlanRect.left + newPlanRect.width / 2.0f, newPlanRect.top + newPlanRect.height / 2.0f);
 	_newPlanButtonText.setPosition(startX + buttonWidth / 2.0f, newPlanY + buttonHeight / 2.0f);
+
+	// --- PRZYCISK DELETE PLAN (tylko jeœli mo¿na usun¹æ) ---
+	_deletePlanButton.setSize(sf::Vector2f(buttonWidth, buttonHeight));
+	_deletePlanButton.setPosition(startX, deletePlanY);
+	_deletePlanButton.setOutlineThickness(2.0f);
+	_deletePlanButton.setFillColor(sf::Color::Transparent);
+	
+	if (CanDeleteCurrentPlan()) {
+		_deletePlanButton.setOutlineColor(sf::Color::Red);
+		_deletePlanButtonText.setFillColor(sf::Color::Red);
+	} else {
+		// Szary kolor dla nieaktywnego przycisku
+		_deletePlanButton.setOutlineColor(sf::Color(80, 80, 80));
+		_deletePlanButtonText.setFillColor(sf::Color(80, 80, 80));
+	}
+
+	_deletePlanButtonText.setFont(font);
+	_deletePlanButtonText.setString("DELETE PLAN");
+	_deletePlanButtonText.setCharacterSize(20);
+	sf::FloatRect deleteRect = _deletePlanButtonText.getLocalBounds();
+	_deletePlanButtonText.setOrigin(deleteRect.left + deleteRect.width / 2.0f, deleteRect.top + deleteRect.height / 2.0f);
+	_deletePlanButtonText.setPosition(startX + buttonWidth / 2.0f, deletePlanY + buttonHeight / 2.0f);
 
 	// --- PRZYCISK EDIT ---
 	_editButton.setSize(sf::Vector2f(buttonWidth, buttonHeight));
@@ -861,5 +932,126 @@ void PlanState::CreateNewPlan()
         Plan_Init();  // Odœwie¿ widok
     } else {
         ShowError("Failed to create plan!");
+    }
+}
+
+bool PlanState::CanDeleteCurrentPlan()
+{
+    if (!this->_data->currentUser || !this->_data->currentUser->currentPlanId.has_value()) {
+        return false;
+    }
+    
+    int planId = this->_data->currentUser->currentPlanId.value();
+    auto plan = this->_data->database.getTrainingPlanById(planId);
+    
+    if (!plan) return false;
+    
+    // Mo¿na usun¹æ tylko plany prywatne (ownerId > 0)
+    // Plany publiczne (ownerId == 0) nie mog¹ byæ usuniête
+    return plan->ownerId > 0;
+}
+
+void PlanState::InitDeleteConfirmPopup()
+{
+    sf::Font& font = this->_data->assets.getFont("Default Font");
+    
+    // T³o popup
+    _deleteConfirmBg.setSize(sf::Vector2f(450.0f, 180.0f));
+    _deleteConfirmBg.setFillColor(sf::Color(50, 50, 50, 245));
+    _deleteConfirmBg.setOutlineThickness(2.0f);
+    _deleteConfirmBg.setOutlineColor(sf::Color::Red);
+    _deleteConfirmBg.setPosition(SCREAN_WIDTH / 2.0f - 225.0f, SCREAN_HEIGHT / 2.0f - 90.0f);
+    
+    // Tytu³
+    _deleteConfirmTitle.setFont(font);
+    _deleteConfirmTitle.setString("DELETE PLAN?");
+    _deleteConfirmTitle.setCharacterSize(26);
+    _deleteConfirmTitle.setFillColor(sf::Color::Red);
+    sf::FloatRect titleBounds = _deleteConfirmTitle.getLocalBounds();
+    _deleteConfirmTitle.setOrigin(titleBounds.left + titleBounds.width / 2.0f, titleBounds.top);
+    _deleteConfirmTitle.setPosition(_deleteConfirmBg.getPosition().x + 225.0f,
+                                     _deleteConfirmBg.getPosition().y + 15.0f);
+    
+    // Wiadomoœæ
+    _deleteConfirmMessage.setFont(font);
+    _deleteConfirmMessage.setString("Are you sure? This action cannot be undone.");
+    _deleteConfirmMessage.setCharacterSize(18);
+    _deleteConfirmMessage.setFillColor(sf::Color::White);
+    sf::FloatRect msgBounds = _deleteConfirmMessage.getLocalBounds();
+    _deleteConfirmMessage.setOrigin(msgBounds.left + msgBounds.width / 2.0f, msgBounds.top);
+    _deleteConfirmMessage.setPosition(_deleteConfirmBg.getPosition().x + 225.0f,
+                                       _deleteConfirmBg.getPosition().y + 60.0f);
+    
+    // Przycisk YES
+    _deleteYesButton.setSize(sf::Vector2f(100.0f, 40.0f));
+    _deleteYesButton.setPosition(_deleteConfirmBg.getPosition().x + 80.0f,
+                                  _deleteConfirmBg.getPosition().y + 110.0f);
+    _deleteYesButton.setFillColor(sf::Color::Transparent);
+    _deleteYesButton.setOutlineThickness(2.0f);
+    _deleteYesButton.setOutlineColor(sf::Color::Red);
+    
+    _deleteYesText.setFont(font);
+    _deleteYesText.setString("YES");
+    _deleteYesText.setCharacterSize(20);
+    _deleteYesText.setFillColor(sf::Color::Red);
+    sf::FloatRect yesBounds = _deleteYesText.getLocalBounds();
+    _deleteYesText.setOrigin(yesBounds.left + yesBounds.width / 2.0f, yesBounds.top + yesBounds.height / 2.0f);
+    _deleteYesText.setPosition(_deleteYesButton.getPosition().x + 50.0f,
+                                _deleteYesButton.getPosition().y + 20.0f);
+    
+    // Przycisk NO
+    _deleteNoButton.setSize(sf::Vector2f(100.0f, 40.0f));
+    _deleteNoButton.setPosition(_deleteConfirmBg.getPosition().x + 270.0f,
+                                 _deleteConfirmBg.getPosition().y + 110.0f);
+    _deleteNoButton.setFillColor(sf::Color::Transparent);
+    _deleteNoButton.setOutlineThickness(2.0f);
+    _deleteNoButton.setOutlineColor(sf::Color::Green);
+    
+    _deleteNoText.setFont(font);
+    _deleteNoText.setString("NO");
+    _deleteNoText.setCharacterSize(20);
+    _deleteNoText.setFillColor(sf::Color::Green);
+    sf::FloatRect noBounds = _deleteNoText.getLocalBounds();
+    _deleteNoText.setOrigin(noBounds.left + noBounds.width / 2.0f, noBounds.top + noBounds.height / 2.0f);
+    _deleteNoText.setPosition(_deleteNoButton.getPosition().x + 50.0f,
+                               _deleteNoButton.getPosition().y + 20.0f);
+}
+
+void PlanState::ShowDeleteConfirmPopup()
+{
+    if (!CanDeleteCurrentPlan()) {
+        ShowError("Cannot delete public plans!");
+        return;
+    }
+    _showDeleteConfirmPopup = true;
+}
+
+void PlanState::HideDeleteConfirmPopup()
+{
+    _showDeleteConfirmPopup = false;
+}
+
+void PlanState::DeleteCurrentPlan()
+{
+    if (!this->_data->currentUser || !this->_data->currentUser->currentPlanId.has_value()) {
+        ShowError("No plan selected!");
+        return;
+    }
+    
+    int planId = this->_data->currentUser->currentPlanId.value();
+    
+    bool success = this->_data->database.deletePlan(planId);
+    
+    if (success) {
+        cout << "[SUCCESS] Plan deleted!" << endl;
+        
+        // Wyczyœæ przypisanie planu u u¿ytkownika
+        this->_data->currentUser->currentPlanId = nullopt;
+        
+        HideDeleteConfirmPopup();
+        Plan_Init();  // Odœwie¿ widok
+    } else {
+        ShowError("Failed to delete plan!");
+        HideDeleteConfirmPopup();
     }
 }

@@ -81,6 +81,7 @@ public:
     vector<PlanHeader> getPlansForUser(int userId);  // NOWA: Pobiera plany dostêpne dla u¿ytkownika
     bool addExerciseToPlan(int planId, int exerciseId, int dayOfWeek, int orderInDay, std::vector<ResultValue> targets);
     bool updatePlanEntries(int planId, const vector<PlanGUIEntry>& newEntries);
+    bool deletePlan(int planId);  // NOWA: Usuwa plan i jego wpisy
 
     // Workout Logs
     bool addWorkoutLog(int userId, int exerciseId, const string& date, int setNo, double weight, int reps);

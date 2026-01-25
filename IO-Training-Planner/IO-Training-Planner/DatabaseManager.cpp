@@ -668,3 +668,38 @@ vector<PlanHeader> DatabaseManager::getPlansForUser(int userId)
     }
     return headers;
 }
+
+bool DatabaseManager::deletePlan(int planId)
+{
+    try {
+        // Sprawdź czy plan istnieje i czy nie jest publiczny
+        int ownerId = 0;
+        *db << "SELECT owner_id FROM plans WHERE id = ?;" << planId >> ownerId;
+        
+        if (ownerId == 0) {
+            cout << "[ERROR] Cannot delete public plan (ID: " << planId << ")" << endl;
+            return false;  // Nie można usunąć planu publicznego
+        }
+        
+        *db << "BEGIN TRANSACTION;";
+        
+        // 1. Usuń wszystkie wpisy planu
+        *db << "DELETE FROM plan_entries WHERE plan_id = ?;" << planId;
+        
+        // 2. Usuń sam plan
+        *db << "DELETE FROM plans WHERE id = ?;" << planId;
+        
+        // 3. Wyczyść przypisanie planu u użytkowników którzy go mieli
+        *db << "UPDATE users SET current_plan_id = 0 WHERE current_plan_id = ?;" << planId;
+        
+        *db << "COMMIT;";
+        
+        cout << "[SUCCESS] Plan ID " << planId << " zostal usuniety." << endl;
+        return true;
+    }
+    catch (exception& e) {
+        cout << "[ERROR] Delete Plan Error: " << e.what() << endl;
+        *db << "ROLLBACK;";
+        return false;
+    }
+}
