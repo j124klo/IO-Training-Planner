@@ -102,108 +102,140 @@ void DatabaseManager::seedData()
     // Tworzymy tylko jednego użytkownika - admin
     auto admin = addUser("admin", "admin");
 
-    auto exPushUps = addExercise("Push-ups", "Klasyczne pompki na klatke piersiowa", { ValueType::REPS });
-    auto exRunning = addExercise("Running", "Bieganie w terenie lub na biezni", { ValueType::DISTANCE_KM, ValueType::TIME_SEC });
-    auto exDeadlift = addExercise("Deadlift", "Martwy ciag ze sztanga", { ValueType::WEIGHT_KG, ValueType::REPS });
+    auto exPushUps = addExercise("Push-ups", "Classic bodyweight exercise for chest and triceps.", { ValueType::REPS });
+    auto exRunning = addExercise("Running", "Outdoor or treadmill running for cardiovascular health.", { ValueType::DISTANCE_KM, ValueType::TIME_SEC });
+    auto exDeadlift = addExercise("Deadlift", "Compound lift targeting the posterior chain.", { ValueType::WEIGHT_KG, ValueType::REPS });
+    auto exSquats = addExercise("Squats", "Fundamental leg exercise targeting quads and glutes.", { ValueType::WEIGHT_KG, ValueType::REPS });
+    auto exPlank = addExercise("Plank", "Isometric core strength exercise.", { ValueType::TIME_SEC });
+    auto exCycling = addExercise("Cycling", "Riding a bicycle or stationary bike.", { ValueType::DISTANCE_KM, ValueType::TIME_SEC });
+    auto exJumpingJacks = addExercise("Jumping Jacks", "Full-body jumping exercise for warm-up or cardio.", { ValueType::TIME_SEC });
+    auto exBurpees = addExercise("Burpees", "Full-body exercise used in strength training and aerobic exercise.", { ValueType::REPS });
+    auto exBenchPress = addExercise("Bench Press", "Key exercise for developing chest muscle strength.", { ValueType::WEIGHT_KG, ValueType::REPS });
+    auto exPullUps = addExercise("Pull-ups", "Upper-body strength exercise. Targets back and biceps.", { ValueType::REPS });
+    auto exLunges = addExercise("Lunges", "Single-leg bodyweight exercise for legs and glutes.", { ValueType::REPS });
+    auto exSitUps = addExercise("Sit-ups", "Abdominal endurance training exercise.", { ValueType::REPS });
 
-    // Nowe ćwiczenia
-    auto exSquats = addExercise("Squats", "Przysiady ze sztanga", { ValueType::WEIGHT_KG, ValueType::REPS });
-    auto exPlank = addExercise("Plank", "Deska - wzmacnianie brzucha", { ValueType::TIME_SEC });
-    auto exCycling = addExercise("Cycling", "Jazda na rowerku-maszynie", { ValueType::DISTANCE_KM, ValueType::TIME_SEC });
+    // Shoulders
+    auto exOverheadPress = addExercise("Overhead Press", "Pressing a weight overhead while seated or standing. Targets shoulders.", { ValueType::WEIGHT_KG, ValueType::REPS });
+    auto exLateralRaises = addExercise("Lateral Raises", "Isolation exercise for the side deltoids using dumbbells.", { ValueType::WEIGHT_KG, ValueType::REPS });
+    auto exFacePulls = addExercise("Face Pulis", "Cable exercise targeting rear delts and rotator cuff health.", { ValueType::WEIGHT_KG, ValueType::REPS });
 
-    addExercise("Jumping Jacks", "Pajacyki - cwiczenie cardio", { ValueType::REPS });
-    addExercise("Burpees", "Burpees - cwiczenie calego ciala", { ValueType::REPS });
-    auto exBenchPress = addExercise("Bench Press", "Wyciskanie sztangi na lawce", { ValueType::WEIGHT_KG, ValueType::REPS });
-    addExercise("Pull-ups", "Podciaganie na drazku", { ValueType::REPS });
-    addExercise("Lunges", "Wykroki z hantlami", { ValueType::WEIGHT_KG, ValueType::REPS });
-    addExercise("Sit-ups", "Brzuszki klasyczne", { ValueType::REPS });
+    // Arms (Biceps/Triceps)
+    auto exBicepCurls = addExercise("Bicep Curls", "Lifting dumbbells or barbell to target the biceps.", { ValueType::WEIGHT_KG, ValueType::REPS });
+    auto exTricepDips = addExercise("Tricep Dips", "Bodyweight exercise on parallel bars targeting triceps.", { ValueType::REPS });
+    auto exHammerCurls = addExercise("Hammer Curls", "Dumbbell curls with neutral grip. Targets biceps and forearms.", { ValueType::WEIGHT_KG, ValueType::REPS });
 
-    // --- PLAN 1: Full Body Workout ---
-    string planName = "Full Body Workout";
-    int existingPlanId = -1;
+    // Back (Lats)
+    auto exLatPulldown = addExercise("Lat Pulldown", "Cable machine exercise for back width.", { ValueType::WEIGHT_KG, ValueType::REPS });
+    auto exDumbbellRow = addExercise("Dumbbell Row", "Unilateral back exercise to correct imbalances.", { ValueType::WEIGHT_KG, ValueType::REPS });
+
+    // Chest (Variations)
+    auto exInclineBench = addExercise("Incline Bench Press", "Pressing on an inclined bench to target upper chest.", { ValueType::WEIGHT_KG, ValueType::REPS });
+    auto exChestFly = addExercise("Chest Fly", "Isolation movement for chest using dumbbells or machine.", { ValueType::WEIGHT_KG, ValueType::REPS });
+
+    // Legs (Machines/Iso)
+    auto exLegPress = addExercise("Leg Press", "Machine-based compound leg exercise. Heavy loading potential.", { ValueType::WEIGHT_KG, ValueType::REPS });
+    auto exCalfRaises = addExercise("Calf Raises", "Isolation exercise for lower leg muscles.", { ValueType::WEIGHT_KG, ValueType::REPS });
+    auto exRomDeadlift = addExercise("Romanian Deadlift", "Deadlift variation focusing on hamstrings stretch.", { ValueType::WEIGHT_KG, ValueType::REPS });
+
+    // Cardio / HIIT / Core
+    auto exMountainClimbers = addExercise("Climbers", "Rapid leg movement in plank position. High intensity cardio.", { ValueType::TIME_SEC });
+    auto exJumpRope = addExercise("Jump Rope", "Classic coordination and cardio exercise.", { ValueType::TIME_SEC });
+    auto exRussianTwists = addExercise("Russian Twists", "Rotational core exercise targeting obliques.", { ValueType::REPS });
+    auto exLegRaises = addExercise("Leg Raises", "Lifting legs while lying or hanging to target lower abs.", { ValueType::REPS });
+
+    string planHIITName = "High-Intensity Interval";
+    int HIITPlanId = -1;
 
     try {
         *db << "SELECT id FROM plans WHERE name = ?;"
-            << planName
-            >> existingPlanId;
+            << planHIITName
+            >> HIITPlanId;
     }
     catch (...) {}
 
-    if (existingPlanId != -1) {
-        cout << "[INFO] Plan '" << planName << "' juz istnieje. Pomijam." << endl;
+    if (HIITPlanId != -1) {
+        cout << "[INFO] Plan '" << planHIITName << "' juz istnieje. Pomijam." << endl;
     }
     else {
-        auto plan = addTrainingPlan(planName, 0);  // 0 = publiczny plan
+        auto plan = addTrainingPlan(planHIITName, 0);  // 0 = publiczny plan
         if (plan) {
-            existingPlanId = plan->id;
-            cout << "[INFO] Ukladanie harmonogramu dla: " << planName << endl;
+            HIITPlanId = plan->id;
+            cout << "[INFO] Ukladanie harmonogramu dla: " << planHIITName << endl;
 
-            // PONIEDZIAŁEK (Dzień 1)
-            if (exRunning)   addExerciseToPlan(plan->id, exRunning->id, 1, 1, { 2.0f, 15.0f });
-            if (exDeadlift)  addExerciseToPlan(plan->id, exDeadlift->id, 1, 3, { 100.0f, 6 });
-            if (exPushUps)   addExerciseToPlan(plan->id, exPushUps->id, 1, 2, { 10 });
+            // Monday: Full Body Burn
+            if (exBurpees)          addExerciseToPlan(HIITPlanId, exBurpees->id, 1, 1, { 20 });
+            if (exMountainClimbers) addExerciseToPlan(HIITPlanId, exMountainClimbers->id, 1, 2, { 45.0f }); // 45 sec
+            if (exJumpRope)         addExerciseToPlan(HIITPlanId, exJumpRope->id, 1, 3, { 60.0f }); // 60 sec
 
-            // ŚRODA (Dzień 3)
-            if (exDeadlift)  addExerciseToPlan(plan->id, exDeadlift->id, 3, 2, { 100.0f, 5 });
-            if (exSquats)    addExerciseToPlan(plan->id, exSquats->id, 3, 1, { 80.0f, 8 });
+            // Wednesday: Core & Run
+            if (exRunning)          addExerciseToPlan(HIITPlanId, exRunning->id, 3, 1, { 3.0f, 20.0f }); // 3km in 20min
+            if (exPlank)            addExerciseToPlan(HIITPlanId, exPlank->id, 3, 2, { 90.0f });
+            if (exRussianTwists)    addExerciseToPlan(HIITPlanId, exRussianTwists->id, 3, 3, { 30 });
 
-            // PIĄTEK (Dzień 5)
-            if (exCycling)   addExerciseToPlan(plan->id, exCycling->id, 5, 1, { 15.0f, 45.0f });
-            if (exPlank)     addExerciseToPlan(plan->id, exPlank->id, 5, 2, { 90.0f });
+            // Friday: Leg Stamina
+            if (exJumpingJacks)     addExerciseToPlan(HIITPlanId, exJumpingJacks->id, 5, 1, { 60.0f });
+            if (exLunges)           addExerciseToPlan(HIITPlanId, exLunges->id, 5, 2, { 40 }); // 20 per leg
+            if (exSquats)           addExerciseToPlan(HIITPlanId, exSquats->id, 5, 3, { 0.0f, 50 }); // 50 air squats
         }
     }
 
-    // --- PLAN 2: Push Pull Legs ---
-    string planName2 = "Push Pull Legs";
-    int planId2 = -1;
-
-    try { *db << "SELECT id FROM plans WHERE name = ?;" << planName2 >> planId2; }
+    // --- PLAN 2: ARNOLD'S UPPER BODY (Hypertrophy) ---
+    string planUpperName = "Upper Body";
+    int planUpperId = -1;
+    try { *db << "SELECT id FROM plans WHERE name = ?;" << planUpperName >> planUpperId; }
     catch (...) {}
 
-    if (planId2 == -1) {
-        auto plan2 = addTrainingPlan(planName2, 0);  // 0 = publiczny plan
-        if (plan2) {
-            planId2 = plan2->id;
-            
-            // Push (Poniedziałek)
-            if (exBenchPress) addExerciseToPlan(planId2, exBenchPress->id, 1, 1, { 80.0f, 8 });
-            if (exPushUps)    addExerciseToPlan(planId2, exPushUps->id, 1, 2, { 15 });
+    if (planUpperId == -1) {
+        auto plan = addTrainingPlan(planUpperName);
+        if (plan) {
+            planUpperId = plan->id;
+            // Monday: Chest & Back
+            if (exBenchPress)    addExerciseToPlan(planUpperId, exBenchPress->id, 1, 1, { 80.0f, 8 });
+            if (exLatPulldown)   addExerciseToPlan(planUpperId, exLatPulldown->id, 1, 2, { 60.0f, 10 });
+            if (exInclineBench)  addExerciseToPlan(planUpperId, exInclineBench->id, 1, 3, { 60.0f, 10 });
+            if (exDumbbellRow)   addExerciseToPlan(planUpperId, exDumbbellRow->id, 1, 4, { 24.0f, 12 });
 
-            // Pull (Środa)
-            if (exDeadlift)   addExerciseToPlan(planId2, exDeadlift->id, 3, 1, { 120.0f, 3 });
-
-            // Legs (Piątek)
-            if (exSquats)     addExerciseToPlan(planId2, exSquats->id, 5, 1, { 100.0f, 5 });
-
-            cout << "[INFO] Utworzono drugi plan: " << planName2 << endl;
+            // Thursday: Shoulders & Arms
+            if (exOverheadPress) addExerciseToPlan(planUpperId, exOverheadPress->id, 4, 1, { 40.0f, 8 });
+            if (exLateralRaises) addExerciseToPlan(planUpperId, exLateralRaises->id, 4, 2, { 10.0f, 15 });
+            if (exBicepCurls)    addExerciseToPlan(planUpperId, exBicepCurls->id, 4, 3, { 15.0f, 12 });
+            if (exTricepDips)    addExerciseToPlan(planUpperId, exTricepDips->id, 4, 4, { 15 });
         }
     }
 
+    // --- PLAN 3: LEGS OF STEEL (Strength) ---
+    string planLegsName = "Lower Body";
+    int planLegsId = -1;
+    try { *db << "SELECT id FROM plans WHERE name = ?;" << planLegsName >> planLegsId; }
+    catch (...) {}
+
+    if (planLegsId == -1) {
+        auto plan = addTrainingPlan(planLegsName);
+        if (plan) {
+            planLegsId = plan->id;
+            // Tuesday: Heavy Lifting
+            if (exSquats)       addExerciseToPlan(planLegsId, exSquats->id, 2, 1, { 100.0f, 5 });
+            if (exLegPress)     addExerciseToPlan(planLegsId, exLegPress->id, 2, 2, { 150.0f, 10 });
+            if (exRomDeadlift)  addExerciseToPlan(planLegsId, exRomDeadlift->id, 2, 3, { 80.0f, 10 });
+
+            // Saturday: Accessories & Calves
+            if (exLunges)       addExerciseToPlan(planLegsId, exLunges->id, 6, 1, { 20 });
+            if (exCalfRaises)   addExerciseToPlan(planLegsId, exCalfRaises->id, 6, 2, { 60.0f, 20 });
+            if (exCycling)      addExerciseToPlan(planLegsId, exCycling->id, 6, 3, { 10.0f, 30.0f });
+        }
+    }
+    
     // Przypisz pierwszy plan (Full Body Workout) do admina
-    if (admin && existingPlanId != -1) {
-        if (!admin->currentPlanId.has_value() || admin->currentPlanId.value() != existingPlanId) {
-            assignPlanToUser(admin->id, existingPlanId);
-            cout << "[SUCCESS] Przypisano plan '" << planName << "' do uzytkownika 'admin'." << endl;
+    if (admin && HIITPlanId != -1) {
+        if (!admin->currentPlanId.has_value() || admin->currentPlanId.value() != HIITPlanId) {
+            assignPlanToUser(admin->id, HIITPlanId);
+            cout << "[SUCCESS] Przypisano plan '" << planHIITName << "' do uzytkownika 'admin'." << endl;
         }
     }
 
     cout << "--- [SEED DATA] Done. ---" << endl;
 }
-
-/*shared_ptr<User> DatabaseManager::addUser(const string& login, const string& pass)
-{
-    try {
-        *db << "INSERT INTO users (login, password) VALUES (?, ?);"
-            << login << pass;
-
-        int id = db->last_insert_rowid();
-        return getUserById(id);
-    }
-    catch (exception& e) {
-        cout << "Add User Error: " << e.what() << endl;
-        return nullptr;
-    }
-}*/
 
 shared_ptr<User> DatabaseManager::addUser(const string& login, const string& pass)
 {
@@ -293,15 +325,6 @@ bool DatabaseManager::assignPlanToUser(int userId, int planId)
     }
 }
 
-/*shared_ptr<Exercise> DatabaseManager::addExercise(const string& name, const string& description, vector<ValueType> types)
-{
-    string typesStr = serializeTypes(types);
-    *db << "INSERT INTO exercises (name, description, value_types) VALUES (?, ?, ?);" << name << description << typesStr;
-
-    int id = db->last_insert_rowid();
-    return getExerciseById(id);
-}*/
-
 shared_ptr<Exercise> DatabaseManager::addExercise(const string& name, const string& description, vector<ValueType> types)
 {
     // KROK 1: Sprawdzenie, czy ćwiczenie już istnieje
@@ -382,15 +405,6 @@ vector<shared_ptr<Exercise>> DatabaseManager::getAllExercises()
     }
     return list;
 }
-
-/* STARA WERSJA - USUNI�TA (u�ywamy wersji z ownerId)
-shared_ptr<TrainingPlan> DatabaseManager::addTrainingPlan(const string& name)
-{
-    *db << "INSERT INTO plans (name) VALUES (?);" << name;
-    int id = db->last_insert_rowid();
-    return getTrainingPlanById(id);
-}
-*/
 
 shared_ptr<TrainingPlan> DatabaseManager::getTrainingPlanById(int id)
 {
