@@ -11,6 +11,8 @@
 #define PLACEHOLDER_LONG_BUTTON_FILEPATH "Resources/Images/Placeholder Long Button.png"
 
 
+#define STARTTRAINING_BUTTON_FILEPATH "Resources/Images/StartTraining! Button.png"
+
 // scroll panel
 #define SCROLL_EDGE "Resources/Images/Scroll Edge.png"
 #define SCROLL_TOP "Resources/Images/Scroll Top.png"
