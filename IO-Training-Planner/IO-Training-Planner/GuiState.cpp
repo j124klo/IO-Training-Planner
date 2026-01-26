@@ -110,10 +110,10 @@ void GuiState::GUI_Init()
 	this->_trainingButton._rect = sf::IntRect(0, 0, 300, 300);
 	this->_trainingButton._sprite.setTextureRect(this->_trainingButton._rect);
 	this->_trainingButton._sprite.setScale(0.35f, 0.35f);
-	this->_trainingButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 3 - this->_trainingButton._sprite.getGlobalBounds().width / 2 + 10.0f;
+	this->_trainingButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 3 - this->_trainingButton._sprite.getGlobalBounds().width / 2 + 10.0f + this->_guiBar.getGlobalBounds().width * 0.1f;
 	this->_trainingButtonDestination.y = 20.0f + (this->_trainingButton._sprite.getGlobalBounds().height + 40.0f);
 	this->_trainingButton._sprite.setPosition(
-		0 - this->_guiBar.getGlobalBounds().width / 3 - this->_trainingButton._sprite.getGlobalBounds().width / 2 + 10.0f,
+		0 - this->_guiBar.getGlobalBounds().width / 3 - this->_trainingButton._sprite.getGlobalBounds().width / 2 + 10.0f + this->_guiBar.getGlobalBounds().width * 0.1f,
 		20.0f + (this->_trainingButton._sprite.getGlobalBounds().height + 40.0f)
 	);
 
@@ -123,10 +123,10 @@ void GuiState::GUI_Init()
 	this->_planButton._rect = sf::IntRect(0, 0, 300, 300);
 	this->_planButton._sprite.setTextureRect(this->_planButton._rect);
 	this->_planButton._sprite.setScale(0.35f, 0.35f);
-	this->_planButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_planButton._sprite.getGlobalBounds().width / 2 - 10.0f;
+	this->_planButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_planButton._sprite.getGlobalBounds().width / 2 - 10.0f + this->_guiBar.getGlobalBounds().width * 0.1f;
 	this->_planButtonDestination.y = 20.0f + (this->_planButton._sprite.getGlobalBounds().height + 40.0f);
 	this->_planButton._sprite.setPosition(
-		0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_planButton._sprite.getGlobalBounds().width / 2 - 10.0f,
+		0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_planButton._sprite.getGlobalBounds().width / 2 - 10.0f + this->_guiBar.getGlobalBounds().width * 0.1f,
 		20.0f + (this->_planButton._sprite.getGlobalBounds().height + 40.0f)
 	);
 
@@ -137,10 +137,10 @@ void GuiState::GUI_Init()
 	this->_stopwatchButton._rect = sf::IntRect(0, 0, 300, 300);
 	this->_stopwatchButton._sprite.setTextureRect(this->_stopwatchButton._rect);
 	this->_stopwatchButton._sprite.setScale(0.35f, 0.35f);
-	this->_stopwatchButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 3 - this->_stopwatchButton._sprite.getGlobalBounds().width / 2 + 10.0f;
+	this->_stopwatchButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 3 - this->_stopwatchButton._sprite.getGlobalBounds().width / 2 + 10.0f + this->_guiBar.getGlobalBounds().width * 0.1f;
 	this->_stopwatchButtonDestination.y = 20.0f + 2 * (this->_stopwatchButton._sprite.getGlobalBounds().height + 40.0f);
 	this->_stopwatchButton._sprite.setPosition(
-		0 - this->_guiBar.getGlobalBounds().width / 3 - this->_stopwatchButton._sprite.getGlobalBounds().width / 2 + 10.0f,
+		0 - this->_guiBar.getGlobalBounds().width / 3 - this->_stopwatchButton._sprite.getGlobalBounds().width / 2 + 10.0f + this->_guiBar.getGlobalBounds().width * 0.1f,
 		20.0f + 2 * (this->_stopwatchButton._sprite.getGlobalBounds().height + 40.0f)
 	);
 
@@ -150,10 +150,10 @@ void GuiState::GUI_Init()
 	this->_calculatorButton._rect = sf::IntRect(0, 0, 300, 300);
 	this->_calculatorButton._sprite.setTextureRect(this->_calculatorButton._rect);
 	this->_calculatorButton._sprite.setScale(0.35f, 0.35f);
-	this->_calculatorButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_calculatorButton._sprite.getGlobalBounds().width / 2 - 10.0f;
+	this->_calculatorButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_calculatorButton._sprite.getGlobalBounds().width / 2 - 10.0f + this->_guiBar.getGlobalBounds().width * 0.1f;
 	this->_calculatorButtonDestination.y = 20.0f + 2 * (this->_calculatorButton._sprite.getGlobalBounds().height + 40.0f);
 	this->_calculatorButton._sprite.setPosition(
-		0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_calculatorButton._sprite.getGlobalBounds().width / 2 - 10.0f,
+		0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_calculatorButton._sprite.getGlobalBounds().width / 2 - 10.0f + this->_guiBar.getGlobalBounds().width * 0.1f,
 		20.0f + 2 * (this->_calculatorButton._sprite.getGlobalBounds().height + 40.0f)
 	);
 
@@ -164,10 +164,10 @@ void GuiState::GUI_Init()
 	this->_progressButton._rect = sf::IntRect(0, 0, 300, 300);
 	this->_progressButton._sprite.setTextureRect(this->_progressButton._rect);
 	this->_progressButton._sprite.setScale(0.35f, 0.35f);
-	this->_progressButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 3 - this->_progressButton._sprite.getGlobalBounds().width / 2 + 10.0f;
+	this->_progressButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 3 - this->_progressButton._sprite.getGlobalBounds().width / 2 + 10.0f + this->_guiBar.getGlobalBounds().width * 0.1f;
 	this->_progressButtonDestination.y = 20.0f + 3 * (this->_progressButton._sprite.getGlobalBounds().height + 40.0f);
 	this->_progressButton._sprite.setPosition(
-		0 - this->_guiBar.getGlobalBounds().width / 3 - this->_progressButton._sprite.getGlobalBounds().width / 2 + 10.0f,
+		0 - this->_guiBar.getGlobalBounds().width / 3 - this->_progressButton._sprite.getGlobalBounds().width / 2 + 10.0f + this->_guiBar.getGlobalBounds().width * 0.1f,
 		20.0f + 3 * (this->_progressButton._sprite.getGlobalBounds().height + 40.0f)
 	);
 
@@ -177,31 +177,31 @@ void GuiState::GUI_Init()
 	this->_exerciseListButton._rect = sf::IntRect(0, 0, 300, 300);
 	this->_exerciseListButton._sprite.setTextureRect(this->_exerciseListButton._rect);
 	this->_exerciseListButton._sprite.setScale(0.35f, 0.35f);
-	this->_exerciseListButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_exerciseListButton._sprite.getGlobalBounds().width / 2 - 10.0f;
+	this->_exerciseListButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_exerciseListButton._sprite.getGlobalBounds().width / 2 - 10.0f + this->_guiBar.getGlobalBounds().width * 0.1f;
 	this->_exerciseListButtonDestination.y = 20.0f + 3 * (this->_exerciseListButton._sprite.getGlobalBounds().height + 40.0f);
 	this->_exerciseListButton._sprite.setPosition(
-		0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_exerciseListButton._sprite.getGlobalBounds().width / 2 - 10.0f,
+		0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_exerciseListButton._sprite.getGlobalBounds().width / 2 - 10.0f + this->_guiBar.getGlobalBounds().width * 0.1f,
 		20.0f + 3 * (this->_exerciseListButton._sprite.getGlobalBounds().height + 40.0f)
 	);
 
 	//	LOGOUT
 	this->_logoutButton._pressed = false;
 	this->_logoutButton._update = false;
-	this->_logoutButton._rect = sf::IntRect(0, 0, 300, 300);
+	this->_logoutButton._rect = sf::IntRect(0, 0, 800, 300);
 	this->_logoutButton._sprite.setTextureRect(this->_logoutButton._rect);
 	this->_logoutButton._sprite.setScale(0.35f, 0.35f);
-	this->_logoutButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 2 - this->_logoutButton._sprite.getGlobalBounds().width / 2;
-	this->_logoutButtonDestination.y = 20.0f + 4 * (this->_logoutButton._sprite.getGlobalBounds().height + 40.0f);
+	this->_logoutButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 2 - this->_logoutButton._sprite.getGlobalBounds().width / 2 + this->_guiBar.getGlobalBounds().width * 0.1f;
+	this->_logoutButtonDestination.y = 20.0f + 5 * (this->_logoutButton._sprite.getGlobalBounds().height + 40.0f);
 	this->_logoutButton._sprite.setPosition(
-		0 - this->_guiBar.getGlobalBounds().width / 2 - this->_logoutButton._sprite.getGlobalBounds().width / 2,
-		20.0f + 4 * (this->_logoutButton._sprite.getGlobalBounds().height + 40.0f)
+		0 - this->_guiBar.getGlobalBounds().width / 2 - this->_logoutButton._sprite.getGlobalBounds().width / 2 + this->_guiBar.getGlobalBounds().width * 0.1f,
+		20.0f + 5 * (this->_logoutButton._sprite.getGlobalBounds().height + 40.0f)
 	);
 }
 void GuiState::GUI_HandleInput()
 {
 	if (this->_data->input.isSpriteClickedAndReleased(this->_menuButton._sprite, sf::Mouse::Left, this->_data->window, this->_menuButton._pressed, this->_menuButton._update))
 	{
-		if (this->_guiBarDestination.x == 0.0f)
+		if (this->_guiBarDestination.x == 0.0f)	//	hide GUI
 		{
 			this->_guiBarDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 0.9;
 
@@ -209,18 +209,18 @@ void GuiState::GUI_HandleInput()
 			this->_homeButtonDestination.x = this->_homeButton._sprite.getGlobalBounds().width;
 			this->_homeButtonDestination.y = 20.0f + (this->_homeButton._sprite.getGlobalBounds().height + 40.0f);
 
-			this->_trainingButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 3 - this->_trainingButton._sprite.getGlobalBounds().width / 2 + 10.0f;
-			this->_planButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_planButton._sprite.getGlobalBounds().width / 2 - 10.0f;
+			this->_trainingButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 3 - this->_trainingButton._sprite.getGlobalBounds().width / 2 + 10.0f + this->_guiBar.getGlobalBounds().width * 0.1f;
+			this->_planButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_planButton._sprite.getGlobalBounds().width / 2 - 10.0f + this->_guiBar.getGlobalBounds().width * 0.1f;
 
-			this->_stopwatchButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 3 - this->_stopwatchButton._sprite.getGlobalBounds().width / 2 + 10.0f;
-			this->_calculatorButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_calculatorButton._sprite.getGlobalBounds().width / 2 - 10.0f;
+			this->_stopwatchButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 3 - this->_stopwatchButton._sprite.getGlobalBounds().width / 2 + 10.0f + this->_guiBar.getGlobalBounds().width * 0.1f;
+			this->_calculatorButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_calculatorButton._sprite.getGlobalBounds().width / 2 - 10.0f + this->_guiBar.getGlobalBounds().width * 0.1f;
 
-			this->_progressButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 3 - this->_progressButton._sprite.getGlobalBounds().width / 2 + 10.0f;
-			this->_exerciseListButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_exerciseListButton._sprite.getGlobalBounds().width / 2 - 10.0f;
+			this->_progressButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 3 - this->_progressButton._sprite.getGlobalBounds().width / 2 + 10.0f + this->_guiBar.getGlobalBounds().width * 0.1f;
+			this->_exerciseListButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_exerciseListButton._sprite.getGlobalBounds().width / 2 - 10.0f + this->_guiBar.getGlobalBounds().width * 0.1f;
 
-			this->_logoutButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 2 - this->_logoutButton._sprite.getGlobalBounds().width / 2;
+			this->_logoutButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 2 - this->_logoutButton._sprite.getGlobalBounds().width / 2 + this->_guiBar.getGlobalBounds().width * 0.1f;
 		}
-		else
+		else	//	show GUI
 		{
 			this->_guiBarDestination.x = 0.0f;
 
@@ -396,7 +396,7 @@ void GuiState::GUI_Update(float dt)
 		this->_logoutButton._update = false;
 		if (this->_logoutButton._pressed)
 		{
-			this->_logoutButton._rect.left = 300;
+			this->_logoutButton._rect.left = 800;
 			this->_logoutButton._sprite.setTextureRect(this->_logoutButton._rect);
 		}
 		else
@@ -409,43 +409,43 @@ void GuiState::GUI_Update(float dt)
 	//	moving objects
 	if (floorV2f(this->_guiBar.getPosition()) != floorV2f(this->_guiBarDestination))
 	{
-		ObjMoveTo(this->_guiBar, this->_guiBarDestination, 650.0f, dt);
+		ObjMoveTo(this->_guiBar, this->_guiBarDestination, 680.0f, dt);
 	}
 	if (floorV2f(this->_menuButton._sprite.getPosition()) != floorV2f(this->_menuButtonDestination))
 	{
-		ObjMoveTo(this->_menuButton._sprite, this->_menuButtonDestination, 60.0f, dt);
+		ObjMoveTo(this->_menuButton._sprite, this->_menuButtonDestination, 65.0f, dt);
 	}
 	if (floorV2f(this->_homeButton._sprite.getPosition()) != floorV2f(this->_homeButtonDestination))
 	{
-		ObjMoveTo(this->_homeButton._sprite, this->_homeButtonDestination, 300.0f, dt);
+		ObjMoveTo(this->_homeButton._sprite, this->_homeButtonDestination, 340.0f, dt);
 	}
 	if (floorV2f(this->_trainingButton._sprite.getPosition()) != floorV2f(this->_trainingButtonDestination))
 	{
-		ObjMoveTo(this->_trainingButton._sprite, this->_trainingButtonDestination, 650.0f, dt);
+		ObjMoveTo(this->_trainingButton._sprite, this->_trainingButtonDestination, 680.0f, dt);
 	}
 	if (floorV2f(this->_planButton._sprite.getPosition()) != floorV2f(this->_planButtonDestination))
 	{
-		ObjMoveTo(this->_planButton._sprite, this->_planButtonDestination, 650.0f, dt);
+		ObjMoveTo(this->_planButton._sprite, this->_planButtonDestination, 680.0f, dt);
 	}
 	if (floorV2f(this->_stopwatchButton._sprite.getPosition()) != floorV2f(this->_stopwatchButtonDestination))
 	{
-		ObjMoveTo(this->_stopwatchButton._sprite, this->_stopwatchButtonDestination, 650.0f, dt);
+		ObjMoveTo(this->_stopwatchButton._sprite, this->_stopwatchButtonDestination, 680.0f, dt);
 	}
 	if (floorV2f(this->_calculatorButton._sprite.getPosition()) != floorV2f(this->_calculatorButtonDestination))
 	{
-		ObjMoveTo(this->_calculatorButton._sprite, this->_calculatorButtonDestination, 650.0f, dt);
+		ObjMoveTo(this->_calculatorButton._sprite, this->_calculatorButtonDestination, 680.0f, dt);
 	}
 	if (floorV2f(this->_progressButton._sprite.getPosition()) != floorV2f(this->_progressButtonDestination))
 	{
-		ObjMoveTo(this->_progressButton._sprite, this->_progressButtonDestination, 650.0f, dt);
+		ObjMoveTo(this->_progressButton._sprite, this->_progressButtonDestination, 680.0f, dt);
 	}
 	if (floorV2f(this->_exerciseListButton._sprite.getPosition()) != floorV2f(this->_exerciseListButtonDestination))
 	{
-		ObjMoveTo(this->_exerciseListButton._sprite, this->_exerciseListButtonDestination, 650.0f, dt);
+		ObjMoveTo(this->_exerciseListButton._sprite, this->_exerciseListButtonDestination, 680.0f, dt);
 	}
 	if (floorV2f(this->_logoutButton._sprite.getPosition()) != floorV2f(this->_logoutButtonDestination))
 	{
-		ObjMoveTo(this->_logoutButton._sprite, this->_logoutButtonDestination, 650.0f, dt);
+		ObjMoveTo(this->_logoutButton._sprite, this->_logoutButtonDestination, 680.0f, dt);
 	}
 }
 void GuiState::GUI_Draw(float dt)
