@@ -29,6 +29,10 @@
 //	home state
 #define PLAN_PANEL_FILEPATH "Resources/Images/Plan Panel.png"
 
+//  progress  state
+#define TIMELINE_BUTTON_FILEPATH "Resources/Images/Timeline Button.png"
+
+
 //	GUI
 #define GUI_BAR_FILEPATH "Resources/Images/GUI Bar.png"
 #define MENU_BUTTON_FILEPATH "Resources/Images/Menu Button.png"
