@@ -17,6 +17,14 @@ private:
 
 	sf::Sprite _background;
 
+	//	scroll panel
+	sf::Sprite _scrollEdgeTop;
+	sf::Sprite _scrollEdgeBot;
+	sf::Sprite _scrollTop;
+	sf::Sprite _scrollMid;
+	sf::Sprite _scrollBot;
+	sf::Vector2f _scrollTopDestination;
+
 	Button _startTrainingButton;
 
 	sf::Sprite _planPanel;

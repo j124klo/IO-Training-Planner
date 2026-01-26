@@ -1,7 +1,6 @@
 #include "DEFINITIONS.hpp"
 #include "HomeState.hpp"
 #include "TrainingState.hpp"
-#include <iostream>
 
 using namespace std;
 
@@ -21,9 +20,10 @@ void HomeState::Buttons_Init()
     this->_startTrainingButton._rect = sf::IntRect(0, 0, 800, 300);
     this->_startTrainingButton._sprite.setTextureRect(this->_startTrainingButton._rect);
     this->_startTrainingButton._sprite.setScale(0.35f, 0.35f);
+
     this->_startTrainingButton._sprite.setPosition(
-        SCREAN_WIDTH / 2.0f - this->_startTrainingButton._sprite.getGlobalBounds().width / 2,
-        40.0f
+        this->_scrollTop.getPosition().x + this->_scrollTop.getGlobalBounds().width / 2 - this->_startTrainingButton._sprite.getGlobalBounds().width / 2,
+		this->_scrollTop.getPosition().y + this->_scrollTop.getGlobalBounds().height
     );
 }
 void HomeState::Buttons_HandleInput(sf::Event& event)
@@ -53,18 +53,13 @@ void HomeState::PlanPanel_Init()
 
     this->_planPanel.setTexture(this->_data->assets.getTexture("Plan Panel"));
 
-    this->_planPanel.setScale(0.6f, 0.6f);
+    this->_planPanel.setScale(0.55f, 0.55f);
 
-    // Centrowanie ca³ego panelu na ekranie
-    float panelX = 105.0f * 2 + (SCREAN_WIDTH - 105.0f * 2 - this->_planPanel.getGlobalBounds().width) / 2;
-    float panelY = SCREAN_HEIGHT / 2 - this->_planPanel.getGlobalBounds().height / 2;
-
+    float panelX = this->_scrollTop.getPosition().x + this->_scrollTop.getGlobalBounds().width / 2 - this->_planPanel.getGlobalBounds().width / 2;
+    float panelY = this->_startTrainingButton._sprite.getPosition().y + this->_startTrainingButton._sprite.getGlobalBounds().height + 40.0f;
     this->_planPanel.setPosition(panelX, panelY);
 
-    // --- 2. LOGIKA UK£ADANIA PLANU (CENTROWANIE) ---
-
     this->_planTexts.clear();
-
     if (this->_data->currentUser && this->_data->currentUser->currentPlanId.has_value()) {
 
         int planId = this->_data->currentUser->currentPlanId.value();
@@ -158,18 +153,74 @@ void HomeState::ScrollPanel_Init()
     this->_data->assets.loadTexture("Scroll Top", SCROLL_TOP);
     this->_data->assets.loadTexture("Scroll Mid", SCROLL_MID);
     this->_data->assets.loadTexture("Scroll Bot", SCROLL_BOT);
+
+    this->_scrollEdgeTop.setTexture(this->_data->assets.getTexture("Scroll Edge"));
+    this->_scrollEdgeBot.setTexture(this->_data->assets.getTexture("Scroll Edge"));
+    this->_scrollTop.setTexture(this->_data->assets.getTexture("Scroll Top"));
+    this->_scrollMid.setTexture(this->_data->assets.getTexture("Scroll Mid"));
+    this->_scrollBot.setTexture(this->_data->assets.getTexture("Scroll Bot"));
+
+    float menuButtonWidth;
+    float menuButtonHeight;
+    sf::Vector2f menuButtonPosition = GetMenuButtonPosition(menuButtonWidth, menuButtonHeight);
+
+    this->_scrollEdgeTop.setPosition(2 * menuButtonWidth + (SCREAN_WIDTH - 2 * menuButtonWidth - this->_scrollEdgeTop.getGlobalBounds().width) / 2, 0.0f);
+    this->_scrollEdgeBot.setPosition(this->_scrollEdgeTop.getPosition().x, SCREAN_HEIGHT - this->_scrollEdgeBot.getGlobalBounds().height);
+
+    this->_scrollTop.setPosition(this->_scrollEdgeTop.getPosition().x, this->_scrollEdgeTop.getGlobalBounds().height - this->_scrollTop.getGlobalBounds().height / 2.0f);
+    this->_scrollTopDestination = this->_scrollTop.getPosition();
+
+    this->_scrollMid.setPosition(this->_scrollEdgeTop.getPosition().x, 0.0f);
 }
 void HomeState::ScrollPanel_HandleInput(sf::Event& event)
 {
-
+    this->_data->input.handleScrollEvent(event);
 }
 void HomeState::ScrollPanel_Update(float dt)
 {
+    float scrollDelta = this->_data->input.getScrollDelta() * 80.0f;
 
+    float topBound = this->_scrollEdgeTop.getGlobalBounds().height - this->_scrollTop.getGlobalBounds().height / 2.0f;
+
+    float contentDeltaY = this->_scrollTop.getGlobalBounds().height * 1.5f + this->_startTrainingButton._sprite.getGlobalBounds().height + 40.0f + this->_planPanel.getGlobalBounds().height + 300.0f;
+    float bottomBound = this->_scrollEdgeBot.getPosition().y - contentDeltaY;
+
+    this->_scrollTopDestination.y += scrollDelta;
+    if (this->_scrollTopDestination.y > topBound) { this->_scrollTopDestination.y = topBound; }
+    else if (this->_scrollTopDestination.y < bottomBound) { this->_scrollTopDestination.y = bottomBound; }
+
+    if (floorV2f(this->_scrollTop.getPosition()) != floorV2f(this->_scrollTopDestination))
+    {
+        ObjMoveTo(this->_scrollTop, this->_scrollTopDestination, 800.0f, dt);
+
+        //  Start Training Button position
+        this->_startTrainingButton._sprite.setPosition(
+            this->_startTrainingButton._sprite.getPosition().x,
+            this->_scrollTop.getPosition().y + this->_scrollTop.getGlobalBounds().height
+        );
+
+		//  Plan Panel position
+        this->_planPanel.setPosition(
+            this->_planPanel.getPosition().x,
+            this->_startTrainingButton._sprite.getPosition().y + this->_startTrainingButton._sprite.getGlobalBounds().height + 40.0f
+		);
+
+		//  Plan Texts positions
+        //  (To do)
+
+		//  Scroll Bot position
+        this->_scrollBot.setPosition(this->_scrollBot.getPosition().x, this->_planPanel.getPosition().y + this->_planPanel.getGlobalBounds().height + 300.0f);
+
+        this->_data->input.resetScrollDelta();
+    }
 }
 void HomeState::ScrollPanel_Draw(float dt)
 {
-
+    this->_data->window.draw(this->_scrollMid);
+    this->_data->window.draw(this->_scrollTop);
+    this->_data->window.draw(this->_scrollBot);
+    this->_data->window.draw(this->_scrollEdgeTop);
+    this->_data->window.draw(this->_scrollEdgeBot);
 }
 
 void HomeState::State_Init()
@@ -181,6 +232,7 @@ void HomeState::State_Init()
 	ScrollPanel_Init();
 	Buttons_Init();
 	PlanPanel_Init();
+    this->_scrollBot.setPosition(this->_scrollEdgeTop.getPosition().x, this->_planPanel.getPosition().y + this->_planPanel.getGlobalBounds().height + 300.0f);
 }
 void HomeState::State_HandleInput(sf::Event& event)
 {

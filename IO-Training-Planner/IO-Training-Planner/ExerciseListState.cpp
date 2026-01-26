@@ -70,8 +70,7 @@ void ExerciseListState::ScrollPanel_Init()
 	this->_scrollEdgeTop.setPosition(2 * menuButtonWidth + (SCREAN_WIDTH - 2 * menuButtonWidth - this->_scrollEdgeTop.getGlobalBounds().width) / 2, 0.0f);
 	this->_scrollEdgeBot.setPosition(this->_scrollEdgeTop.getPosition().x, SCREAN_HEIGHT - this->_scrollEdgeBot.getGlobalBounds().height);
 
-	float halfTopH = this->_scrollTop.getGlobalBounds().height / 2.0f;
-	this->_scrollTop.setPosition(this->_scrollEdgeTop.getPosition().x, this->_scrollEdgeTop.getGlobalBounds().height - halfTopH);
+	this->_scrollTop.setPosition(this->_scrollEdgeTop.getPosition().x, this->_scrollEdgeTop.getGlobalBounds().height - this->_scrollTop.getGlobalBounds().height / 2.0f);
 	this->_scrollTopDestination = this->_scrollTop.getPosition();
 
 	this->_scrollMid.setPosition(this->_scrollEdgeTop.getPosition().x, 0.0f);
