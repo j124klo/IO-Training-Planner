@@ -8,6 +8,7 @@
 #define DEFAULT_BACKGROUND_FILEPATH "Resources/Images/Default Background.png"
 #define DEFAULT_FONT_FILEPATH "Resources/Fonts/Roboto-VariableFont_wdth,wght.ttf"
 #define PLACEHOLDER_SHORT_BUTTON_FILEPATH "Resources/Images/Placeholder Short Button.png"
+#define PLACEHOLDER_LONG_BUTTON_FILEPATH "Resources/Images/Placeholder Long Button.png"
 
 
 // scroll panel

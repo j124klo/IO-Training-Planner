@@ -1,43 +1,6 @@
-/*#include "DEFINITIONS.hpp"
-#include "HomeState.hpp"
-
-using namespace std;
-
-HomeState::HomeState(AppDataRef data) : GuiState(data)
-{
-
-}
-
-void HomeState::State_Init()
-{
-	this->_data->assets.loadTexture("Default Background", DEFAULT_BACKGROUND_FILEPATH);
-	this->_data->assets.loadTexture("Plan Panel", PLAN_PANEL_FILEPATH);
-
-	this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
-	this->_planPanel.setTexture(this->_data->assets.getTexture("Plan Panel"));
-
-	this->_planPanel.setScale(0.6f, 0.6f);
-	this->_planPanel.setPosition(
-		105.0f * 2 + (SCREAN_WIDTH - 105.0f * 2 - this->_planPanel.getGlobalBounds().width) / 2,		//	temp	105.0f zamiast this->_menuButton._sprite.getGlobalBounds().width
-		SCREAN_HEIGHT / 2 - this->_planPanel.getGlobalBounds().height / 2
-	);
-}
-void HomeState::State_HandleInput(sf::Event& event)
-{
-
-}
-void HomeState::State_Update(float dt)
-{
-	
-}
-void HomeState::State_Draw(float dt)
-{
-	this->_data->window.draw(this->_background);
-	this->_data->window.draw(this->_planPanel);
-}*/
-
 #include "DEFINITIONS.hpp"
 #include "HomeState.hpp"
+#include "TrainingState.hpp"
 #include <iostream>
 
 using namespace std;
@@ -45,6 +8,43 @@ using namespace std;
 HomeState::HomeState(AppDataRef data) : GuiState(data)
 {
 
+}
+
+void HomeState::Buttons_Init()
+{
+    this->_data->assets.loadTexture("Start Training Button", PLACEHOLDER_LONG_BUTTON_FILEPATH);
+
+	this->_startTrainingButton._sprite.setTexture(this->_data->assets.getTexture("Start Training Button"));
+
+    this->_startTrainingButton._pressed = false;
+    this->_startTrainingButton._update = false;
+    this->_startTrainingButton._rect = sf::IntRect(0, 0, 800, 300);
+    this->_startTrainingButton._sprite.setTextureRect(this->_startTrainingButton._rect);
+    this->_startTrainingButton._sprite.setScale(0.35f, 0.35f);
+    this->_startTrainingButton._sprite.setPosition(
+        SCREAN_WIDTH / 2,   // - this->_startTrainingButton._sprite.getGlobalBounds().width / 2,
+        SCREAN_HEIGHT / 2
+    );
+}
+void HomeState::Buttons_HandleInput(sf::Event& event)
+{
+    if (this->_data->input.isSpriteClickedAndReleased(this->_startTrainingButton._sprite, sf::Mouse::Left, this->_data->window, this->_startTrainingButton._pressed, this->_startTrainingButton._update))
+    {
+        this->_data->machine.AddState(StateRef(new TrainingState(_data)), true);
+    }
+}
+void HomeState::Buttons_Update(float dt)
+{
+    if (this->_startTrainingButton._update)
+    {
+        this->_startTrainingButton._update = false;
+        this->_startTrainingButton._rect.left = this->_startTrainingButton._pressed ? 800 : 0;
+        this->_startTrainingButton._sprite.setTextureRect(this->_startTrainingButton._rect);
+    }
+}
+void HomeState::Buttons_Draw(float dt)
+{
+    this->_data->window.draw(this->_startTrainingButton._sprite);
 }
 
 void HomeState::ScrollPanel_Init()
@@ -151,19 +151,20 @@ void HomeState::State_Init()
 }
 void HomeState::State_HandleInput(sf::Event& event)
 {
-
+	Buttons_HandleInput(event);
 }
 void HomeState::State_Update(float dt)
 {
-
+	Buttons_Update(dt);
 }
 void HomeState::State_Draw(float dt)
 {
     this->_data->window.draw(this->_background);
-    this->_data->window.draw(this->_planPanel);
 
-    // Rysowanie tekstów z planu
+    this->_data->window.draw(this->_planPanel);
     for (const auto& text : this->_planTexts) {
         this->_data->window.draw(text);
     }
+
+	Buttons_Draw(dt);
 }
