@@ -109,7 +109,7 @@ void RegisterState::Message_Init()
 }
 void RegisterState::TextFields_HandleInput(sf::Event& event)
 {
-    // Input field selection
+    // --- OBS£UGA KLIKNIÊÆ MYSZK¥ (BEZ ZMIAN) ---
     if (this->_data->input.isRectangleShapeClicked(this->_loginBounds, sf::Mouse::Left, this->_data->window))
     {
         this->_isLoginActive = true;
@@ -150,29 +150,59 @@ void RegisterState::TextFields_HandleInput(sf::Event& event)
         this->_confirmPasswordBounds.setOutlineThickness(0.0f);
     }
 
-    // Text input handling
+    // --- SEKCJA PISANIA Z OGRANICZENIAMI I MASKOWANIEM ---
+
+    // 1. LOGIN
     if (this->_data->input.typingText(event, this->_loginText, this->_login, this->_isLoginActive))
     {
+        // Limit 10 znaków
+        if (this->_loginText.length() > 10) {
+            this->_loginText.pop_back();
+            this->_login.setString(this->_loginText);
+        }
+
         this->_login.setOrigin(this->_login.getGlobalBounds().width / 2, this->_login.getGlobalBounds().height / 2);
         this->_login.setPosition(
             this->_loginBounds.getPosition().x + this->_loginBounds.getSize().x / 2,
-            this->_loginBounds.getPosition().y-15 + this->_loginBounds.getSize().y / 2
+            this->_loginBounds.getPosition().y - 15 + this->_loginBounds.getSize().y / 2
         );
     }
+    // 2. HAS£O
     else if (this->_data->input.typingText(event, this->_passwordText, this->_password, this->_isPasswordActive))
     {
+        // Limit 10 znaków
+        if (this->_passwordText.length() > 10) {
+            this->_passwordText.pop_back();
+        }
+
+        // Maskowanie gwiazdkami (lokalnie)
+        string masked = "";
+        for (size_t i = 0; i < this->_passwordText.length(); i++) masked += "*";
+        this->_password.setString(masked);
+
         this->_password.setOrigin(this->_password.getGlobalBounds().width / 2, this->_password.getGlobalBounds().height / 2);
         this->_password.setPosition(
             this->_passwordBounds.getPosition().x + this->_passwordBounds.getSize().x / 2,
-            this->_passwordBounds.getPosition().y-15 + this->_passwordBounds.getSize().y / 2
+            this->_passwordBounds.getPosition().y - 15 + this->_passwordBounds.getSize().y / 2
         );
     }
+    // 3. POTWIERD HAS£O
     else if (this->_data->input.typingText(event, this->_confirmPasswordText, this->_confirmPassword, this->_isConfirmPasswordActive))
     {
+        // Limit 10 znaków
+        if (this->_confirmPasswordText.length() > 10) {
+            this->_confirmPasswordText.pop_back();
+        }
+
+        // Maskowanie gwiazdkami (lokalnie)
+        string masked = "";
+        for (size_t i = 0; i < this->_confirmPasswordText.length(); i++) masked += "*";
+        this->_confirmPassword.setString(masked);
+
         this->_confirmPassword.setOrigin(this->_confirmPassword.getGlobalBounds().width / 2, this->_confirmPassword.getGlobalBounds().height / 2);
         this->_confirmPassword.setPosition(
             this->_confirmPasswordBounds.getPosition().x + this->_confirmPasswordBounds.getSize().x / 2,
-            this->_confirmPasswordBounds.getPosition().y-15 + this->_confirmPasswordBounds.getSize().y / 2
+            this->_confirmPasswordBounds.getPosition().y - 15 + this->_confirmPasswordBounds.getSize().y / 2
         );
     }
 }
@@ -235,12 +265,12 @@ void RegisterState::Buttons_HandleInput(sf::Event& event)
     {
         if (this->_loginText.empty() || this->_passwordText.empty())
         {
-            this->_messageLabel.setString("Login i haslo nie moga byc puste!");
+            this->_messageLabel.setString("Login and password cannot be empty!");
             this->_messageLabel.setFillColor(sf::Color::Red);
         }
         else if (this->_passwordText != this->_confirmPasswordText)
         {
-            this->_messageLabel.setString("Hasla sie nie zgadzaja!");
+            this->_messageLabel.setString("Passwords do not match!");
             this->_messageLabel.setFillColor(sf::Color::Red);
         }
         else
@@ -248,7 +278,7 @@ void RegisterState::Buttons_HandleInput(sf::Event& event)
             auto existingUser = this->_data->database.getUserByLogin(this->_loginText);
             if (existingUser != nullptr)
             {
-                this->_messageLabel.setString("Uzytkownik o takim loginie juz istnieje!");
+                this->_messageLabel.setString("User with this login already exists!");
                 this->_messageLabel.setFillColor(sf::Color::Red);
             }
             else
@@ -264,15 +294,15 @@ void RegisterState::Buttons_HandleInput(sf::Event& event)
                         int defaultPlanId = availablePlans[0].id;
                         this->_data->database.assignPlanToUser(newUser->id, defaultPlanId);
                         // Opcjonalnie: log w konsoli
-                        cout << "[REGISTER] Przypisano plan ID: " << defaultPlanId << " uzytkownikowi: " << this->_loginText << endl;
+                        cout << "[REGISTER] Assigned plan ID: " << defaultPlanId << " to user: " << this->_loginText << endl;
                     }
 
-                    this->_messageLabel.setString("Rejestracja udana! Mozesz sie zalogowac.");
+                    this->_messageLabel.setString("Registration successful! You can log in.");
                     this->_messageLabel.setFillColor(sf::Color::Green);
                 }
                 else
                 {
-                    this->_messageLabel.setString("Blad podczas rejestracji!");
+                    this->_messageLabel.setString("Error during registration!");
                     this->_messageLabel.setFillColor(sf::Color::Red);
                 }
             }
