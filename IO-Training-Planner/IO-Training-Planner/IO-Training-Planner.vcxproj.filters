@@ -100,7 +100,7 @@
       <Filter>Source Files\States</Filter>
     </ClCompile>
     <ClCompile Include="RegisterState.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\States</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -174,7 +174,7 @@
       <Filter>Header Files\States</Filter>
     </ClInclude>
     <ClInclude Include="RegisterState.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\States</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -229,10 +229,13 @@
     <Image Include="Resources\Images\Placeholder Short Button.png">
       <Filter>Resource Files\Images</Filter>
     </Image>
-    <Image Include="..\..\..\..\..\Downloads\RegisterButton.png">
+    <Image Include="Resources\Images\Register Button.png">
       <Filter>Resource Files\Images</Filter>
     </Image>
-    <Image Include="..\..\..\..\..\Downloads\LogoutButton.png">
+    <Image Include="Resources\Images\Back Button.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="Resources\Images\Logout Button.png">
       <Filter>Resource Files\Images</Filter>
     </Image>
   </ItemGroup>
