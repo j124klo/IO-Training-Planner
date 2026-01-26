@@ -99,7 +99,7 @@ void LoginState::TextFields_HandleInput(sf::Event& event)
 		this->_login.setOrigin(this->_login.getGlobalBounds().width / 2, this->_login.getGlobalBounds().height / 2);
 		this->_login.setPosition(
 			this->_loginBounds.getPosition().x + this->_loginBounds.getSize().x / 2,
-			this->_loginBounds.getPosition().y + this->_loginBounds.getSize().y / 2
+			this->_loginBounds.getPosition().y-15 + this->_loginBounds.getSize().y / 2
 		);
 	}
 	else if (this->_data->input.typingText(event, this->_passwordText, this->_password, this->_isPasswordActive))
@@ -107,7 +107,7 @@ void LoginState::TextFields_HandleInput(sf::Event& event)
 		this->_password.setOrigin(this->_password.getGlobalBounds().width / 2, this->_password.getGlobalBounds().height / 2);
 		this->_password.setPosition(
 			this->_passwordBounds.getPosition().x + this->_passwordBounds.getSize().x / 2,
-			this->_passwordBounds.getPosition().y + this->_passwordBounds.getSize().y / 2
+			this->_passwordBounds.getPosition().y-15 + this->_passwordBounds.getSize().y / 2
 		);
 	}
 }
