@@ -11,7 +11,7 @@ HomeState::HomeState(AppDataRef data) : GuiState(data)
 
 void HomeState::Buttons_Init()
 {
-    this->_data->assets.loadTexture("Start Training Button", PLACEHOLDER_LONG_BUTTON_FILEPATH);
+    this->_data->assets.loadTexture("Start Training Button", STARTTRAINING_BUTTON_FILEPATH);
 
 	this->_startTrainingButton._sprite.setTexture(this->_data->assets.getTexture("Start Training Button"));
 

@@ -8,6 +8,7 @@
 #include "CalculatorState.hpp"
 #include "ProgressState.hpp"
 #include "ExerciseListState.hpp"
+#include "LoginState.hpp"
 
 GuiState::GuiState(AppDataRef data) : _data(data)
 {
@@ -59,6 +60,7 @@ void GuiState::GUI_Init()
 	this->_data->assets.loadTexture("Calculator Button", CALCULATOR_BUTTON_FILEPATH);
 	this->_data->assets.loadTexture("Progress Button", PROGRESS_BUTTON_FILEPATH);
 	this->_data->assets.loadTexture("Exercise List Button", EXERCISE_LIST_BUTTON_FILEPATH);
+	this->_data->assets.loadTexture("Logout Button", LOGOUT_BUTTON_FILEPATH);
 
 	this->_guiBar.setTexture(this->_data->assets.getTexture("Gui Bar"));
 	this->_menuButton._sprite.setTexture(this->_data->assets.getTexture("Menu Button"));
@@ -69,6 +71,7 @@ void GuiState::GUI_Init()
 	this->_calculatorButton._sprite.setTexture(this->_data->assets.getTexture("Calculator Button"));
 	this->_progressButton._sprite.setTexture(this->_data->assets.getTexture("Progress Button"));
 	this->_exerciseListButton._sprite.setTexture(this->_data->assets.getTexture("Exercise List Button"));
+	this->_logoutButton._sprite.setTexture(this->_data->assets.getTexture("Logout Button"));
 
 
 	//	GUI BAR
@@ -180,6 +183,19 @@ void GuiState::GUI_Init()
 		0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_exerciseListButton._sprite.getGlobalBounds().width / 2 - 10.0f,
 		20.0f + 3 * (this->_exerciseListButton._sprite.getGlobalBounds().height + 40.0f)
 	);
+
+	//	LOGOUT
+	this->_logoutButton._pressed = false;
+	this->_logoutButton._update = false;
+	this->_logoutButton._rect = sf::IntRect(0, 0, 300, 300);
+	this->_logoutButton._sprite.setTextureRect(this->_logoutButton._rect);
+	this->_logoutButton._sprite.setScale(0.35f, 0.35f);
+	this->_logoutButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 2 - this->_logoutButton._sprite.getGlobalBounds().width / 2;
+	this->_logoutButtonDestination.y = 20.0f + 4 * (this->_logoutButton._sprite.getGlobalBounds().height + 40.0f);
+	this->_logoutButton._sprite.setPosition(
+		0 - this->_guiBar.getGlobalBounds().width / 2 - this->_logoutButton._sprite.getGlobalBounds().width / 2,
+		20.0f + 4 * (this->_logoutButton._sprite.getGlobalBounds().height + 40.0f)
+	);
 }
 void GuiState::GUI_HandleInput()
 {
@@ -201,6 +217,8 @@ void GuiState::GUI_HandleInput()
 
 			this->_progressButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 3 - this->_progressButton._sprite.getGlobalBounds().width / 2 + 10.0f;
 			this->_exerciseListButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_exerciseListButton._sprite.getGlobalBounds().width / 2 - 10.0f;
+
+			this->_logoutButtonDestination.x = 0 - this->_guiBar.getGlobalBounds().width / 2 - this->_logoutButton._sprite.getGlobalBounds().width / 2;
 		}
 		else
 		{
@@ -218,6 +236,8 @@ void GuiState::GUI_HandleInput()
 
 			this->_progressButtonDestination.x = this->_guiBar.getGlobalBounds().width * 2 / 3 - this->_progressButton._sprite.getGlobalBounds().width / 2 + 10.0f;
 			this->_exerciseListButtonDestination.x = this->_guiBar.getGlobalBounds().width / 3 - this->_exerciseListButton._sprite.getGlobalBounds().width / 2 - 10.0f;
+
+			this->_logoutButtonDestination.x = this->_guiBar.getGlobalBounds().width / 2 - this->_logoutButton._sprite.getGlobalBounds().width / 2;
 		}
 	}
 
@@ -248,6 +268,11 @@ void GuiState::GUI_HandleInput()
 	if (this->_data->input.isSpriteClickedAndReleased(this->_exerciseListButton._sprite, sf::Mouse::Left, this->_data->window, this->_exerciseListButton._pressed, this->_exerciseListButton._update))
 	{
 		this->_data->machine.AddState(StateRef(new ExerciseListState(this->_data)), true);
+	}
+	if (this->_data->input.isSpriteClickedAndReleased(this->_logoutButton._sprite, sf::Mouse::Left, this->_data->window, this->_logoutButton._pressed, this->_logoutButton._update))
+	{
+		this->_data->currentUser = nullptr;
+		this->_data->machine.AddState(StateRef(new LoginState(this->_data)), true);
 	}
 }
 void GuiState::GUI_Update(float dt)
@@ -366,6 +391,20 @@ void GuiState::GUI_Update(float dt)
 			this->_exerciseListButton._sprite.setTextureRect(this->_exerciseListButton._rect);
 		}
 	}
+	if (this->_logoutButton._update)
+	{
+		this->_logoutButton._update = false;
+		if (this->_logoutButton._pressed)
+		{
+			this->_logoutButton._rect.left = 300;
+			this->_logoutButton._sprite.setTextureRect(this->_logoutButton._rect);
+		}
+		else
+		{
+			this->_logoutButton._rect.left = 0;
+			this->_logoutButton._sprite.setTextureRect(this->_logoutButton._rect);
+		}
+	}
 
 	//	moving objects
 	if (floorV2f(this->_guiBar.getPosition()) != floorV2f(this->_guiBarDestination))
@@ -404,6 +443,10 @@ void GuiState::GUI_Update(float dt)
 	{
 		ObjMoveTo(this->_exerciseListButton._sprite, this->_exerciseListButtonDestination, 650.0f, dt);
 	}
+	if (floorV2f(this->_logoutButton._sprite.getPosition()) != floorV2f(this->_logoutButtonDestination))
+	{
+		ObjMoveTo(this->_logoutButton._sprite, this->_logoutButtonDestination, 650.0f, dt);
+	}
 }
 void GuiState::GUI_Draw(float dt)
 {
@@ -416,6 +459,7 @@ void GuiState::GUI_Draw(float dt)
 	this->_data->window.draw(this->_calculatorButton._sprite);
 	this->_data->window.draw(this->_progressButton._sprite);
 	this->_data->window.draw(this->_exerciseListButton._sprite);
+	this->_data->window.draw(this->_logoutButton._sprite);
 }
 
 sf::Vector2f GuiState::GetMenuButtonPosition(float& width, float& height)
