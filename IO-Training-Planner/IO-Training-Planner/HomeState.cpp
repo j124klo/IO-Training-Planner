@@ -200,7 +200,16 @@ void HomeState::ScrollPanel_Update(float dt)
 		);
 
 		//  Plan Texts positions
-        //  (To do)
+        for (int i = 0; i < 7; ++i)
+        {
+            for (int j = 0; j < this->_planTextsDay[i].size(); j++)
+            {
+                this->_planTextsDay[i][j].setPosition(
+                    this->_planTextsDay[i][j].getPosition().x,
+					this->_planPanel.getPosition().y + 80.0f + j * 40.0f
+                );
+            }
+        }
 
 		//  Scroll Bot position
         this->_scrollBot.setPosition(this->_scrollBot.getPosition().x, this->_planPanel.getPosition().y + this->_planPanel.getGlobalBounds().height + 300.0f);
