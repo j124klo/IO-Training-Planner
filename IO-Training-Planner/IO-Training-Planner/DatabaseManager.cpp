@@ -42,9 +42,7 @@ DatabaseManager::DatabaseManager()
         //}
         seedData();
     }
-    catch (exception& e) {
-        cout << "Database Init Error: " << e.what() << endl;
-    }
+    catch (exception& e) {}
 }
 
 void DatabaseManager::createTables() {
@@ -96,9 +94,7 @@ void DatabaseManager::createTables() {
 }
 
 void DatabaseManager::seedData()
-{
-    cout << "Seeding database..." << endl;
-    
+{ 
     // Tworzymy tylko jednego użytkownika - admin
     auto admin = addUser("admin", "admin");
 
@@ -154,14 +150,10 @@ void DatabaseManager::seedData()
     }
     catch (...) {}
 
-    if (HIITPlanId != -1) {
-        cout << "[INFO] Plan '" << planHIITName << "' juz istnieje. Pomijam." << endl;
-    }
-    else {
+    if (HIITPlanId == -1) {
         auto plan = addTrainingPlan(planHIITName, 0);  // 0 = publiczny plan
         if (plan) {
             HIITPlanId = plan->id;
-            cout << "[INFO] Ukladanie harmonogramu dla: " << planHIITName << endl;
 
             // Monday: Full Body Burn
             if (exBurpees)          addExerciseToPlan(HIITPlanId, exBurpees->id, 1, 1, { 20 });
@@ -230,11 +222,8 @@ void DatabaseManager::seedData()
     if (admin && HIITPlanId != -1) {
         if (!admin->currentPlanId.has_value() || admin->currentPlanId.value() != HIITPlanId) {
             assignPlanToUser(admin->id, HIITPlanId);
-            cout << "[SUCCESS] Przypisano plan '" << planHIITName << "' do uzytkownika 'admin'." << endl;
         }
     }
-
-    cout << "--- [SEED DATA] Done. ---" << endl;
 }
 
 shared_ptr<User> DatabaseManager::addUser(const string& login, const string& pass)
@@ -256,11 +245,9 @@ shared_ptr<User> DatabaseManager::addUser(const string& login, const string& pas
 
         int id = db->last_insert_rowid();
 
-        cout << "[INFO] Zarejestrowano nowego uzytkownika: " << login << endl; // Log w konsoli
         return getUserById(id);
     }
     catch (exception& e) {
-        cout << "Add User Error: " << e.what() << endl;
         return nullptr;
     }
 }
@@ -285,9 +272,7 @@ shared_ptr<User> DatabaseManager::getUserByLogin(const string& login)
             found = true;
             };
     }
-    catch (exception& e) {
-        cout << "Get User Error: " << e.what() << endl;
-    }
+    catch (exception& e) {}
 
     return found ? user : nullptr;
 }
@@ -360,7 +345,6 @@ shared_ptr<Exercise> DatabaseManager::addExercise(const string& name, const stri
         return getExerciseById(newId);
     }
     catch (exception& e) {
-        cout << "Add Exercise Error: " << e.what() << endl;
         return nullptr;
     }
 }
@@ -400,9 +384,7 @@ vector<shared_ptr<Exercise>> DatabaseManager::getAllExercises()
             list.push_back(ex);
             };
     }
-    catch (exception& e) {
-        cout << "Get All Ex Error: " << e.what() << endl;
-    }
+    catch (exception& e) {}
     return list;
 }
 
@@ -606,9 +588,7 @@ vector<PlanHeader> DatabaseManager::getAllPlanHeaders()
             headers.push_back({ id, name });
             };
     }
-    catch (exception& e) {
-        cout << "Get All Plans Error: " << e.what() << endl;
-    }
+    catch (exception& e) {}
     return headers;
 }
 
@@ -649,11 +629,9 @@ bool DatabaseManager::updatePlanEntries(int planId, const std::vector<PlanGUIEnt
         }
 
         *db << "COMMIT;";
-        cout << "[DB] Zapisano " << newEntries.size() << " wpisow do planu ID " << planId << endl;
         return true;
     }
     catch (std::exception& e) {
-        std::cout << "Update Plan Error: " << e.what() << std::endl;
         *db << "ROLLBACK;"; // Cofnij zmiany w razie błędu
         return false;
     }
@@ -677,9 +655,7 @@ vector<PlanHeader> DatabaseManager::getPlansForUser(int userId)
             headers.push_back({ id, name });
             };
     }
-    catch (exception& e) {
-        cout << "Get Plans For User Error: " << e.what() << endl;
-    }
+    catch (exception& e) {}
     return headers;
 }
 
@@ -691,7 +667,6 @@ bool DatabaseManager::deletePlan(int planId)
         *db << "SELECT owner_id FROM plans WHERE id = ?;" << planId >> ownerId;
         
         if (ownerId == 0) {
-            cout << "[ERROR] Cannot delete public plan (ID: " << planId << ")" << endl;
             return false;  // Nie można usunąć planu publicznego
         }
         
@@ -708,11 +683,9 @@ bool DatabaseManager::deletePlan(int planId)
         
         *db << "COMMIT;";
         
-        cout << "[SUCCESS] Plan ID " << planId << " zostal usuniety." << endl;
         return true;
     }
     catch (exception& e) {
-        cout << "[ERROR] Delete Plan Error: " << e.what() << endl;
         *db << "ROLLBACK;";
         return false;
     }
