@@ -12,9 +12,6 @@
 
 #define LOGO_FILEPATH "Resources/Images/Logo.png"
 
-
-#define STARTTRAINING_BUTTON_FILEPATH "Resources/Images/StartTraining! Button.png"
-
 // scroll panel
 #define SCROLL_EDGE "Resources/Images/Scroll Edge.png"
 #define SCROLL_TOP "Resources/Images/Scroll Top.png"
@@ -33,6 +30,7 @@
 
 //	home state
 #define PLAN_PANEL_FILEPATH "Resources/Images/Plan Panel.png"
+#define STARTTRAINING_BUTTON_FILEPATH "Resources/Images/Start Training Button.png"
 
 //  progress  state
 #define TIMELINE_BUTTON_FILEPATH "Resources/Images/Timeline Button.png"

@@ -28,7 +28,6 @@ private:
 	Button _startTrainingButton;
 
 	sf::Sprite _planPanel;
-	// 7 wektorów - jeden dla ka¿dego dnia tygodnia (0=PON, 1=WT, ..., 6=ND)
 	vector<sf::Text> _planTextsDay[7];
 
 public:
