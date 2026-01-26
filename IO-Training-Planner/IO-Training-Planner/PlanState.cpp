@@ -2,7 +2,7 @@
 #include "PlanState.hpp"
 #include <algorithm> // sort
 #include <sstream>   // stringstream
-#include <iomanip>   //// setprecision
+#include <iomanip>   // setprecision
 
 using namespace std;
 
@@ -26,13 +26,13 @@ string PlanState::getDayName(int dayId) {
 
 string PlanState::getDayShortName(int dayId) {
 	switch (dayId) {
-	case 1: return "PON";
-	case 2: return "WT";
-	case 3: return "SR";
-	case 4: return "CZW";
-	case 5: return "PT";
-	case 6: return "SOB";
-	case 7: return "ND";
+	case 1: return "MON";
+	case 2: return "TUE";
+	case 3: return "WED";
+	case 4: return "THU";
+	case 5: return "FRI";
+	case 6: return "SAT";
+	case 7: return "SUN";
 	default: return "?";
 	}
 }
@@ -46,7 +46,6 @@ void PlanState::Plan_Init()
 	
 	// Sprawdzenie u¿ytkownika
 	if (!this->_data->currentUser) {
-		cout << "[DEBUG PlanState] ERROR: No current user!" << endl;
 		RefreshTableLayout();
 		LoadAvailablePlans();
 		InitSideMenuButtons();
@@ -54,7 +53,6 @@ void PlanState::Plan_Init()
 	}
 	
 	if (!this->_data->currentUser->currentPlanId.has_value()) {
-		cout << "[DEBUG PlanState] User has no plan assigned. Showing empty table." << endl;
 		RefreshTableLayout();
 		LoadAvailablePlans();
 		InitSideMenuButtons();
@@ -65,7 +63,6 @@ void PlanState::Plan_Init()
 	auto dbPlan = this->_data->database.getTrainingPlanById(planId);
 
 	if (!dbPlan) {
-		cout << "[DEBUG PlanState] ERROR: Plan not found in database! Plan ID: " << planId << endl;
 		// Plan nie existe - wyczyœæ przypisanie
 		this->_data->currentUser->currentPlanId = nullopt;
 		RefreshTableLayout();
@@ -73,8 +70,6 @@ void PlanState::Plan_Init()
 		InitSideMenuButtons();
 		return;
 	}
-
-	cout << "[DEBUG PlanState] Plan found: " << dbPlan->name << ", entries count: " << dbPlan->entries.size() << endl;
 
 	// Pobieranie danych z planu
 	for (const auto& dbEntry : dbPlan->entries)
@@ -280,9 +275,7 @@ void PlanState::State_HandleInput(sf::Event& event)
 					newEntry._targets = { 0 };
 					
 					_planEntries.push_back(newEntry);
-					
-					cout << "[INFO] Dodano cwiczenie '" << exercise->name << "' do dnia " << _addPopupDayId << endl;
-					
+									
 					HideAddExercisePopup();
 					RefreshTableLayout();
 					return;
@@ -341,7 +334,6 @@ void PlanState::State_HandleInput(sf::Event& event)
 				// Reszta logiki bez zmian...
 				if (this->_data->currentUser->currentPlanId == newPlanId) return;
 
-				cout << "[INFO] Zmiana planu na ID: " << newPlanId << endl;
 				this->_data->database.assignPlanToUser(this->_data->currentUser->id, newPlanId);
 				this->_data->currentUser->currentPlanId = newPlanId;
 
@@ -360,8 +352,6 @@ void PlanState::State_HandleInput(sf::Event& event)
             
             this->_isEditMode = !this->_isEditMode; // Prze³¹cznik (ON/OFF)
 
-            cout << "[INFO] Tryb edycji: " << (_isEditMode ? "WLACZONY" : "WYLACZONY") << endl;
-
             // Prze³adowujemy przyciski, ¿eby zmieniæ kolor napisu i ramki
             InitSideMenuButtons();
             RefreshTableLayout(); // Odœwie¿ aby pokazaæ/ukryæ przyciski [+]
@@ -376,18 +366,10 @@ void PlanState::State_HandleInput(sf::Event& event)
                 return;
             }
             
-            cout << "[INFO] Zapisywanie zmian w planie..." << endl;
-
             if (this->_data->currentUser && this->_data->currentUser->currentPlanId.has_value())
             {
                 int planId = this->_data->currentUser->currentPlanId.value();
                 bool success = this->_data->database.updatePlanEntries(planId, _planEntries);
-                
-                if (success) {
-                    cout << "[SUCCESS] Plan zostal zapisany do bazy danych!" << endl;
-                } else {
-                    cout << "[ERROR] Nie udalo sie zapisac planu!" << endl;
-                }
             }
 
             if (_isEditMode) {
@@ -400,7 +382,6 @@ void PlanState::State_HandleInput(sf::Event& event)
 		// --- NEW: KLIKNIÊCIE "NEW PLAN" ---
 		if (_newPlanButton.getGlobalBounds().contains(mousePos))
 		{
-			cout << "[INFO] Otwieranie okna tworzenia nowego planu..." << endl;
 			ShowNewPlanPopup();
 			return;
 		}
@@ -409,7 +390,6 @@ void PlanState::State_HandleInput(sf::Event& event)
 		if (_deletePlanButton.getGlobalBounds().contains(mousePos))
 		{
 			if (CanDeleteCurrentPlan()) {
-                cout << "[INFO] Otwieranie okna potwierdzenia usuniecia..." << endl;
                 ShowDeleteConfirmPopup();
             } else {
                 ShowError("Cannot delete public plans!");
@@ -424,7 +404,6 @@ void PlanState::State_HandleInput(sf::Event& event)
 			{
 				if (col.addButton.getGlobalBounds().contains(mousePos))
 				{
-					cout << "[INFO] Kliknieto [+] dla dnia: " << col.dayName << endl;
 					ShowAddExercisePopup(col.dayId);
 					return;
 				}
@@ -435,7 +414,6 @@ void PlanState::State_HandleInput(sf::Event& event)
 			{
 				if (_planEntries[i]._nameText.getGlobalBounds().contains(mousePos))
 				{
-					cout << "[EDIT] Usuwam cwiczenie: " << _planEntries[i]._exerciseName << endl;
 					_planEntries.erase(_planEntries.begin() + i);
 					RefreshTableLayout();
 					return;
@@ -1038,7 +1016,6 @@ void PlanState::CreateNewPlan()
     auto newPlan = this->_data->database.addTrainingPlan(_newPlanName, userId);
     
     if (newPlan) {
-        cout << "[SUCCESS] Created new plan: " << _newPlanName << " for user ID: " << userId << endl;
         this->_data->database.assignPlanToUser(userId, newPlan->id);
         this->_data->currentUser->currentPlanId = newPlan->id;
         
@@ -1168,7 +1145,6 @@ void PlanState::DeleteCurrentPlan()
     bool success = this->_data->database.deletePlan(planId);
     
     if (success) {
-        cout << "[SUCCESS] Plan deleted!" << endl;
         
         this->_data->currentUser->currentPlanId = nullopt;
         
@@ -1177,7 +1153,6 @@ void PlanState::DeleteCurrentPlan()
             int newPlanId = availablePlans[0].id;
             this->_data->database.assignPlanToUser(this->_data->currentUser->id, newPlanId);
             this->_data->currentUser->currentPlanId = newPlanId;
-            cout << "[INFO] Automatycznie przypisano plan ID " << newPlanId << endl;
         }
         
         HideDeleteConfirmPopup();

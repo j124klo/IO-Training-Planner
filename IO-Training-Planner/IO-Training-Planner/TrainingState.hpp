@@ -101,6 +101,8 @@ private:
 
     string getDayName(int day);
 
+    string getCurrentDate();
+
 public:
     TrainingState(AppDataRef data);
 
