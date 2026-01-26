@@ -302,7 +302,7 @@ void RegisterState::Buttons_Draw(float dt)
 
 void RegisterState::Init()
 {
-    _data->assets.loadTexture("Back Button", PLACEHOLDER_SHORT_BUTTON_FILEPATH);
+    _data->assets.loadTexture("Back Button", BACK_BUTTON_FILEPATH);
 
     _background.setTexture(_data->assets.getTexture("Default Background"));
 
