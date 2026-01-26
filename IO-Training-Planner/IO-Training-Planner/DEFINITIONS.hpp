@@ -10,6 +10,8 @@
 #define PLACEHOLDER_SHORT_BUTTON_FILEPATH "Resources/Images/Placeholder Short Button.png"
 #define PLACEHOLDER_LONG_BUTTON_FILEPATH "Resources/Images/Placeholder Long Button.png"
 
+#define LOGO_FILEPATH "Resources/Images/Logo.png"
+
 
 #define STARTTRAINING_BUTTON_FILEPATH "Resources/Images/StartTraining! Button.png"
 

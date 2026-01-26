@@ -10,7 +10,16 @@ AppPlanner::AppPlanner(unsigned width, unsigned height, string title)
 	_data->window.create(sf::VideoMode(width, height), title, sf::Style::Titlebar | sf::Style::Close);
 	_data->machine.AddState(StateRef(new SplashState(this->_data)));
 
+
+	sf::Image icon;
+	if (!icon.loadFromFile(LOGO_FILEPATH)) {
+
+		std::cerr << "Nie udalo sie zaladowac ikony!" << std::endl;
+	}
+	_data->window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+
 	this->run();
+
 }
 
 AppPlanner::~AppPlanner()
@@ -21,6 +30,9 @@ AppPlanner::~AppPlanner()
 //	Main loop
 void AppPlanner::run()
 {
+
+
+
 	float newTime;
 	float frameTime;		//	time between frames (currentTime and newTime)
 	float interpolation;
