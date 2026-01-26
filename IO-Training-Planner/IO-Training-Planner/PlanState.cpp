@@ -41,39 +41,42 @@ void PlanState::Plan_Init()
 {
 	this->_planEntries.clear();
 
-	// DEBUG: Sprawdzenie u¿ytkownika
-	cout << "[DEBUG PlanState] Checking user..." << endl;
-
-	// 1. Sprawdzenie u¿ytkownika i planu
+	// Zawsze inicjalizuj kolumny i przyciski - nawet jeœli nie ma planu
+	InitDayColumns();
+	
+	// Sprawdzenie u¿ytkownika
 	if (!this->_data->currentUser) {
 		cout << "[DEBUG PlanState] ERROR: No current user!" << endl;
-		InitDayColumns();
 		RefreshTableLayout();
+		LoadAvailablePlans();
+		InitSideMenuButtons();
 		return;
 	}
 	
 	if (!this->_data->currentUser->currentPlanId.has_value()) {
-		cout << "[DEBUG PlanState] ERROR: User has no plan assigned! User ID: " << this->_data->currentUser->id << endl;
-		InitDayColumns();
+		cout << "[DEBUG PlanState] User has no plan assigned. Showing empty table." << endl;
 		RefreshTableLayout();
+		LoadAvailablePlans();
+		InitSideMenuButtons();
 		return;
 	}
 
 	int planId = this->_data->currentUser->currentPlanId.value();
-	cout << "[DEBUG PlanState] User plan ID: " << planId << endl;
-	
 	auto dbPlan = this->_data->database.getTrainingPlanById(planId);
 
 	if (!dbPlan) {
 		cout << "[DEBUG PlanState] ERROR: Plan not found in database! Plan ID: " << planId << endl;
-		InitDayColumns();
+		// Plan nie existe - wyczyœæ przypisanie
+		this->_data->currentUser->currentPlanId = nullopt;
 		RefreshTableLayout();
+		LoadAvailablePlans();
+		InitSideMenuButtons();
 		return;
 	}
 
 	cout << "[DEBUG PlanState] Plan found: " << dbPlan->name << ", entries count: " << dbPlan->entries.size() << endl;
 
-	// 2. Pobieranie danych (Logika)
+	// Pobieranie danych z planu
 	for (const auto& dbEntry : dbPlan->entries)
 	{
 		PlanGUIEntry guiEntry;
@@ -84,7 +87,6 @@ void PlanState::Plan_Init()
 		guiEntry._orderIndex = dbEntry.orderInDay;
 		guiEntry._dayName = getDayName(dbEntry.dayOfWeek);
 
-		// Nazwa æwiczenia
 		auto exercise = this->_data->database.getExerciseById(dbEntry.exerciseId);
 		if (exercise) {
 			guiEntry._exerciseName = exercise->name;
@@ -93,7 +95,6 @@ void PlanState::Plan_Init()
 			guiEntry._exerciseName = "Unknown";
 		}
 
-		// Formatowanie celów (Target Info)
 		stringstream ss;
 		for (size_t i = 0; i < dbEntry.targetValues.size(); ++i) {
 			if (holds_alternative<int>(dbEntry.targetValues[i])) {
@@ -113,7 +114,7 @@ void PlanState::Plan_Init()
 		this->_planEntries.push_back(guiEntry);
 	}
 
-	// 3. Sortowanie (Dzieñ -> Kolejnoœæ)
+	// Sortowanie
 	sort(this->_planEntries.begin(), this->_planEntries.end(),
 		[](const PlanGUIEntry& a, const PlanGUIEntry& b) {
 			if (a._dayId != b._dayId)
@@ -121,11 +122,8 @@ void PlanState::Plan_Init()
 			return a._orderIndex < b._orderIndex;
 		});
 
-	// 4. Inicjalizacja tabelki
-	InitDayColumns();
+	// Odœwie¿ layout
 	RefreshTableLayout();
-	InitPopup();
-
 	LoadAvailablePlans();
 	InitSideMenuButtons();
 }
@@ -158,18 +156,39 @@ void PlanState::Plan_Draw(float dt)
 		this->_data->window.draw(_popupBackground);
 		this->_data->window.draw(_popupTitle);
 		
-		for (const auto& txt : _popupExerciseTexts)
-		{
-			this->_data->window.draw(txt);
-		}
+		// Rysuj tylko widoczne æwiczenia (z uwzglêdnieniem scrollowania)
+        float startY = _popupBackground.getPosition().y + 50.0f;
+        float startX = _popupBackground.getPosition().x + 15.0f;
+        float itemHeight = 32.0f;
+        float popupBottom = _popupBackground.getPosition().y + _popupBackground.getSize().y - 15.0f;
+        
+        for (int i = _popupScrollOffset; i < (int)_popupExerciseTexts.size() && i < _popupScrollOffset + _popupMaxVisibleItems; ++i)
+        {
+            float posY = startY + (i - _popupScrollOffset) * itemHeight;
+            
+            // SprawdŸ czy element mieœci siê w popup
+            if (posY + itemHeight < popupBottom)
+            {
+                _popupExerciseTexts[i].setPosition(startX, posY);
+                this->_data->window.draw(_popupExerciseTexts[i]);
+            }
+        }
+        
+        // Rysuj scrollbar tylko jeœli jest wiêcej elementów ni¿ widocznych
+        if (_allExercises.size() > (size_t)_popupMaxVisibleItems)
+        {
+            this->_data->window.draw(_popupScrollbar);
+            this->_data->window.draw(_popupScrollThumb);
+        }
 	}
 }
 
 void PlanState::State_Init()
 {
 	this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
-	InitNewPlanPopup();
-	InitDeleteConfirmPopup();
+	InitPopup();              // Popup dodawania æwiczeñ
+	InitNewPlanPopup();       // Popup tworzenia nowego planu
+	InitDeleteConfirmPopup(); // Popup potwierdzenia usuniêcia
 	Plan_Init();
 }
 
@@ -178,6 +197,14 @@ void PlanState::State_HandleInput(sf::Event& event)
 	// 1. Obs³uga zamkniêcia okna (Standard)
 	if (event.type == sf::Event::Closed) {
 		this->_data->window.close();
+	}
+	
+	// --- Obs³uga scrollowania kó³kiem myszy w popup ---
+	if (_showAddPopup && event.type == sf::Event::MouseWheelScrolled)
+	{
+		int delta = (event.mouseWheelScroll.delta > 0) ? -1 : 1;  // Scroll w górê = -1, w dó³ = +1
+		UpdatePopupScroll(delta);
+		return;
 	}
 	
 	// --- Obs³uga wpisywania tekstu dla nowego planu ---
@@ -212,17 +239,25 @@ void PlanState::State_HandleInput(sf::Event& event)
 				return;
 			}
 			
-			// SprawdŸ czy klikniêto na æwiczenie w liœcie
-			for (size_t i = 0; i < _popupExerciseTexts.size(); ++i)
-			{
-				if (_popupExerciseTexts[i].getGlobalBounds().contains(mousePos))
-				{
-					auto& exercise = _allExercises[i];
-					
-					// BLOKADA DUPLIKATÓW: SprawdŸ czy to æwiczenie ju¿ jest w tym dniu
-					bool alreadyExists = false;
-					for (const auto& entry : _planEntries) {
-						if (entry._dayId == _addPopupDayId && entry._exerciseId == exercise->id) {
+			// SprawdŸ czy klikniêto na æwiczenie w liœcie (z uwzglêdnieniem scrollowania)
+            float startY = _popupBackground.getPosition().y + 50.0f;
+            float startX = _popupBackground.getPosition().x + 15.0f;
+            float itemHeight = 32.0f;
+            float itemWidth = _popupBackground.getSize().x - 40.0f;  // Bez scrollbara
+            
+            for (int i = _popupScrollOffset; i < (int)_allExercises.size() && i < _popupScrollOffset + _popupMaxVisibleItems; ++i)
+            {
+                float posY = startY + (i - _popupScrollOffset) * itemHeight;
+                sf::FloatRect itemBounds(startX, posY, itemWidth, itemHeight);
+                
+                if (itemBounds.contains(mousePos))
+                {
+                    auto& exercise = _allExercises[i];
+                    
+                    // BLOKADA DUPLIKATÓW: SprawdŸ czy to æwiczenie ju¿ jest w tym dniu
+                    bool alreadyExists = false;
+                    for (const auto& entry : _planEntries) {
+                        if (entry._dayId == _addPopupDayId && entry._exerciseId == exercise->id) {
 							alreadyExists = true;
 							break;
 						}
@@ -251,9 +286,9 @@ void PlanState::State_HandleInput(sf::Event& event)
 					HideAddExercisePopup();
 					RefreshTableLayout();
 					return;
-				}
-			}
-			return;
+                }
+            }
+            return;
 		}
 		
 		// --- POPUP: Tworzenie nowego planu ---
@@ -318,38 +353,48 @@ void PlanState::State_HandleInput(sf::Event& event)
 		// 2. KLIKNIÊCIE "EDIT PLAN"
 		if (_editButton.getGlobalBounds().contains(mousePos))
 		{
-			this->_isEditMode = !this->_isEditMode; // Prze³¹cznik (ON/OFF)
+			if (!CanEditCurrentPlan()) {
+                ShowError("Cannot edit public plans!");
+                return;
+            }
+            
+            this->_isEditMode = !this->_isEditMode; // Prze³¹cznik (ON/OFF)
 
-			cout << "[INFO] Tryb edycji: " << (_isEditMode ? "WLACZONY" : "WYLACZONY") << endl;
+            cout << "[INFO] Tryb edycji: " << (_isEditMode ? "WLACZONY" : "WYLACZONY") << endl;
 
-			// Prze³adowujemy przyciski, ¿eby zmieniæ kolor napisu i ramki
-			InitSideMenuButtons();
-			RefreshTableLayout(); // Odœwie¿ aby pokazaæ/ukryæ przyciski [+]
-			return;
+            // Prze³adowujemy przyciski, ¿eby zmieniæ kolor napisu i ramki
+            InitSideMenuButtons();
+            RefreshTableLayout(); // Odœwie¿ aby pokazaæ/ukryæ przyciski [+]
+            return;
 		}
 
 		// 3. KLIKNIÊCIE "SAVE PLAN"
 		if (_saveButton.getGlobalBounds().contains(mousePos))
 		{
-			cout << "[INFO] Zapisywanie zmian w planie..." << endl;
+			if (!CanEditCurrentPlan()) {
+                ShowError("Cannot save changes to public plans!");
+                return;
+            }
+            
+            cout << "[INFO] Zapisywanie zmian w planie..." << endl;
 
-			if (this->_data->currentUser && this->_data->currentUser->currentPlanId.has_value())
-			{
-				int planId = this->_data->currentUser->currentPlanId.value();
-				bool success = this->_data->database.updatePlanEntries(planId, _planEntries);
-				
-				if (success) {
-					cout << "[SUCCESS] Plan zostal zapisany do bazy danych!" << endl;
-				} else {
-					cout << "[ERROR] Nie udalo sie zapisac planu!" << endl;
-				}
-			}
+            if (this->_data->currentUser && this->_data->currentUser->currentPlanId.has_value())
+            {
+                int planId = this->_data->currentUser->currentPlanId.value();
+                bool success = this->_data->database.updatePlanEntries(planId, _planEntries);
+                
+                if (success) {
+                    cout << "[SUCCESS] Plan zostal zapisany do bazy danych!" << endl;
+                } else {
+                    cout << "[ERROR] Nie udalo sie zapisac planu!" << endl;
+                }
+            }
 
-			if (_isEditMode) {
-				_isEditMode = false;
-				InitSideMenuButtons();
-			}
-			return;
+            if (_isEditMode) {
+                _isEditMode = false;
+                InitSideMenuButtons();
+            }
+            return;
 		}
 		
 		// --- NEW: KLIKNIÊCIE "NEW PLAN" ---
@@ -372,7 +417,7 @@ void PlanState::State_HandleInput(sf::Event& event)
             return;
 		}
 
-		// --- D. KLIKNIÊCIE NA PRZYCISKI [+] (tylko w trybie edycji) ---
+		// --- D. KLIKNIÊCIE NA PRZYCISKA [+] (tylko w trybie edycji) ---
 		if (_isEditMode)
 		{
 			for (const auto& col : _dayColumns)
@@ -452,10 +497,31 @@ void PlanState::State_Draw(float dt)
 	{
 		this->_data->window.draw(_popupBackground);
 		this->_data->window.draw(_popupTitle);
-		for (const auto& txt : _popupExerciseTexts)
-		{
-			this->_data->window.draw(txt);
-		}
+		
+		// Rysuj tylko widoczne æwiczenia (z uwzglêdnieniem scrollowania)
+        float startY = _popupBackground.getPosition().y + 50.0f;
+        float startX = _popupBackground.getPosition().x + 15.0f;
+        float itemHeight = 32.0f;
+        float popupBottom = _popupBackground.getPosition().y + _popupBackground.getSize().y - 15.0f;
+        
+        for (int i = _popupScrollOffset; i < (int)_popupExerciseTexts.size() && i < _popupScrollOffset + _popupMaxVisibleItems; ++i)
+        {
+            float posY = startY + (i - _popupScrollOffset) * itemHeight;
+            
+            // SprawdŸ czy element mieœci siê w popup
+            if (posY + itemHeight < popupBottom)
+            {
+                _popupExerciseTexts[i].setPosition(startX, posY);
+                this->_data->window.draw(_popupExerciseTexts[i]);
+            }
+        }
+        
+        // Rysuj scrollbar tylko jeœli jest wiêcej elementów ni¿ widocznych
+        if (_allExercises.size() > (size_t)_popupMaxVisibleItems)
+        {
+            this->_data->window.draw(_popupScrollbar);
+            this->_data->window.draw(_popupScrollThumb);
+        }
 	}
 
 	// --- POPUP DO TWORZENIA NOWEGO PLANU ---
@@ -608,16 +674,23 @@ void PlanState::InitSideMenuButtons()
 	_editButton.setOutlineThickness(2.0f);
 	_editButton.setFillColor(sf::Color::Transparent);
 
-	if (_isEditMode) {
-		_editButton.setOutlineColor(sf::Color(255, 165, 0));
-		_editText.setFillColor(sf::Color(255, 165, 0));
-		_editText.setString("EDIT MODE ON");
-	}
-	else {
-		_editButton.setOutlineColor(sf::Color::White);
-		_editText.setFillColor(sf::Color::White);
-		_editText.setString("EDIT PLAN");
-	}
+	if (!CanEditCurrentPlan()) {
+        // Plan publiczny - nie mo¿na edytowaæ (szary)
+        _editButton.setOutlineColor(sf::Color(80, 80, 80));
+        _editText.setFillColor(sf::Color(80, 80, 80));
+        _editText.setString("EDIT PLAN");
+        _isEditMode = false;  // Wymuœ wy³¹czenie trybu edycji
+    }
+    else if (_isEditMode) {
+        _editButton.setOutlineColor(sf::Color(255, 165, 0));
+        _editText.setFillColor(sf::Color(255, 165, 0));
+        _editText.setString("EDIT MODE ON");
+    }
+    else {
+        _editButton.setOutlineColor(sf::Color::White);
+        _editText.setFillColor(sf::Color::White);
+        _editText.setString("EDIT PLAN");
+    }
 
 	_editText.setFont(font);
 	_editText.setCharacterSize(20);
@@ -630,16 +703,23 @@ void PlanState::InitSideMenuButtons()
 	_saveButton.setSize(sf::Vector2f(buttonWidth, buttonHeight));
 	_saveButton.setPosition(startX, saveY);
 	_saveButton.setOutlineThickness(2.0f);
-	_saveButton.setOutlineColor(sf::Color::Green); // Zielony zawsze
 	_saveButton.setFillColor(sf::Color::Transparent);
 
-	_saveText.setFont(font);
-	_saveText.setString("SAVE PLAN");
-	_saveText.setCharacterSize(20);
-	_saveText.setFillColor(sf::Color::Green);
-	sf::FloatRect saveRect = _saveText.getLocalBounds();
-	_saveText.setOrigin(saveRect.left + saveRect.width / 2.0f, saveRect.top + saveRect.height / 2.0f);
-	_saveText.setPosition(startX + buttonWidth / 2.0f, saveY + buttonHeight / 2.0f);
+    if (!CanEditCurrentPlan()) {
+        // Plan publiczny - nie mo¿na zapisywaæ zmian (szary)
+        _saveButton.setOutlineColor(sf::Color(80, 80, 80));
+        _saveText.setFillColor(sf::Color(80, 80, 80));
+    } else {
+        _saveButton.setOutlineColor(sf::Color::Green);
+        _saveText.setFillColor(sf::Color::Green);
+    }
+
+    _saveText.setFont(font);
+    _saveText.setString("SAVE PLAN");
+    _saveText.setCharacterSize(20);
+    sf::FloatRect saveRect = _saveText.getLocalBounds();
+    _saveText.setOrigin(saveRect.left + saveRect.width / 2.0f, saveRect.top + saveRect.height / 2.0f);
+    _saveText.setPosition(startX + buttonWidth / 2.0f, saveY + buttonHeight / 2.0f);
 }
 
 void PlanState::InitDayColumns()
@@ -770,57 +850,97 @@ void PlanState::InitPopup()
 {
 	sf::Font& font = this->_data->assets.getFont("Default Font");
 	
-	// T³o popup
-	_popupBackground.setSize(sf::Vector2f(400.0f, 500.0f));
-	_popupBackground.setFillColor(sf::Color(40, 40, 40, 240));
+	// T³o popup - mniejsze i wycentrowane
+	_popupBackground.setSize(sf::Vector2f(350.0f, 450.0f));
+	_popupBackground.setFillColor(sf::Color(40, 40, 40, 245));
 	_popupBackground.setOutlineThickness(2.0f);
 	_popupBackground.setOutlineColor(sf::Color::White);
-	_popupBackground.setPosition(SCREAN_WIDTH / 2.0f - 200.0f, SCREAN_HEIGHT / 2.0f - 250.0f);
+	_popupBackground.setPosition(SCREAN_WIDTH / 2.0f - 175.0f, SCREAN_HEIGHT / 2.0f - 225.0f);
 	
 	// Tytu³
 	_popupTitle.setFont(font);
-	_popupTitle.setCharacterSize(24);
+	_popupTitle.setCharacterSize(22);
 	_popupTitle.setFillColor(sf::Color::Yellow);
 }
 
 void PlanState::ShowAddExercisePopup(int dayId)
 {
-	_showAddPopup = true;
-	_addPopupDayId = dayId;
+    _showAddPopup = true;
+    _addPopupDayId = dayId;
+    _popupScrollOffset = 0;  // Reset scrollowania
 	
 	// Pobierz wszystkie æwiczenia z bazy
 	_allExercises = this->_data->database.getAllExercises();
 	
 	// Ustaw tytu³
-	_popupTitle.setString("Dodaj cwiczenie do: " + getDayName(dayId));
+	_popupTitle.setString("Add exercise - " + getDayShortName(dayId));
 	sf::FloatRect titleBounds = _popupTitle.getLocalBounds();
-	_popupTitle.setPosition(_popupBackground.getPosition().x + 200.0f - titleBounds.width / 2.0f,
-							_popupBackground.getPosition().y + 15.0f);
+	_popupTitle.setPosition(_popupBackground.getPosition().x + 175.0f - titleBounds.width / 2.0f,
+							_popupBackground.getPosition().y + 10.0f);
 	
 	// Twórz teksty dla ka¿dego æwiczenia
 	_popupExerciseTexts.clear();
 	sf::Font& font = this->_data->assets.getFont("Default Font");
 	
-	float startY = _popupBackground.getPosition().y + 60.0f;
-	float startX = _popupBackground.getPosition().x + 20.0f;
+	float startY = _popupBackground.getPosition().y + 50.0f;
+	float startX = _popupBackground.getPosition().x + 15.0f;
+	float itemHeight = 32.0f;
 	
 	for (size_t i = 0; i < _allExercises.size(); ++i)
 	{
 		sf::Text txt;
 		txt.setFont(font);
 		txt.setString(_allExercises[i]->name);
-		txt.setCharacterSize(18);
+		txt.setCharacterSize(16);
 		txt.setFillColor(sf::Color::White);
-		txt.setPosition(startX, startY + i * 35.0f);
+		txt.setPosition(startX, startY + i * itemHeight);
 		_popupExerciseTexts.push_back(txt);
 	}
+	
+	// Konfiguracja scrollbara
+	float scrollbarHeight = _popupBackground.getSize().y - 60.0f;
+	_popupScrollbar.setSize(sf::Vector2f(10.0f, scrollbarHeight));
+	_popupScrollbar.setPosition(_popupBackground.getPosition().x + _popupBackground.getSize().x - 15.0f,
+								 _popupBackground.getPosition().y + 50.0f);
+	_popupScrollbar.setFillColor(sf::Color(60, 60, 60));
+	
+	// Rozmiar "kciuka" scrollbara zale¿y od liczby elementów
+	float visibleRatio = (float)_popupMaxVisibleItems / (float)_allExercises.size();
+	if (visibleRatio > 1.0f) visibleRatio = 1.0f;
+	float thumbHeight = scrollbarHeight * visibleRatio;
+	if (thumbHeight < 30.0f) thumbHeight = 30.0f;
+	
+	_popupScrollThumb.setSize(sf::Vector2f(10.0f, thumbHeight));
+	_popupScrollThumb.setFillColor(sf::Color(120, 120, 120));
+}
+
+void PlanState::UpdatePopupScroll(int delta)
+{
+    int maxOffset = (int)_allExercises.size() - _popupMaxVisibleItems;
+    if (maxOffset < 0) maxOffset = 0;
+    
+    _popupScrollOffset += delta;
+    if (_popupScrollOffset < 0) _popupScrollOffset = 0;
+    if (_popupScrollOffset > maxOffset) _popupScrollOffset = maxOffset;
+    
+    // Aktualizuj pozycjê "kciuka" scrollbara
+    float scrollbarHeight = _popupScrollbar.getSize().y;
+    float thumbHeight = _popupScrollThumb.getSize().y;
+    float scrollRange = scrollbarHeight - thumbHeight;
+    float scrollRatio = (maxOffset > 0) ? (float)_popupScrollOffset / (float)maxOffset : 0.0f;
+    
+    _popupScrollThumb.setPosition(
+        _popupScrollbar.getPosition().x,
+        _popupScrollbar.getPosition().y + scrollRange * scrollRatio
+    );
 }
 
 void PlanState::HideAddExercisePopup()
 {
-	_showAddPopup = false;
-	_addPopupDayId = -1;
-	_popupExerciseTexts.clear();
+    _showAddPopup = false;
+    _addPopupDayId = -1;
+    _popupExerciseTexts.clear();
+    _popupScrollOffset = 0;
 }
 
 void PlanState::ShowError(const string& message)
@@ -830,7 +950,6 @@ void PlanState::ShowError(const string& message)
     _errorMessage.setCharacterSize(20);
     _errorMessage.setFillColor(sf::Color::Red);
     
-    // Wycentruj na ekranie
     sf::FloatRect bounds = _errorMessage.getLocalBounds();
     _errorMessage.setOrigin(bounds.left + bounds.width / 2.0f, bounds.top + bounds.height / 2.0f);
     _errorMessage.setPosition(SCREAN_WIDTH / 2.0f, SCREAN_HEIGHT - 50.0f);
@@ -839,18 +958,18 @@ void PlanState::ShowError(const string& message)
     _errorClock.restart();
 }
 
+// --- FUNKCJE DO TWORZENIA NOWEGO PLANU ---
+
 void PlanState::InitNewPlanPopup()
 {
     sf::Font& font = this->_data->assets.getFont("Default Font");
     
-    // T³o popup
     _newPlanPopupBg.setSize(sf::Vector2f(400.0f, 200.0f));
     _newPlanPopupBg.setFillColor(sf::Color(40, 40, 40, 240));
     _newPlanPopupBg.setOutlineThickness(2.0f);
     _newPlanPopupBg.setOutlineColor(sf::Color::White);
     _newPlanPopupBg.setPosition(SCREAN_WIDTH / 2.0f - 200.0f, SCREAN_HEIGHT / 2.0f - 100.0f);
     
-    // Tytu³
     _newPlanTitle.setFont(font);
     _newPlanTitle.setString("Create New Plan");
     _newPlanTitle.setCharacterSize(24);
@@ -859,7 +978,6 @@ void PlanState::InitNewPlanPopup()
     _newPlanTitle.setPosition(_newPlanPopupBg.getPosition().x + 200.0f - titleBounds.width / 2.0f,
                               _newPlanPopupBg.getPosition().y + 15.0f);
     
-    // Pole tekstowe
     _newPlanInputBox.setSize(sf::Vector2f(350.0f, 40.0f));
     _newPlanInputBox.setPosition(_newPlanPopupBg.getPosition().x + 25.0f, 
                                   _newPlanPopupBg.getPosition().y + 60.0f);
@@ -873,7 +991,6 @@ void PlanState::InitNewPlanPopup()
     _newPlanInputText.setPosition(_newPlanInputBox.getPosition().x + 10.0f,
                                    _newPlanInputBox.getPosition().y + 8.0f);
     
-    // Przycisk CREATE
     _newPlanCreateButton.setSize(sf::Vector2f(150.0f, 40.0f));
     _newPlanCreateButton.setPosition(_newPlanPopupBg.getPosition().x + 125.0f,
                                       _newPlanPopupBg.getPosition().y + 130.0f);
@@ -913,27 +1030,26 @@ void PlanState::CreateNewPlan()
     }
     
     if (!this->_data->currentUser) {
-        ShowError("You must be logged in to create a plan!");
+        ShowError("You must be logged in!");
         return;
     }
     
-    // Utwórz nowy plan dla tego u¿ytkownika
     int userId = this->_data->currentUser->id;
     auto newPlan = this->_data->database.addTrainingPlan(_newPlanName, userId);
     
     if (newPlan) {
         cout << "[SUCCESS] Created new plan: " << _newPlanName << " for user ID: " << userId << endl;
-        
-        // Przypisz nowy plan do u¿ytkownika
         this->_data->database.assignPlanToUser(userId, newPlan->id);
         this->_data->currentUser->currentPlanId = newPlan->id;
         
         HideNewPlanPopup();
-        Plan_Init();  // Odœwie¿ widok
+        Plan_Init();
     } else {
         ShowError("Failed to create plan!");
     }
 }
+
+// --- FUNKCJE DO USUWANIA PLANU ---
 
 bool PlanState::CanDeleteCurrentPlan()
 {
@@ -946,8 +1062,22 @@ bool PlanState::CanDeleteCurrentPlan()
     
     if (!plan) return false;
     
-    // Mo¿na usun¹æ tylko plany prywatne (ownerId > 0)
-    // Plany publiczne (ownerId == 0) nie mog¹ byæ usuniête
+    return plan->ownerId > 0;  // Tylko plany prywatne mo¿na usun¹æ
+}
+
+bool PlanState::CanEditCurrentPlan()
+{
+    if (!this->_data->currentUser || !this->_data->currentUser->currentPlanId.has_value()) {
+        return false;
+    }
+    
+    int planId = this->_data->currentUser->currentPlanId.value();
+    auto plan = this->_data->database.getTrainingPlanById(planId);
+    
+    if (!plan) return false;
+    
+    // Mo¿na edytowaæ tylko plany prywatne (ownerId > 0)
+    // Plany publiczne (ownerId == 0) s¹ tylko do odczytu
     return plan->ownerId > 0;
 }
 
@@ -955,14 +1085,12 @@ void PlanState::InitDeleteConfirmPopup()
 {
     sf::Font& font = this->_data->assets.getFont("Default Font");
     
-    // T³o popup
     _deleteConfirmBg.setSize(sf::Vector2f(450.0f, 180.0f));
     _deleteConfirmBg.setFillColor(sf::Color(50, 50, 50, 245));
     _deleteConfirmBg.setOutlineThickness(2.0f);
     _deleteConfirmBg.setOutlineColor(sf::Color::Red);
     _deleteConfirmBg.setPosition(SCREAN_WIDTH / 2.0f - 225.0f, SCREAN_HEIGHT / 2.0f - 90.0f);
     
-    // Tytu³
     _deleteConfirmTitle.setFont(font);
     _deleteConfirmTitle.setString("DELETE PLAN?");
     _deleteConfirmTitle.setCharacterSize(26);
@@ -972,7 +1100,6 @@ void PlanState::InitDeleteConfirmPopup()
     _deleteConfirmTitle.setPosition(_deleteConfirmBg.getPosition().x + 225.0f,
                                      _deleteConfirmBg.getPosition().y + 15.0f);
     
-    // Wiadomoœæ
     _deleteConfirmMessage.setFont(font);
     _deleteConfirmMessage.setString("Are you sure? This action cannot be undone.");
     _deleteConfirmMessage.setCharacterSize(18);
@@ -982,7 +1109,6 @@ void PlanState::InitDeleteConfirmPopup()
     _deleteConfirmMessage.setPosition(_deleteConfirmBg.getPosition().x + 225.0f,
                                        _deleteConfirmBg.getPosition().y + 60.0f);
     
-    // Przycisk YES
     _deleteYesButton.setSize(sf::Vector2f(100.0f, 40.0f));
     _deleteYesButton.setPosition(_deleteConfirmBg.getPosition().x + 80.0f,
                                   _deleteConfirmBg.getPosition().y + 110.0f);
@@ -999,7 +1125,6 @@ void PlanState::InitDeleteConfirmPopup()
     _deleteYesText.setPosition(_deleteYesButton.getPosition().x + 50.0f,
                                 _deleteYesButton.getPosition().y + 20.0f);
     
-    // Przycisk NO
     _deleteNoButton.setSize(sf::Vector2f(100.0f, 40.0f));
     _deleteNoButton.setPosition(_deleteConfirmBg.getPosition().x + 270.0f,
                                  _deleteConfirmBg.getPosition().y + 110.0f);
@@ -1045,11 +1170,18 @@ void PlanState::DeleteCurrentPlan()
     if (success) {
         cout << "[SUCCESS] Plan deleted!" << endl;
         
-        // Wyczyœæ przypisanie planu u u¿ytkownika
         this->_data->currentUser->currentPlanId = nullopt;
         
+        auto availablePlans = this->_data->database.getPlansForUser(this->_data->currentUser->id);
+        if (!availablePlans.empty()) {
+            int newPlanId = availablePlans[0].id;
+            this->_data->database.assignPlanToUser(this->_data->currentUser->id, newPlanId);
+            this->_data->currentUser->currentPlanId = newPlanId;
+            cout << "[INFO] Automatycznie przypisano plan ID " << newPlanId << endl;
+        }
+        
         HideDeleteConfirmPopup();
-        Plan_Init();  // Odœwie¿ widok
+        Plan_Init();
     } else {
         ShowError("Failed to delete plan!");
         HideDeleteConfirmPopup();

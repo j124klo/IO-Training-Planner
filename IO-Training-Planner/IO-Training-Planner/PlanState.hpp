@@ -58,9 +58,16 @@ private:
     sf::RectangleShape _popupBackground;    // T³o popup
     sf::Text _popupTitle;                   // Tytu³ popup
     
+    // Scrollowanie listy æwiczeñ
+    int _popupScrollOffset = 0;             // Przesuniêcie scrollowania
+    int _popupMaxVisibleItems = 12;         // Maksymalna liczba widocznych elementów
+    sf::RectangleShape _popupScrollbar;     // Pasek scrollbara
+    sf::RectangleShape _popupScrollThumb;   // "Kciuk" scrollbara
+    
     void ShowAddExercisePopup(int dayId);
     void HideAddExercisePopup();
     void InitPopup();
+    void UpdatePopupScroll(int delta);      // Nowa: obs³uga scrollowania
 
     // --- KOMUNIKAT O B£ÊDZIE ---
     sf::Text _errorMessage;
@@ -102,6 +109,7 @@ private:
     void InitDeleteConfirmPopup();
     void DeleteCurrentPlan();
     bool CanDeleteCurrentPlan();  // Sprawdza czy aktualny plan mo¿na usun¹æ
+    bool CanEditCurrentPlan();    // Sprawdza czy aktualny plan mo¿na edytowaæ
 
     // --- BOCZNE MENU (plany) ---
     vector<PlanHeader> _availablePlans;
