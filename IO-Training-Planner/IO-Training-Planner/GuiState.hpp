@@ -31,6 +31,8 @@ private:
     Button _progressButton;
     sf::Vector2f _exerciseListButtonDestination;
     Button _exerciseListButton;
+    sf::Vector2f _logoutButtonDestination;
+    Button _logoutButton;
 
     void GUI_Init();
     void GUI_HandleInput();
