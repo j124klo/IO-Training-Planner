@@ -172,6 +172,7 @@
     <ClInclude Include="ProgressState.hpp" />
     <ClInclude Include="RegisterState.hpp" />
     <ClInclude Include="RepPercentageState.hpp" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="StateMachine.hpp" />
     <ClInclude Include="StopwatchState.hpp" />
     <ClInclude Include="TrainingState.hpp" />
@@ -192,6 +193,7 @@
     <Image Include="Resources\Images\Calculator Button.png" />
     <Image Include="Resources\Images\Continue Button.png" />
     <Image Include="Resources\Images\Default Background.png" />
+    <Image Include="Resources\Images\Logo.ico" />
     <Image Include="Resources\Images\Logo.png" />
     <Image Include="Resources\Images\Placeholder Long Button.png" />
     <Image Include="Resources\Images\Exercise List Button.png" />
@@ -211,6 +213,9 @@
     <Image Include="Resources\Images\Stopwatch Button.png" />
     <Image Include="Resources\Images\Timeline Button.png" />
     <Image Include="Resources\Images\Training Button.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="IO-Training-Planner.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

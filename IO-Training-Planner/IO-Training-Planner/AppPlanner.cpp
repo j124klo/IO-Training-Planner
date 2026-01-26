@@ -10,7 +10,6 @@ AppPlanner::AppPlanner(unsigned width, unsigned height, string title)
 	_data->window.create(sf::VideoMode(width, height), title, sf::Style::Titlebar | sf::Style::Close);
 	_data->machine.AddState(StateRef(new SplashState(this->_data)));
 
-
 	sf::Image icon;
 	if (!icon.loadFromFile(LOGO_FILEPATH)) {
 
