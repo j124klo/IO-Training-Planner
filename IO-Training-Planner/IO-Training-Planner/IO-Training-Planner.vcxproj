@@ -187,6 +187,7 @@
     <ClInclude Include="State.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\..\..\..\Downloads\Register Button.png" />
     <Image Include="Resources\Images\Calculator Button.png" />
     <Image Include="Resources\Images\Continue Button.png" />
     <Image Include="Resources\Images\Default Background.png" />
@@ -198,7 +199,6 @@
     <Image Include="Resources\Images\Placeholder Short Button.png" />
     <Image Include="Resources\Images\Plan Panel.png" />
     <Image Include="Resources\Images\Progress Button.png" />
-    <Image Include="Resources\Images\Register Button.png" />
     <Image Include="Resources\Images\Scroll Bot.png" />
     <Image Include="Resources\Images\Scroll Edge.png" />
     <Image Include="Resources\Images\Scroll Mid.png" />
