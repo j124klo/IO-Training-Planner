@@ -33,7 +33,6 @@ private:
     bool _isRepsActive;
 
     // Result display
-    sf::Text _resultLabel;
     sf::Text _resultValue;
 
     // Calculate button

@@ -11,7 +11,7 @@ CalculatorState::CalculatorState(AppDataRef data) : GuiState(data)
 
 //	zmieniæ na zale¿ne od ekranu (* generalnie wszêdzie poprawiæ w tych inicjalizacjach aby pozycje by³y zale¿ne od ekranu)
 //	przyk³adowo w osi y niech okienka wpisywania bêd¹ na wysokoœci 2/6 ekranu, 3/6 ekranu, wynik na 4/6 ekranu, a przycisk na 5/6 ekranu
-//	a w osi x niech bêd¹ wyœrodkowane na ekranie z przerwo¹ oko³o 40,0f miêdzy etykiet¹ a polem wpisywania
+//	a w osi x niech bêd¹ wyœrodkowane na ekranie z przerw¹ oko³o 40,0f miêdzy etykiet¹ a polem wpisywania
 void CalculatorState::InputFields_Init()
 {
 	this->_weightInput.setFont(this->_data->assets.getFont("Default Font"));
@@ -75,23 +75,13 @@ void CalculatorState::Labels_Init()
 		SCREAN_HEIGHT * 3.0f / 6.0f - this->_repsLabel.getGlobalBounds().height / 2.0f
 	);
 
-	// Result label - pozycja Y na 4/6 ekranu
-	this->_resultLabel.setFont(this->_data->assets.getFont("Default Font"));
-	this->_resultLabel.setCharacterSize(35);
-	this->_resultLabel.setFillColor(sf::Color::White);
-	this->_resultLabel.setString("1RM:");
-	this->_resultLabel.setPosition(
-		SCREAN_WIDTH / 2.0f - 40.0f / 2.0f - this->_resultLabel.getGlobalBounds().width,
-		SCREAN_HEIGHT * 4.0f / 6.0f - this->_resultLabel.getGlobalBounds().height / 2.0f
-	);
-
-	// Result value - pozycja Y na 4/6 ekranu
+	// Result value - pozycja Y na 4/6 ekranu, wyœrodkowany na ekranie
 	this->_resultValue.setFont(this->_data->assets.getFont("Default Font"));
 	this->_resultValue.setCharacterSize(40);
-	this->_resultValue.setFillColor(sf::Color::Yellow);
-	this->_resultValue.setString("0.0 kg");
+	this->_resultValue.setFillColor(sf::Color::Red);
+	this->_resultValue.setString("");
 	this->_resultValue.setPosition(
-		SCREAN_WIDTH / 2.0f + 40.0f / 2.0f,
+		SCREAN_WIDTH / 2.0f,
 		SCREAN_HEIGHT * 4.0f / 6.0f - this->_resultValue.getGlobalBounds().height / 2.0f
 	);
 }
@@ -171,12 +161,14 @@ void CalculatorState::State_HandleInput(sf::Event& event)
 			{
 				this->_resultValue.setString("Invalid input");
 				this->_resultValue.setFillColor(sf::Color::Red);
+				this->_resultValue.setOrigin(this->_resultValue.getGlobalBounds().width / 2.0f, 0);
 			}
 		}
 		else
 		{
 			this->_resultValue.setString("Fill all fields");
 			this->_resultValue.setFillColor(sf::Color::Red);
+			this->_resultValue.setOrigin(this->_resultValue.getGlobalBounds().width / 2.0f, 0);
 		}
 
 		this->_isWeightActive = false;
@@ -235,7 +227,6 @@ void CalculatorState::State_Draw(float dt)
 	// Draw labels
 	this->_data->window.draw(this->_weightLabel);
 	this->_data->window.draw(this->_repsLabel);
-	this->_data->window.draw(this->_resultLabel);
 
 	// Draw input fields
 	this->_data->window.draw(this->_weightBounds);
