@@ -206,6 +206,7 @@
     <Image Include="Resources\Images\Scroll Top.png" />
     <Image Include="Resources\Images\Splash Background.png" />
     <Image Include="Resources\Images\Stopwatch Button.png" />
+    <Image Include="Resources\Images\Timeline Button.png" />
     <Image Include="Resources\Images\Training Button.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

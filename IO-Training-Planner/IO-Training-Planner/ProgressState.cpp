@@ -11,7 +11,7 @@ ProgressState::ProgressState(AppDataRef data) : GuiState(data)
 
 void ProgressState::ProgressHistoryButton_Init()
 {
-    this->_data->assets.loadTexture("Progress History Button", PLACEHOLDER_SHORT_BUTTON_FILEPATH);
+    this->_data->assets.loadTexture("Progress History Button", TIMELINE_BUTTON_FILEPATH);
 	this->_progressHistoryButton._sprite.setTexture(this->_data->assets.getTexture("Progress History Button"));
 
     float menuButtonWidth;
