@@ -22,8 +22,8 @@ void HomeState::Buttons_Init()
     this->_startTrainingButton._sprite.setTextureRect(this->_startTrainingButton._rect);
     this->_startTrainingButton._sprite.setScale(0.35f, 0.35f);
     this->_startTrainingButton._sprite.setPosition(
-        SCREAN_WIDTH / 2,   // - this->_startTrainingButton._sprite.getGlobalBounds().width / 2,
-        SCREAN_HEIGHT / 2
+        SCREAN_WIDTH / 2.0f - this->_startTrainingButton._sprite.getGlobalBounds().width / 2,
+        40.0f
     );
 }
 void HomeState::Buttons_HandleInput(sf::Event& event)
@@ -47,23 +47,10 @@ void HomeState::Buttons_Draw(float dt)
     this->_data->window.draw(this->_startTrainingButton._sprite);
 }
 
-void HomeState::ScrollPanel_Init()
+void HomeState::PlanPanel_Init()
 {
-    this->_data->assets.loadTexture("Scroll Edge", SCROLL_EDGE);
-    this->_data->assets.loadTexture("Scroll Top", SCROLL_TOP);
-    this->_data->assets.loadTexture("Scroll Mid", SCROLL_MID);
-    this->_data->assets.loadTexture("Scroll Bot", SCROLL_BOT);
-}
-
-void HomeState::State_Init()
-{
-    // 1. £adowanie zasobów
-    this->_data->assets.loadTexture("Default Background", DEFAULT_BACKGROUND_FILEPATH);
     this->_data->assets.loadTexture("Plan Panel", PLAN_PANEL_FILEPATH);
 
-	ScrollPanel_Init();
-
-    this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
     this->_planPanel.setTexture(this->_data->assets.getTexture("Plan Panel"));
 
     this->_planPanel.setScale(0.6f, 0.6f);
@@ -149,22 +136,69 @@ void HomeState::State_Init()
         }
     }
 }
+void HomeState::PlanPanel_HandleInput(sf::Event& event)
+{
+
+}
+void HomeState::PlanPanel_Update(float dt)
+{
+
+}
+void HomeState::PlanPanel_Draw(float dt)
+{
+    this->_data->window.draw(this->_planPanel);
+    for (const auto& text : this->_planTexts) {
+        this->_data->window.draw(text);
+    }
+}
+
+void HomeState::ScrollPanel_Init()
+{
+    this->_data->assets.loadTexture("Scroll Edge", SCROLL_EDGE);
+    this->_data->assets.loadTexture("Scroll Top", SCROLL_TOP);
+    this->_data->assets.loadTexture("Scroll Mid", SCROLL_MID);
+    this->_data->assets.loadTexture("Scroll Bot", SCROLL_BOT);
+}
+void HomeState::ScrollPanel_HandleInput(sf::Event& event)
+{
+
+}
+void HomeState::ScrollPanel_Update(float dt)
+{
+
+}
+void HomeState::ScrollPanel_Draw(float dt)
+{
+
+}
+
+void HomeState::State_Init()
+{
+    this->_data->assets.loadTexture("Default Background", DEFAULT_BACKGROUND_FILEPATH);
+
+    this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
+
+	ScrollPanel_Init();
+	Buttons_Init();
+	PlanPanel_Init();
+}
 void HomeState::State_HandleInput(sf::Event& event)
 {
 	Buttons_HandleInput(event);
+	PlanPanel_HandleInput(event);
+	ScrollPanel_HandleInput(event);
 }
 void HomeState::State_Update(float dt)
 {
 	Buttons_Update(dt);
+	PlanPanel_Update(dt);
+	ScrollPanel_Update(dt);
 }
 void HomeState::State_Draw(float dt)
 {
     this->_data->window.draw(this->_background);
 
-    this->_data->window.draw(this->_planPanel);
-    for (const auto& text : this->_planTexts) {
-        this->_data->window.draw(text);
-    }
-
+	PlanPanel_Draw(dt);
 	Buttons_Draw(dt);
+	ScrollPanel_Draw(dt);
 }

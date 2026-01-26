@@ -30,6 +30,11 @@ public:
 	void Buttons_Update(float dt);
 	void Buttons_Draw(float dt);
 
+	void PlanPanel_Init();
+	void PlanPanel_HandleInput(sf::Event& event);
+	void PlanPanel_Update(float dt);
+	void PlanPanel_Draw(float dt);
+
 	void ScrollPanel_Init();
 	void ScrollPanel_HandleInput(sf::Event& event);
 	void ScrollPanel_Update(float dt);
