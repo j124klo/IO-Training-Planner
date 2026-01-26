@@ -241,9 +241,6 @@
     <Image Include="Resources\Images\Logout Button.png">
       <Filter>Resource Files\Images</Filter>
     </Image>
-    <Image Include="..\..\..\..\..\Downloads\StartTraining! Button.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="Resources\Images\Logo.ico">
       <Filter>Resource Files</Filter>
     </Image>
@@ -254,6 +251,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Resources\Images\Logo.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Images\Start Training Button.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
