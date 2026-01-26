@@ -51,22 +51,70 @@ string ProgressHistoryState::formatLogResult(const WorkoutLog& log)
     return ss.str();
 }
 
+void ProgressHistoryState::Buttons_Init()
+{
+    this->_data->assets.loadTexture("Back Button", BACK_BUTTON_FILEPATH);
+
+	this->_backButton._sprite.setTexture(this->_data->assets.getTexture("Back Button"));
+
+    float menuButtonWidth;
+    float menuButtonHeight;
+    sf::Vector2f menuButtonPosition = GetMenuButtonPosition(menuButtonWidth, menuButtonHeight);
+
+    this->_backButton._pressed = false;
+    this->_backButton._update = false;
+    this->_backButton._rect = sf::IntRect(0, 0, 300, 300);
+    this->_backButton._sprite.setTextureRect(this->_backButton._rect);
+    this->_backButton._sprite.setScale(0.35f, 0.35f);
+    this->_backButton._sprite.setPosition( menuButtonPosition.x, SCREAN_HEIGHT - this->_backButton._sprite.getGlobalBounds().height - 20.0f );
+}
+void ProgressHistoryState::Buttons_HandleInput(sf::Event& event)
+{
+    if (this->_data->input.isSpriteClickedAndReleased(this->_backButton._sprite, sf::Mouse::Left, this->_data->window, this->_backButton._pressed, this->_backButton._update))
+    {
+        this->_data->machine.AddState(StateRef(new ProgressState(this->_data)), true);
+    }
+}
+void ProgressHistoryState::Buttons_Update(float dt)
+{
+    if (this->_backButton._update)
+    {
+        this->_backButton._update = false;
+        this->_backButton._rect.left = this->_backButton._pressed ? 300 : 0;
+        this->_backButton._sprite.setTextureRect(this->_backButton._rect);
+    }
+}
+void ProgressHistoryState::Buttons_Draw(float dt)
+{
+	this->_data->window.draw(this->_backButton._sprite);
+}
+
+void ProgressHistoryState::Logs_Init()
+{
+
+}
+void ProgressHistoryState::Logs_HandleInput(sf::Event& event)
+{
+
+}
+void ProgressHistoryState::Logs_Update(float dt)
+{
+
+}
+void ProgressHistoryState::Logs_Draw(float dt)
+{
+    this->_data->window.draw(this->_title);
+    for (const auto& txt : _logTexts) {
+        this->_data->window.draw(txt);
+    }
+}
+
 void ProgressHistoryState::State_Init()
 {
     this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
     _font = this->_data->assets.getFont("Default Font");
 
-    // 1. Przycisk Wstecz - PRZESUNIÊTY NA PRAW¥ STRONÊ
-    _backButtonShape.setSize(sf::Vector2f(100.0f, 40.0f));
-    _backButtonShape.setFillColor(sf::Color(100, 100, 100)); // Szary
-    _backButtonShape.setPosition(SCREAN_WIDTH - 150.0f, 40.0f); // Prawy górny róg
-
-    _backButtonLabel.setFont(_font);
-    _backButtonLabel.setString("Back");
-    _backButtonLabel.setCharacterSize(20);
-    _backButtonLabel.setFillColor(sf::Color::White);
-    // Centrowanie napisu na przycisku
-    _backButtonLabel.setPosition(SCREAN_WIDTH - 135.0f, 48.0f);
+	Buttons_Init();
 
     // 2. Tytu³ - Przesuniêty bardziej w prawo
     _title.setFont(_font);
@@ -128,37 +176,17 @@ void ProgressHistoryState::State_Init()
 }
 void ProgressHistoryState::State_HandleInput(sf::Event& event)
 {
-    if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
-        sf::Vector2i mousePos = sf::Mouse::getPosition(this->_data->window);
-
-        // Obs³uga przycisku Wstecz
-        if (_backButtonShape.getGlobalBounds().contains((float)mousePos.x, (float)mousePos.y)) {
-            // Wracamy do ProgressState
-            this->_data->machine.AddState(StateRef(new ProgressState(this->_data)), true);
-        }
-    }
+	Buttons_HandleInput(event);
 }
 void ProgressHistoryState::State_Update(float dt)
 {
-    // Hover effect
-    sf::Vector2i mousePos = sf::Mouse::getPosition(this->_data->window);
-    if (_backButtonShape.getGlobalBounds().contains((float)mousePos.x, (float)mousePos.y)) {
-        _backButtonShape.setOutlineColor(sf::Color::White);
-        _backButtonShape.setOutlineThickness(1.0f);
-    }
-    else {
-        _backButtonShape.setOutlineThickness(0.0f);
-    }
+	Buttons_Update(dt);
 }
 void ProgressHistoryState::State_Draw(float dt)
 {
     this->_data->window.draw(this->_background);
-    this->_data->window.draw(this->_title);
 
-    this->_data->window.draw(this->_backButtonShape);
-    this->_data->window.draw(this->_backButtonLabel);
-
-    for (const auto& txt : _logTexts) {
-        this->_data->window.draw(txt);
-    }
+	Logs_Draw(dt);
+    
+	Buttons_Draw(dt);
 }

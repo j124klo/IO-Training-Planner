@@ -13,12 +13,12 @@ using namespace std;
 class ProgressHistoryState : public GuiState
 {
 private:
+	sf::Clock _clock;
+
     sf::Sprite _background;
     sf::Font _font;
 
-    // Przycisk powrotu (Kszta³t, nie obrazek)
-    sf::RectangleShape _backButtonShape;
-    sf::Text _backButtonLabel;
+	Button _backButton;
 
     sf::Text _title;
     vector<WorkoutLog> _logs;
@@ -29,6 +29,16 @@ private:
 
 public:
     ProgressHistoryState(AppDataRef data);
+
+	void Buttons_Init();
+	void Buttons_HandleInput(sf::Event& event);
+	void Buttons_Update(float dt);
+	void Buttons_Draw(float dt);
+
+	void Logs_Init();
+	void Logs_HandleInput(sf::Event& event);
+	void Logs_Update(float dt);
+	void Logs_Draw(float dt);
 
     void State_Init();
     void State_HandleInput(sf::Event& event);
