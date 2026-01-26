@@ -59,7 +59,11 @@ void HomeState::PlanPanel_Init()
     float panelY = this->_startTrainingButton._sprite.getPosition().y + this->_startTrainingButton._sprite.getGlobalBounds().height + 40.0f;
     this->_planPanel.setPosition(panelX, panelY);
 
-    this->_planTexts.clear();
+    // Wyczyœæ wszystkie 7 wektorów
+    for (int i = 0; i < 7; ++i) {
+        this->_planTextsDay[i].clear();
+    }
+    
     if (this->_data->currentUser && this->_data->currentUser->currentPlanId.has_value()) {
 
         int planId = this->_data->currentUser->currentPlanId.value();
@@ -67,21 +71,17 @@ void HomeState::PlanPanel_Init()
 
         if (dbPlan) {
 
-            // === KONFIGURACJA WYMIARÓW (TU ZMIENIASZ LICZBY) ===
-
+            // === KONFIGURACJA WYMIARÓW ===
             float panelW = this->_planPanel.getGlobalBounds().width;
 
-            // Ustawienia siatki
-            float marginLeft = 0.0f;     // Przesuniêcie ca³ej siatki w prawo/lewo (gdyby nie trafia³a w kolumny)
-            float colWidth = panelW / 7.0f; // Szerokoœæ jednej kolumny (automatyczna)
+            float marginLeft = 0.0f;
+            float colWidth = panelW / 7.0f;
 
-            // Ustawienia pionowe (Y)
-            float headerHeight = 45.0f;  // Ile miejsca zajmuje nag³ówek "Monday" itp.
-            float startY = panelY + headerHeight + 35.0f; // Punkt startowy dla pierwszego æwiczenia
-            float rowHeight = 40.0f;     // Sta³y odstêp miêdzy liniami (im wiêcej, tym rzadziej)
+            float headerHeight = 45.0f;
+            float startY = panelY + headerHeight + 35.0f;
+            float rowHeight = 40.0f;
 
-            // Wygl¹d tekstu
-            int fontSize = 22;           // Rozmiar czcionki (¿eby siê mieœci³o)
+            int fontSize = 22;
 
             for (const auto& entry : dbPlan->entries) {
 
@@ -97,36 +97,26 @@ void HomeState::PlanPanel_Init()
                 text.setCharacterSize(fontSize);
                 text.setFillColor(sf::Color(77, 153, 204));
 
-                // === MAGIA CENTROWANIA POZIOMEGO (X) ===
-
-                // 1. ZnajdŸ lew¹ krawêdŸ kolumny dla danego dnia
+                // === CENTROWANIE POZIOME (X) ===
                 int colIndex = entry.dayOfWeek - 1; // 0..6
+                
+                // Walidacja indeksu
+                if (colIndex < 0 || colIndex > 6) continue;
+                
                 float colLeftEdge = panelX + marginLeft + (colIndex * colWidth);
-
-                // 2. ZnajdŸ œrodek tej kolumny
                 float colCenter = colLeftEdge + (colWidth / 2.0f);
 
-                // 3. Pobierz szerokoœæ samego napisu
                 sf::FloatRect textBounds = text.getLocalBounds();
-
-                // 4. Ustaw X tak, ¿eby œrodek napisu pokrywa³ siê ze œrodkiem kolumny
-                // (Odejmujemy po³owê szerokoœci napisu od œrodka kolumny)
                 float xPos = colCenter - (textBounds.width / 2.0f);
 
-
                 // === USTAWIANIE PIONOWE (Y) ===
-
-                // entry.orderIndex to kolejnoœæ w dniu (1, 2, 3...)
-                // Odejmujemy 1, ¿eby pierwszy element by³ na górze (index 0)
                 int rowIndex = entry.orderInDay - 1;
-
                 float yPos = startY + (rowIndex * rowHeight);
 
-                // Finalne ustawienie
                 text.setPosition(xPos, yPos);
 
-                // Dodajemy do listy rysowania
-                this->_planTexts.push_back(text);
+                // Dodaj do odpowiedniego wektora dla danego dnia
+                this->_planTextsDay[colIndex].push_back(text);
             }
         }
     }
@@ -142,8 +132,12 @@ void HomeState::PlanPanel_Update(float dt)
 void HomeState::PlanPanel_Draw(float dt)
 {
     this->_data->window.draw(this->_planPanel);
-    for (const auto& text : this->_planTexts) {
-        this->_data->window.draw(text);
+    
+    // Rysuj teksty ze wszystkich 7 wektorów
+    for (int day = 0; day < 7; ++day) {
+        for (const auto& text : this->_planTextsDay[day]) {
+            this->_data->window.draw(text);
+        }
     }
 }
 
