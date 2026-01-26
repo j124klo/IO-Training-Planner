@@ -9,6 +9,7 @@
 #define DEFAULT_FONT_FILEPATH "Resources/Fonts/Roboto-VariableFont_wdth,wght.ttf"
 #define PLACEHOLDER_SHORT_BUTTON_FILEPATH "Resources/Images/Placeholder Short Button.png"
 
+
 // scroll panel
 #define SCROLL_EDGE "Resources/Images/Scroll Edge.png"
 #define SCROLL_TOP "Resources/Images/Scroll Top.png"
@@ -19,6 +20,7 @@
 #define CONTINUE_BUTTON_FILEPATH "Resources/Images/Continue Button.png"
 #define LOGOUT_BUTTON_FILEPATH "Resources/Images/Logout Button.png"
 #define REGISTER_BUTTON_FILEPATH "Resources/Images/Register Button.png"
+#define BACK_BUTTON_FILEPATH "Resources/Images/Back Button.png"
 
 //	splash state
 #define SPLASH_STATE_SHOW_TIME 1.5
