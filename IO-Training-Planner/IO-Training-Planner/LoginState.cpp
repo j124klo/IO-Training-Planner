@@ -24,10 +24,11 @@ void LoginState::Login_Init()
 	this->_login.setCharacterSize(50);
 	this->_login.setFillColor(sf::Color::Black);
 	this->_loginBounds.setFillColor(sf::Color::White);
-	this->_loginBounds.setSize({ 300.0f, 100.0f });
+	this->_loginBounds.setSize({ 300.0f, 80.0f });
+
 	this->_loginBounds.setPosition(
 		SCREAN_WIDTH / 2 - this->_loginBounds.getGlobalBounds().width / 2,
-		SCREAN_HEIGHT / 3 - this->_loginBounds.getGlobalBounds().height / 2
+		SCREAN_HEIGHT / 7 +20.0f
 	);
 	this->_login.setPosition(
 		this->_loginBounds.getPosition().x + this->_loginBounds.getSize().x / 2 - this->_login.getGlobalBounds().width / 2,
@@ -52,10 +53,11 @@ void LoginState::Password_Init()
 	this->_password.setCharacterSize(50);
 	this->_password.setFillColor(sf::Color::Black);
 	this->_passwordBounds.setFillColor(sf::Color::White);
-	this->_passwordBounds.setSize({ 300.0f, 100.0f });
+	this->_passwordBounds.setSize({ 300.0f, 80.0f });
+
 	this->_passwordBounds.setPosition(
 		SCREAN_WIDTH / 2 - this->_passwordBounds.getGlobalBounds().width / 2,
-		this->_loginBounds.getPosition().y + this->_passwordBounds.getGlobalBounds().height * 2
+		this->_loginBounds.getPosition().y + this->_loginBounds.getGlobalBounds().height + this->_passwordLabel.getGlobalBounds().height + 60.0f
 	);
 	this->_password.setPosition(
 		this->_passwordBounds.getPosition().x + this->_passwordBounds.getSize().x / 2 - this->_password.getGlobalBounds().width / 2,

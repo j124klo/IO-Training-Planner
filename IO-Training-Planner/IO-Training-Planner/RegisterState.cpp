@@ -11,318 +11,337 @@ RegisterState::RegisterState(AppDataRef data) : _data(data)
 
 void RegisterState::Login_Init()
 {
-    _login.setFont(_data->assets.getFont("Default Font"));
-    _loginLabel.setFont(_data->assets.getFont("Default Font"));
+    this->_login.setFont(this->_data->assets.getFont("Default Font"));
+    this->_loginLabel.setFont(this->_data->assets.getFont("Default Font"));
 
-    _isLoginActive = false;
-    _loginText = "";
-    _loginLabel.setString("Login:");
-    _loginLabel.setCharacterSize(50);
-    _loginLabel.setFillColor(sf::Color::White);
-    _login.setString("");
-    _login.setCharacterSize(50);
-    _login.setFillColor(sf::Color::Black);
-    _loginBounds.setFillColor(sf::Color::White);
-    _loginBounds.setSize({ 300.0f, 80.0f });
-    _loginBounds.setPosition(
-        SCREAN_WIDTH / 2 - _loginBounds.getGlobalBounds().width / 2,
-        SCREAN_HEIGHT / 5
+    this->_isLoginActive = false;
+    this->_loginText = "";
+    this->_loginLabel.setString("Login:");
+    this->_loginLabel.setCharacterSize(50);
+    this->_loginLabel.setFillColor(sf::Color::White);
+    this->_login.setString("");
+    this->_login.setCharacterSize(50);
+    this->_login.setFillColor(sf::Color::Black);
+    this->_loginBounds.setFillColor(sf::Color::White);
+    this->_loginBounds.setSize({ 300.0f, 80.0f });
+
+    this->_loginBounds.setPosition(
+        SCREAN_WIDTH / 2 - this->_loginBounds.getGlobalBounds().width / 2,
+		SCREAN_HEIGHT / 7 + 20.0f
     );
-    _login.setPosition(
-        _loginBounds.getPosition().x + _loginBounds.getSize().x / 2 - _login.getGlobalBounds().width / 2,
-        _loginBounds.getPosition().y + _loginBounds.getSize().y / 2 - _login.getGlobalBounds().height / 2
+    this->_login.setPosition(
+        this->_loginBounds.getPosition().x + this->_loginBounds.getSize().x / 2 - this->_login.getGlobalBounds().width / 2,
+        this->_loginBounds.getPosition().y + this->_loginBounds.getSize().y / 2 - this->_login.getGlobalBounds().height / 2
     );
-    _loginLabel.setPosition(
-        _loginBounds.getPosition().x + _loginBounds.getSize().x / 2 - _loginLabel.getGlobalBounds().width / 2,
-        _loginBounds.getPosition().y - _loginLabel.getGlobalBounds().height - 20.0f
+    this->_loginLabel.setPosition(
+        this->_loginBounds.getPosition().x + this->_loginBounds.getSize().x / 2 - this->_loginLabel.getGlobalBounds().width / 2,
+        this->_loginBounds.getPosition().y - this->_loginLabel.getGlobalBounds().height - 20.0f
     );
 }
 void RegisterState::Password_Init()
 {
-    _password.setFont(_data->assets.getFont("Default Font"));
-    _passwordLabel.setFont(_data->assets.getFont("Default Font"));
+    this->_password.setFont(this->_data->assets.getFont("Default Font"));
+    this->_passwordLabel.setFont(this->_data->assets.getFont("Default Font"));
 
-    _isPasswordActive = false;
-    _passwordText = "";
-    _passwordLabel.setString("Password:");
-    _passwordLabel.setCharacterSize(50);
-    _passwordLabel.setFillColor(sf::Color::White);
-    _password.setString("");
-    _password.setCharacterSize(50);
-    _password.setFillColor(sf::Color::Black);
-    _passwordBounds.setFillColor(sf::Color::White);
-    _passwordBounds.setSize({ 300.0f, 80.0f });
-    _passwordBounds.setPosition(
-        SCREAN_WIDTH / 2 - _passwordBounds.getGlobalBounds().width / 2,
-        _loginBounds.getPosition().y + 140.0f
+    this->_isPasswordActive = false;
+    this->_passwordText = "";
+    this->_passwordLabel.setString("Password:");
+    this->_passwordLabel.setCharacterSize(50);
+    this->_passwordLabel.setFillColor(sf::Color::White);
+    this->_password.setString("");
+    this->_password.setCharacterSize(50);
+    this->_password.setFillColor(sf::Color::Black);
+    this->_passwordBounds.setFillColor(sf::Color::White);
+    this->_passwordBounds.setSize({ 300.0f, 80.0f });
+
+    this->_passwordBounds.setPosition(
+        SCREAN_WIDTH / 2 - this->_passwordBounds.getGlobalBounds().width / 2,
+		this->_loginBounds.getPosition().y + this->_loginBounds.getGlobalBounds().height + this->_passwordLabel.getGlobalBounds().height + 60.0f
     );
-    _password.setPosition(
-        _passwordBounds.getPosition().x + _passwordBounds.getSize().x / 2 - _password.getGlobalBounds().width / 2,
-        _passwordBounds.getPosition().y + _passwordBounds.getSize().y / 2 - _password.getGlobalBounds().height / 2
+    this->_password.setPosition(
+        this->_passwordBounds.getPosition().x + this->_passwordBounds.getSize().x / 2 - this->_password.getGlobalBounds().width / 2,
+        this->_passwordBounds.getPosition().y + this->_passwordBounds.getSize().y / 2 - this->_password.getGlobalBounds().height / 2
     );
-    _passwordLabel.setPosition(
-        _passwordBounds.getPosition().x + _passwordBounds.getSize().x / 2 - _passwordLabel.getGlobalBounds().width / 2,
-        _passwordBounds.getPosition().y - _passwordLabel.getGlobalBounds().height - 20.0f
+    this->_passwordLabel.setPosition(
+        this->_passwordBounds.getPosition().x + this->_passwordBounds.getSize().x / 2 - this->_passwordLabel.getGlobalBounds().width / 2,
+        this->_passwordBounds.getPosition().y - this->_passwordLabel.getGlobalBounds().height - 20.0f
     );
 }
 void RegisterState::ConfirmPassword_Init()
 {
-    _confirmPassword.setFont(_data->assets.getFont("Default Font"));
-    _confirmPasswordLabel.setFont(_data->assets.getFont("Default Font"));
+    this->_confirmPassword.setFont(this->_data->assets.getFont("Default Font"));
+    this->_confirmPasswordLabel.setFont(this->_data->assets.getFont("Default Font"));
 
-    _isConfirmPasswordActive = false;
-    _confirmPasswordText = "";
-    _confirmPasswordLabel.setString("Confirm Password:");
-    _confirmPasswordLabel.setCharacterSize(50);
-    _confirmPasswordLabel.setFillColor(sf::Color::White);
-    _confirmPassword.setString("");
-    _confirmPassword.setCharacterSize(50);
-    _confirmPassword.setFillColor(sf::Color::Black);
-    _confirmPasswordBounds.setFillColor(sf::Color::White);
-    _confirmPasswordBounds.setSize({ 300.0f, 80.0f });
-    _confirmPasswordBounds.setPosition(
-        SCREAN_WIDTH / 2 - _confirmPasswordBounds.getGlobalBounds().width / 2,
-        _passwordBounds.getPosition().y + 140.0f
-    );
-    _confirmPassword.setPosition(
-        _confirmPasswordBounds.getPosition().x + _confirmPasswordBounds.getSize().x / 2 - _confirmPassword.getGlobalBounds().width / 2,
-        _confirmPasswordBounds.getPosition().y + _confirmPasswordBounds.getSize().y / 2 - _confirmPassword.getGlobalBounds().height / 2
-    );
-    _confirmPasswordLabel.setPosition(
-        _confirmPasswordBounds.getPosition().x + _confirmPasswordBounds.getSize().x / 2 - _confirmPasswordLabel.getGlobalBounds().width / 2,
-        _confirmPasswordBounds.getPosition().y - _confirmPasswordLabel.getGlobalBounds().height - 20.0f
-    );
-}
-void RegisterState::Buttons_Init()
-{
-    // Register button
-    _registerButton._sprite.setTexture(_data->assets.getTexture("Continue Button"));
-    _registerButton._pressed = false;
-    _registerButton._update = false;
-    _registerButton._rect = sf::IntRect(0, 0, 800, 300);
-    _registerButton._sprite.setTextureRect(_registerButton._rect);
-    _registerButton._sprite.setScale(0.25f, 0.25f);
-    _registerButton._sprite.setPosition(
-        SCREAN_WIDTH / 2 - _registerButton._sprite.getGlobalBounds().width / 2,
-        _confirmPasswordBounds.getPosition().y + 140.0f
-    );
+    this->_isConfirmPasswordActive = false;
+    this->_confirmPasswordText = "";
+    this->_confirmPasswordLabel.setString("Confirm Password:");
+    this->_confirmPasswordLabel.setCharacterSize(50);
+    this->_confirmPasswordLabel.setFillColor(sf::Color::White);
+    this->_confirmPassword.setString("");
+    this->_confirmPassword.setCharacterSize(50);
+    this->_confirmPassword.setFillColor(sf::Color::Black);
+    this->_confirmPasswordBounds.setFillColor(sf::Color::White);
+    this->_confirmPasswordBounds.setSize({ 300.0f, 80.0f });
 
-    // Back button
-    _backButton._sprite.setTexture(_data->assets.getTexture("Placeholder Short Button"));
-    _backButton._pressed = false;
-    _backButton._update = false;
-    _backButton._rect = sf::IntRect(0, 0, 800, 300);
-    _backButton._sprite.setTextureRect(_backButton._rect);
-    _backButton._sprite.setScale(0.2f, 0.2f);
-    _backButton._sprite.setPosition(50.0f, 50.0f);
+    this->_confirmPasswordBounds.setPosition(
+        SCREAN_WIDTH / 2 - this->_confirmPasswordBounds.getGlobalBounds().width / 2,
+        this->_passwordBounds.getPosition().y + this->_passwordBounds.getGlobalBounds().height + this->_confirmPasswordLabel.getGlobalBounds().height + 60.0f
+    );
+    this->_confirmPassword.setPosition(
+        this->_confirmPasswordBounds.getPosition().x + this->_confirmPasswordBounds.getSize().x / 2 - this->_confirmPassword.getGlobalBounds().width / 2,
+        this->_confirmPasswordBounds.getPosition().y + this->_confirmPasswordBounds.getSize().y / 2 - this->_confirmPassword.getGlobalBounds().height / 2
+    );
+    this->_confirmPasswordLabel.setPosition(
+        this->_confirmPasswordBounds.getPosition().x + this->_confirmPasswordBounds.getSize().x / 2 - this->_confirmPasswordLabel.getGlobalBounds().width / 2,
+        this->_confirmPasswordBounds.getPosition().y - this->_confirmPasswordLabel.getGlobalBounds().height - 20.0f
+    );
 }
 void RegisterState::Message_Init()
 {
-    _messageLabel.setFont(_data->assets.getFont("Default Font"));
-    _messageLabel.setString("");
-    _messageLabel.setCharacterSize(30);
-    _messageLabel.setFillColor(sf::Color::Red);
-    _messageLabel.setPosition(
+    this->_messageLabel.setFont(this->_data->assets.getFont("Default Font"));
+    this->_messageLabel.setString("");
+    this->_messageLabel.setCharacterSize(30);
+    this->_messageLabel.setFillColor(sf::Color::Red);
+    this->_messageLabel.setPosition(
         SCREAN_WIDTH / 2,
-        _registerButton._sprite.getPosition().y + 100.0f
+        this->_continueButton._sprite.getPosition().y + this->_continueButton._sprite.getGlobalBounds().height + 40.0f
     );
+}
+void RegisterState::TextFields_HandleInput(sf::Event& event)
+{
+    // Input field selection
+    if (this->_data->input.isRectangleShapeClicked(this->_loginBounds, sf::Mouse::Left, this->_data->window))
+    {
+        this->_isLoginActive = true;
+        this->_isPasswordActive = false;
+        this->_isConfirmPasswordActive = false;
+        this->_loginBounds.setOutlineColor(sf::Color::Blue);
+        this->_loginBounds.setOutlineThickness(2.0f);
+        this->_passwordBounds.setOutlineThickness(0.0f);
+        this->_confirmPasswordBounds.setOutlineThickness(0.0f);
+    }
+    else if (this->_data->input.isRectangleShapeClicked(this->_passwordBounds, sf::Mouse::Left, this->_data->window))
+    {
+        this->_isLoginActive = false;
+        this->_isPasswordActive = true;
+        this->_isConfirmPasswordActive = false;
+        this->_passwordBounds.setOutlineColor(sf::Color::Blue);
+        this->_passwordBounds.setOutlineThickness(2.0f);
+        this->_loginBounds.setOutlineThickness(0.0f);
+        this->_confirmPasswordBounds.setOutlineThickness(0.0f);
+    }
+    else if (this->_data->input.isRectangleShapeClicked(this->_confirmPasswordBounds, sf::Mouse::Left, this->_data->window))
+    {
+        this->_isLoginActive = false;
+        this->_isPasswordActive = false;
+        this->_isConfirmPasswordActive = true;
+        this->_confirmPasswordBounds.setOutlineColor(sf::Color::Blue);
+        this->_confirmPasswordBounds.setOutlineThickness(2.0f);
+        this->_loginBounds.setOutlineThickness(0.0f);
+        this->_passwordBounds.setOutlineThickness(0.0f);
+    }
+    else if (this->_data->input.isSpriteClicked(this->_background, sf::Mouse::Left, this->_data->window))
+    {
+        this->_isLoginActive = false;
+        this->_isPasswordActive = false;
+        this->_isConfirmPasswordActive = false;
+        this->_loginBounds.setOutlineThickness(0.0f);
+        this->_passwordBounds.setOutlineThickness(0.0f);
+        this->_confirmPasswordBounds.setOutlineThickness(0.0f);
+    }
+
+    // Text input handling
+    if (this->_data->input.typingText(event, this->_loginText, this->_login, this->_isLoginActive))
+    {
+        this->_login.setOrigin(this->_login.getGlobalBounds().width / 2, this->_login.getGlobalBounds().height / 2);
+        this->_login.setPosition(
+            this->_loginBounds.getPosition().x + this->_loginBounds.getSize().x / 2,
+            this->_loginBounds.getPosition().y + this->_loginBounds.getSize().y / 2
+        );
+    }
+    else if (this->_data->input.typingText(event, this->_passwordText, this->_password, this->_isPasswordActive))
+    {
+        this->_password.setOrigin(this->_password.getGlobalBounds().width / 2, this->_password.getGlobalBounds().height / 2);
+        this->_password.setPosition(
+            this->_passwordBounds.getPosition().x + this->_passwordBounds.getSize().x / 2,
+            this->_passwordBounds.getPosition().y + this->_passwordBounds.getSize().y / 2
+        );
+    }
+    else if (this->_data->input.typingText(event, this->_confirmPasswordText, this->_confirmPassword, this->_isConfirmPasswordActive))
+    {
+        this->_confirmPassword.setOrigin(this->_confirmPassword.getGlobalBounds().width / 2, this->_confirmPassword.getGlobalBounds().height / 2);
+        this->_confirmPassword.setPosition(
+            this->_confirmPasswordBounds.getPosition().x + this->_confirmPasswordBounds.getSize().x / 2,
+            this->_confirmPasswordBounds.getPosition().y + this->_confirmPasswordBounds.getSize().y / 2
+        );
+    }
+}
+void RegisterState::TextFields_Update(float dt)
+{
+
+}
+void RegisterState::TextFields_Draw(float dt)
+{
+    this->_data->window.draw(_loginLabel);
+    this->_data->window.draw(_loginBounds);
+    this->_data->window.draw(_login);
+
+    this->_data->window.draw(_passwordLabel);
+    this->_data->window.draw(_passwordBounds);
+    this->_data->window.draw(_password);
+
+    this->_data->window.draw(_confirmPasswordLabel);
+    this->_data->window.draw(_confirmPasswordBounds);
+    this->_data->window.draw(_confirmPassword);
+
+    this->_data->window.draw(_messageLabel);
+}
+
+void RegisterState::Buttons_Init()
+{
+    this->_continueButton._sprite.setTexture(this->_data->assets.getTexture("Continue Button"));
+    this->_backButton._sprite.setTexture(this->_data->assets.getTexture("Back Button"));
+
+    this->_continueButton._pressed = false;
+    this->_continueButton._update = false;
+    this->_continueButton._rect = sf::IntRect(0, 0, 800, 300);
+    this->_continueButton._sprite.setTextureRect(this->_continueButton._rect);
+    this->_continueButton._sprite.setScale(0.35f, 0.35f);
+    this->_continueButton._sprite.setPosition(
+        SCREAN_WIDTH / 2 - this->_continueButton._sprite.getGlobalBounds().width / 2,
+		this->_confirmPasswordBounds.getPosition().y + this->_confirmPasswordBounds.getGlobalBounds().height + 40.0f
+    );
+
+    this->_backButton._pressed = false;
+    this->_backButton._update = false;
+    this->_backButton._rect = sf::IntRect(0, 0, 300, 300);
+    this->_backButton._sprite.setTextureRect(this->_backButton._rect);
+    this->_backButton._sprite.setScale(0.35f, 0.35f);
+    this->_backButton._sprite.setPosition(
+        this->_continueButton._sprite.getPosition().x - 40.0f - this->_backButton._sprite.getGlobalBounds().width,
+        this->_continueButton._sprite.getPosition().y
+    );
+}
+void RegisterState::Buttons_HandleInput(sf::Event& event)
+{
+    if (this->_data->input.isSpriteClickedAndReleased(this->_backButton._sprite, sf::Mouse::Left, this->_data->window, this->_backButton._pressed, this->_backButton._update))
+    {
+        this->_data->machine.AddState(StateRef(new LoginState(_data)), true);
+    }
+
+    if (this->_data->input.isSpriteClickedAndReleased(this->_continueButton._sprite, sf::Mouse::Left, this->_data->window, this->_continueButton._pressed, this->_continueButton._update))
+    {
+        if (this->_loginText.empty() || this->_passwordText.empty())
+        {
+            this->_messageLabel.setString("Login i haslo nie moga byc puste!");
+            this->_messageLabel.setFillColor(sf::Color::Red);
+        }
+        else if (this->_passwordText != this->_confirmPasswordText)
+        {
+            this->_messageLabel.setString("Hasla sie nie zgadzaja!");
+            this->_messageLabel.setFillColor(sf::Color::Red);
+        }
+        else
+        {
+            auto existingUser = this->_data->database.getUserByLogin(this->_loginText);
+            if (existingUser != nullptr)
+            {
+                this->_messageLabel.setString("Uzytkownik o takim loginie juz istnieje!");
+                this->_messageLabel.setFillColor(sf::Color::Red);
+            }
+            else
+            {
+                auto newUser = this->_data->database.addUser(this->_loginText, this->_passwordText);
+
+                if (newUser)
+                {
+                    auto availablePlans = this->_data->database.getAllPlanHeaders();
+
+                    if (!availablePlans.empty())
+                    {
+                        int defaultPlanId = availablePlans[0].id;
+                        this->_data->database.assignPlanToUser(newUser->id, defaultPlanId);
+                        // Opcjonalnie: log w konsoli
+                        cout << "[REGISTER] Przypisano plan ID: " << defaultPlanId << " uzytkownikowi: " << this->_loginText << endl;
+                    }
+
+                    this->_messageLabel.setString("Rejestracja udana! Mozesz sie zalogowac.");
+                    this->_messageLabel.setFillColor(sf::Color::Green);
+                }
+                else
+                {
+                    this->_messageLabel.setString("Blad podczas rejestracji!");
+                    this->_messageLabel.setFillColor(sf::Color::Red);
+                }
+            }
+        }
+        this->_messageLabel.setOrigin(this->_messageLabel.getGlobalBounds().width / 2, 0);
+    }
+}
+void RegisterState::Buttons_Update(float dt)
+{
+    if (this->_continueButton._update)
+    {
+        this->_continueButton._update = false;
+        this->_continueButton._rect.left = this->_continueButton._pressed ? 800 : 0;
+        this->_continueButton._sprite.setTextureRect(this->_continueButton._rect);
+    }
+
+    if (this->_backButton._update)
+    {
+        this->_backButton._update = false;
+        this->_backButton._rect.left = this->_backButton._pressed ? 300 : 0;
+        this->_backButton._sprite.setTextureRect(this->_backButton._rect);
+    }
+}
+void RegisterState::Buttons_Draw(float dt)
+{
+    this->_data->window.draw(_continueButton._sprite);
+    this->_data->window.draw(_backButton._sprite);
 }
 
 void RegisterState::Init()
 {
-    _data->assets.loadTexture("Default Background", DEFAULT_BACKGROUND_FILEPATH);
-    _data->assets.loadFont("Default Font", DEFAULT_FONT_FILEPATH);
-    _data->assets.loadTexture("Continue Button", CONTINUE_BUTTON_FILEPATH);
-    _data->assets.loadTexture("Placeholder Short Button", PLACEHOLDER_SHORT_BUTTON_FILEPATH);
+    _data->assets.loadTexture("Back Button", PLACEHOLDER_SHORT_BUTTON_FILEPATH);
 
     _background.setTexture(_data->assets.getTexture("Default Background"));
 
     Login_Init();
     Password_Init();
     ConfirmPassword_Init();
+
     Buttons_Init();
+
     Message_Init();
 }
 void RegisterState::HandleInput()
 {
     sf::Event event;
 
-    while (_data->window.pollEvent(event))
+    while (this->_data->window.pollEvent(event))
     {
         if (event.type == sf::Event::Closed)
         {
-            _data->window.close();
+            this->_data->window.close();
         }
 
-        // Back button
-        if (_data->input.isSpriteClickedAndReleased(_backButton._sprite, sf::Mouse::Left, _data->window, _backButton._pressed, _backButton._update))
-        {
-            _data->machine.AddState(StateRef(new LoginState(_data)), true);
-        }
-
-        // Register button
-        if (_data->input.isSpriteClickedAndReleased(_registerButton._sprite, sf::Mouse::Left, _data->window, _registerButton._pressed, _registerButton._update))
-        {
-            // Validation
-            if (_loginText.empty() || _passwordText.empty())
-            {
-                _messageLabel.setString("Login i haslo nie moga byc puste!");
-                _messageLabel.setFillColor(sf::Color::Red);
-            }
-            else if (_passwordText != _confirmPasswordText)
-            {
-                _messageLabel.setString("Hasla sie nie zgadzaja!");
-                _messageLabel.setFillColor(sf::Color::Red);
-            }
-            else
-            {
-                // Check if user already exists
-                auto existingUser = _data->database.getUserByLogin(_loginText);
-                if (existingUser != nullptr)
-                {
-                    _messageLabel.setString("Uzytkownik o takim loginie juz istnieje!");
-                    _messageLabel.setFillColor(sf::Color::Red);
-                }
-                else
-                {
-                    // Register new user
-                    auto newUser = _data->database.addUser(_loginText, _passwordText);
-
-                    if (newUser)
-                    {
-                        // --- AUTOMATYCZNE PRZYPISANIE PLANU ---
-                        // Pobieramy wszystkie dostêpne plany
-                        auto availablePlans = _data->database.getAllPlanHeaders();
-
-                        // Jeœli w bazie s¹ jakieœ plany, przypisujemy pierwszy (domyœlny)
-                        if (!availablePlans.empty())
-                        {
-                            int defaultPlanId = availablePlans[0].id;
-                            _data->database.assignPlanToUser(newUser->id, defaultPlanId);
-                            // Opcjonalnie: log w konsoli
-                            cout << "[REGISTER] Przypisano plan ID: " << defaultPlanId << " uzytkownikowi: " << _loginText << endl;
-                        }
-                        // ---------------------------------------
-
-                        _messageLabel.setString("Rejestracja udana! Mozesz sie zalogowac.");
-                        _messageLabel.setFillColor(sf::Color::Green);
-                    }
-                    else
-                    {
-                        _messageLabel.setString("Blad podczas rejestracji!");
-                        _messageLabel.setFillColor(sf::Color::Red);
-                    }
-                }
-            }
-            // Center message
-            _messageLabel.setOrigin(_messageLabel.getGlobalBounds().width / 2, 0);
-        }
-
-        // Input field selection
-        if (_data->input.isRectangleShapeClicked(_loginBounds, sf::Mouse::Left, _data->window))
-        {
-            _isLoginActive = true;
-            _isPasswordActive = false;
-            _isConfirmPasswordActive = false;
-            _loginBounds.setOutlineColor(sf::Color::Blue);
-            _loginBounds.setOutlineThickness(2.0f);
-            _passwordBounds.setOutlineThickness(0.0f);
-            _confirmPasswordBounds.setOutlineThickness(0.0f);
-        }
-        else if (_data->input.isRectangleShapeClicked(_passwordBounds, sf::Mouse::Left, _data->window))
-        {
-            _isLoginActive = false;
-            _isPasswordActive = true;
-            _isConfirmPasswordActive = false;
-            _passwordBounds.setOutlineColor(sf::Color::Blue);
-            _passwordBounds.setOutlineThickness(2.0f);
-            _loginBounds.setOutlineThickness(0.0f);
-            _confirmPasswordBounds.setOutlineThickness(0.0f);
-        }
-        else if (_data->input.isRectangleShapeClicked(_confirmPasswordBounds, sf::Mouse::Left, _data->window))
-        {
-            _isLoginActive = false;
-            _isPasswordActive = false;
-            _isConfirmPasswordActive = true;
-            _confirmPasswordBounds.setOutlineColor(sf::Color::Blue);
-            _confirmPasswordBounds.setOutlineThickness(2.0f);
-            _loginBounds.setOutlineThickness(0.0f);
-            _passwordBounds.setOutlineThickness(0.0f);
-        }
-        else if (_data->input.isSpriteClicked(_background, sf::Mouse::Left, _data->window))
-        {
-            _isLoginActive = false;
-            _isPasswordActive = false;
-            _isConfirmPasswordActive = false;
-            _loginBounds.setOutlineThickness(0.0f);
-            _passwordBounds.setOutlineThickness(0.0f);
-            _confirmPasswordBounds.setOutlineThickness(0.0f);
-        }
-
-        // Text input handling
-        if (_data->input.typingText(event, _loginText, _login, _isLoginActive))
-        {
-            _login.setOrigin(_login.getGlobalBounds().width / 2, _login.getGlobalBounds().height / 2);
-            _login.setPosition(
-                _loginBounds.getPosition().x + _loginBounds.getSize().x / 2,
-                _loginBounds.getPosition().y + _loginBounds.getSize().y / 2
-            );
-        }
-        else if (_data->input.typingText(event, _passwordText, _password, _isPasswordActive))
-        {
-            _password.setOrigin(_password.getGlobalBounds().width / 2, _password.getGlobalBounds().height / 2);
-            _password.setPosition(
-                _passwordBounds.getPosition().x + _passwordBounds.getSize().x / 2,
-                _passwordBounds.getPosition().y + _passwordBounds.getSize().y / 2
-            );
-        }
-        else if (_data->input.typingText(event, _confirmPasswordText, _confirmPassword, _isConfirmPasswordActive))
-        {
-            _confirmPassword.setOrigin(_confirmPassword.getGlobalBounds().width / 2, _confirmPassword.getGlobalBounds().height / 2);
-            _confirmPassword.setPosition(
-                _confirmPasswordBounds.getPosition().x + _confirmPasswordBounds.getSize().x / 2,
-                _confirmPasswordBounds.getPosition().y + _confirmPasswordBounds.getSize().y / 2
-            );
-        }
+		Buttons_HandleInput(event);
+		TextFields_HandleInput(event);        
     }
 }
 void RegisterState::Update(float dt)
 {
-    if (_registerButton._update)
-    {
-        _registerButton._update = false;
-        _registerButton._rect.left = _registerButton._pressed ? 800 : 0;
-        _registerButton._sprite.setTextureRect(_registerButton._rect);
-    }
-
-    if (_backButton._update)
-    {
-        _backButton._update = false;
-        _backButton._rect.left = _backButton._pressed ? 800 : 0;
-        _backButton._sprite.setTextureRect(_backButton._rect);
-    }
+	TextFields_Update(dt);
+	Buttons_Update(dt);
 }
 void RegisterState::Draw(float dt)
 {
-    _data->window.clear(sf::Color::Black);
+    this->_data->window.clear(sf::Color::Black);
 
-    _data->window.draw(_background);
+    this->_data->window.draw(this->_background);
 
-    _data->window.draw(_loginLabel);
-    _data->window.draw(_loginBounds);
-    _data->window.draw(_login);
+	TextFields_Draw(dt);
+	Buttons_Draw(dt);
 
-    _data->window.draw(_passwordLabel);
-    _data->window.draw(_passwordBounds);
-    _data->window.draw(_password);
-
-    _data->window.draw(_confirmPasswordLabel);
-    _data->window.draw(_confirmPasswordBounds);
-    _data->window.draw(_confirmPassword);
-
-    _data->window.draw(_registerButton._sprite);
-    _data->window.draw(_backButton._sprite);
-    _data->window.draw(_messageLabel);
-
-    _data->window.display();
+    this->_data->window.display();
 }
