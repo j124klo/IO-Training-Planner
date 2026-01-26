@@ -39,7 +39,7 @@ private:
     //  Error/Success message
     sf::Text _messageLabel;
 
-	//  Buttons
+    //  Buttons
     Button _continueButton;
     Button _backButton;
 
@@ -50,14 +50,14 @@ public:
     void Password_Init();
     void ConfirmPassword_Init();
     void Message_Init();
-	void TextFields_HandleInput(sf::Event& event);
-	void TextFields_Update(float dt);
-	void TextFields_Draw(float dt);
+    void TextFields_HandleInput(sf::Event& event);
+    void TextFields_Update(float dt);
+    void TextFields_Draw(float dt);
 
     void Buttons_Init();
-	void Buttons_HandleInput(sf::Event& event);
-	void Buttons_Update(float dt);
-	void Buttons_Draw(float dt);
+    void Buttons_HandleInput(sf::Event& event);
+    void Buttons_Update(float dt);
+    void Buttons_Draw(float dt);
 
     void Init();
     void HandleInput();

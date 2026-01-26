@@ -27,7 +27,7 @@ void RegisterState::Login_Init()
 
     this->_loginBounds.setPosition(
         SCREAN_WIDTH / 2 - this->_loginBounds.getGlobalBounds().width / 2,
-		SCREAN_HEIGHT / 7 + 20.0f
+        SCREAN_HEIGHT / 7 + 20.0f
     );
     this->_login.setPosition(
         this->_loginBounds.getPosition().x + this->_loginBounds.getSize().x / 2 - this->_login.getGlobalBounds().width / 2,
@@ -56,7 +56,7 @@ void RegisterState::Password_Init()
 
     this->_passwordBounds.setPosition(
         SCREAN_WIDTH / 2 - this->_passwordBounds.getGlobalBounds().width / 2,
-		this->_loginBounds.getPosition().y + this->_loginBounds.getGlobalBounds().height + this->_passwordLabel.getGlobalBounds().height + 60.0f
+        this->_loginBounds.getPosition().y + this->_loginBounds.getGlobalBounds().height + this->_passwordLabel.getGlobalBounds().height + 60.0f
     );
     this->_password.setPosition(
         this->_passwordBounds.getPosition().x + this->_passwordBounds.getSize().x / 2 - this->_password.getGlobalBounds().width / 2,
@@ -199,6 +199,8 @@ void RegisterState::TextFields_Draw(float dt)
 
 void RegisterState::Buttons_Init()
 {
+    this->_data->assets.loadTexture("Back Button", BACK_BUTTON_FILEPATH);
+
     this->_continueButton._sprite.setTexture(this->_data->assets.getTexture("Continue Button"));
     this->_backButton._sprite.setTexture(this->_data->assets.getTexture("Back Button"));
 
@@ -209,7 +211,7 @@ void RegisterState::Buttons_Init()
     this->_continueButton._sprite.setScale(0.35f, 0.35f);
     this->_continueButton._sprite.setPosition(
         SCREAN_WIDTH / 2 - this->_continueButton._sprite.getGlobalBounds().width / 2,
-		this->_confirmPasswordBounds.getPosition().y + this->_confirmPasswordBounds.getGlobalBounds().height + 40.0f
+        this->_confirmPasswordBounds.getPosition().y + this->_confirmPasswordBounds.getGlobalBounds().height + 40.0f
     );
 
     this->_backButton._pressed = false;
@@ -302,9 +304,7 @@ void RegisterState::Buttons_Draw(float dt)
 
 void RegisterState::Init()
 {
-    _data->assets.loadTexture("Back Button", BACK_BUTTON_FILEPATH);
-
-    _background.setTexture(_data->assets.getTexture("Default Background"));
+    this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
 
     Login_Init();
     Password_Init();
@@ -325,14 +325,14 @@ void RegisterState::HandleInput()
             this->_data->window.close();
         }
 
-		Buttons_HandleInput(event);
-		TextFields_HandleInput(event);        
+        Buttons_HandleInput(event);
+        TextFields_HandleInput(event);
     }
 }
 void RegisterState::Update(float dt)
 {
-	TextFields_Update(dt);
-	Buttons_Update(dt);
+    TextFields_Update(dt);
+    Buttons_Update(dt);
 }
 void RegisterState::Draw(float dt)
 {
@@ -340,8 +340,8 @@ void RegisterState::Draw(float dt)
 
     this->_data->window.draw(this->_background);
 
-	TextFields_Draw(dt);
-	Buttons_Draw(dt);
+    TextFields_Draw(dt);
+    Buttons_Draw(dt);
 
     this->_data->window.display();
 }
