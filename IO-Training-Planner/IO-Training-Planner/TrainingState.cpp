@@ -13,6 +13,20 @@ TrainingState::TrainingState(AppDataRef data) : GuiState(data)
     _selectedDay = -1;
 }
 
+string TrainingState::getCurrentDate() {
+    time_t t = time(0);   // Pobierz czas systemowy
+    struct tm now;        // Struktura na datê (nie wskaŸnik)
+
+    localtime_s(&now, &t);
+
+    stringstream ss;
+    ss << (now.tm_year + 1900) << '-'
+        << setfill('0') << setw(2) << (now.tm_mon + 1) << '-'
+        << setfill('0') << setw(2) << now.tm_mday;
+
+    return ss.str();
+}
+
 void TrainingState::State_Init()
 {
     this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
@@ -480,7 +494,7 @@ void TrainingState::State_HandleInput(sf::Event& event)
                         this->_data->database.addWorkoutLog(
                             this->_data->currentUser->id,
                             ex.exerciseId,
-                            "2026-01-25",
+                            getCurrentDate(),
                             row.setNumber,
                             v1,
                             v2
