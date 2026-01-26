@@ -192,6 +192,7 @@
     <Image Include="Resources\Images\Calculator Button.png" />
     <Image Include="Resources\Images\Continue Button.png" />
     <Image Include="Resources\Images\Default Background.png" />
+    <Image Include="Resources\Images\Logo.png" />
     <Image Include="Resources\Images\Placeholder Long Button.png" />
     <Image Include="Resources\Images\Exercise List Button.png" />
     <Image Include="Resources\Images\GUI Bar.png" />
