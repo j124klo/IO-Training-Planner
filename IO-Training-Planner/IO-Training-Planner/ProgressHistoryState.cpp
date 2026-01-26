@@ -7,6 +7,48 @@ using namespace std;
 
 ProgressHistoryState::ProgressHistoryState(AppDataRef data) : GuiState(data)
 {
+
+}
+
+string ProgressHistoryState::formatLogResult(const WorkoutLog& log)
+{
+    // Pobieramy æwiczenie, ¿eby znaæ typ
+    auto ex = this->_data->database.getExerciseById(log.exerciseId);
+
+    if (!ex) {
+        stringstream ss;
+        ss << log.weight << " - " << log.reps;
+        return ss.str();
+    }
+
+    bool hasDist = false;
+    bool hasTime = false;
+    for (auto vt : ex->valueTypes) {
+        if (vt == ValueType::DISTANCE_KM) hasDist = true;
+        if (vt == ValueType::TIME_SEC) hasTime = true;
+    }
+
+    stringstream ss;
+    if (hasDist) {
+        // Bieganie: km / min
+        ss << log.weight << "km / " << log.reps << "min";
+    }
+    else if (hasTime) {
+        // Plank: s
+        ss << log.weight << "s";
+    }
+    else {
+        // Si³ownia
+        if (log.weight > 0) {
+            ss << log.weight << "kg x " << log.reps;
+        }
+        else {
+            // Jeœli ciê¿ar 0 (np. pompki), wyœwietl tylko powtórzenia
+            ss << log.reps << " reps";
+        }
+    }
+
+    return ss.str();
 }
 
 void ProgressHistoryState::State_Init()
@@ -84,48 +126,6 @@ void ProgressHistoryState::State_Init()
         currentY += 30.0f;
     }
 }
-
-string ProgressHistoryState::formatLogResult(const WorkoutLog& log)
-{
-    // Pobieramy æwiczenie, ¿eby znaæ typ
-    auto ex = this->_data->database.getExerciseById(log.exerciseId);
-
-    if (!ex) {
-        stringstream ss;
-        ss << log.weight << " - " << log.reps;
-        return ss.str();
-    }
-
-    bool hasDist = false;
-    bool hasTime = false;
-    for (auto vt : ex->valueTypes) {
-        if (vt == ValueType::DISTANCE_KM) hasDist = true;
-        if (vt == ValueType::TIME_SEC) hasTime = true;
-    }
-
-    stringstream ss;
-    if (hasDist) {
-        // Bieganie: km / min
-        ss << log.weight << "km / " << log.reps << "min";
-    }
-    else if (hasTime) {
-        // Plank: s
-        ss << log.weight << "s";
-    }
-    else {
-        // Si³ownia
-        if (log.weight > 0) {
-            ss << log.weight << "kg x " << log.reps;
-        }
-        else {
-            // Jeœli ciê¿ar 0 (np. pompki), wyœwietl tylko powtórzenia
-            ss << log.reps << " reps";
-        }
-    }
-
-    return ss.str();
-}
-
 void ProgressHistoryState::State_HandleInput(sf::Event& event)
 {
     if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
@@ -138,7 +138,6 @@ void ProgressHistoryState::State_HandleInput(sf::Event& event)
         }
     }
 }
-
 void ProgressHistoryState::State_Update(float dt)
 {
     // Hover effect
@@ -151,7 +150,6 @@ void ProgressHistoryState::State_Update(float dt)
         _backButtonShape.setOutlineThickness(0.0f);
     }
 }
-
 void ProgressHistoryState::State_Draw(float dt)
 {
     this->_data->window.draw(this->_background);

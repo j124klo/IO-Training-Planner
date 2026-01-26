@@ -177,7 +177,7 @@
       <Filter>Header Files\States</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
+      <Filter>Resource Files\Images</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -241,25 +241,25 @@
     <Image Include="Resources\Images\Logout Button.png">
       <Filter>Resource Files\Images</Filter>
     </Image>
-    <Image Include="Resources\Images\Logo.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Resources\Images\Placeholder Long Button.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="Resources\Images\Timeline Button.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Resources\Images\Logo.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Images</Filter>
     </Image>
     <Image Include="Resources\Images\Start Training Button.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="Resources\Images\Placeholder Long Button.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="Resources\Images\Logo.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="Resources\Images\Logo.ico">
+      <Filter>Resource Files\Images</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IO-Training-Planner.rc">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Images</Filter>
     </ResourceCompile>
   </ItemGroup>
 </Project>
