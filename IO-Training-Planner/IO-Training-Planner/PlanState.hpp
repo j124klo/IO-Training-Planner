@@ -46,6 +46,14 @@ private:
     float _headerHeight = 50.0f;            // Wysokoœæ nag³ówka
     float _rowHeight = 35.0f;               // Wysokoœæ wiersza z æwiczeniem (zmniejszona - tylko nazwa)
     
+    // --- SCROLLOWANIE TABELKI ÆWICZEÑ ---
+    int _tableScrollOffset = 0;             // Przesuniêcie scrollowania tabelki
+    int _tableMaxVisibleRows = 15;          // Maksymalna liczba widocznych wierszy
+    sf::RectangleShape _tableScrollbar;     // Pasek scrollbara tabelki
+    sf::RectangleShape _tableScrollThumb;   // "Kciuk" scrollbara tabelki
+    void UpdateTableScroll(int delta);
+    int GetMaxTableRows();                  // Zwraca maksymaln¹ liczbê æwiczeñ w jednej kolumnie
+    
     void InitDayColumns();                  // Inicjalizacja kolumn
     void RefreshTableLayout();              // Odœwie¿enie layoutu po zmianach
 
@@ -116,6 +124,15 @@ private:
     sf::Text _availablePlansTitle;
     vector<sf::RectangleShape> _planButtons;
     void LoadAvailablePlans();
+    
+    // --- SCROLLOWANIE LISTY PLANÓW ---
+    int _planListScrollOffset = 0;          // Przesuniêcie scrollowania listy planów
+    int _planListMaxVisible = 5;            // Maksymalna liczba widocznych planów
+    sf::RectangleShape _planListScrollbar;  // Pasek scrollbara
+    sf::RectangleShape _planListScrollThumb;// "Kciuk" scrollbara
+    sf::FloatRect _planListArea;            // Obszar listy planów (do wykrywania scrollowania)
+    void UpdatePlanListScroll(int delta);
+    void InitPlanListScrollbar();
 
     // --- PRZYCISKI EDIT & SAVE ---
     sf::RectangleShape _editButton;
@@ -124,6 +141,9 @@ private:
     sf::Text _saveText;
     bool _isEditMode = false;
     void InitSideMenuButtons();
+    
+    // --- LEWE MENU (NEW/DELETE) ---
+    void InitLeftMenuButtons();
 
 public:
     PlanState(AppDataRef data);
