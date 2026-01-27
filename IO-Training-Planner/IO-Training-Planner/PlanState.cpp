@@ -23,7 +23,6 @@ string PlanState::getDayName(int dayId) {
 	default: return "";
 	}
 }
-
 string PlanState::getDayShortName(int dayId) {
 	switch (dayId) {
 	case 1: return "MON";
@@ -127,7 +126,6 @@ void PlanState::Plan_Init()
 	InitSideMenuButtons();
 	InitLeftMenuButtons();
 }
-
 void PlanState::Plan_Draw(float dt)
 {
 	// 1. Rysuj nag³ówki kolumn (dni tygodnia)
@@ -207,7 +205,6 @@ void PlanState::State_Init()
 	InitPlanListScrollbar();  // Scrollbar listy planów
 	Plan_Init();
 }
-
 void PlanState::State_HandleInput(sf::Event& event)
 {
 	// 1. Obs³uga zamkniêcia okna (Standard)
@@ -472,7 +469,6 @@ void PlanState::State_HandleInput(sf::Event& event)
 		}
 	}
 }
-
 void PlanState::State_Update(float dt)
 {
 	// Jeœli zmieni³ siê tryb edycji, mo¿emy zaktualizowaæ kolory
@@ -487,7 +483,6 @@ void PlanState::State_Update(float dt)
 		}
 	}
 }
-
 void PlanState::State_Draw(float dt)
 {
 	this->_data->window.draw(this->_background);
@@ -686,7 +681,6 @@ void PlanState::InitPlanListScrollbar()
 	_planListScrollbar.setFillColor(sf::Color(60, 60, 60));
 	_planListScrollThumb.setFillColor(sf::Color(120, 120, 120));
 }
-
 void PlanState::UpdatePlanListScroll(int delta)
 {
 	int maxOffset = static_cast<int>(_availablePlans.size()) - _planListMaxVisible;
@@ -704,7 +698,6 @@ void PlanState::InitSideMenuButtons()
 {
 	// Pusta funkcja - przyciski przeniesione do InitLeftMenuButtons
 }
-
 void PlanState::InitLeftMenuButtons()
 {
 	// Konfiguracja wymiarów
@@ -804,7 +797,6 @@ void PlanState::InitLeftMenuButtons()
 	_saveText.setOrigin(saveRect.left + saveRect.width / 2.0f, saveRect.top + saveRect.height / 2.0f);
 	_saveText.setPosition(startX + buttonWidth / 2.0f, saveY + buttonHeight / 2.0f);
 }
-
 void PlanState::InitDayColumns()
 {
 	_dayColumns.clear();
@@ -1155,20 +1147,17 @@ void PlanState::InitNewPlanPopup()
 	_newPlanCreateText.setPosition(_newPlanCreateButton.getPosition().x + 75.0f,
 		_newPlanCreateButton.getPosition().y + 20.0f);
 }
-
 void PlanState::ShowNewPlanPopup()
 {
 	_showNewPlanPopup = true;
 	_newPlanName = "";
 	_newPlanInputText.setString("");
 }
-
 void PlanState::HideNewPlanPopup()
 {
 	_showNewPlanPopup = false;
 	_newPlanName = "";
 }
-
 void PlanState::CreateNewPlan()
 {
 	if (_newPlanName.empty()) {
@@ -1211,7 +1200,6 @@ bool PlanState::CanDeleteCurrentPlan()
 
 	return plan->ownerId > 0;  // Tylko plany prywatne mo¿na usun¹æ
 }
-
 bool PlanState::CanEditCurrentPlan()
 {
 	if (!this->_data->currentUser || !this->_data->currentUser->currentPlanId.has_value()) {
@@ -1227,7 +1215,6 @@ bool PlanState::CanEditCurrentPlan()
 	// Plany publiczne (ownerId == 0) s¹ tylko do odczytu
 	return plan->ownerId > 0;
 }
-
 void PlanState::InitDeleteConfirmPopup()
 {
 	sf::Font& font = this->_data->assets.getFont("Default Font");
@@ -1288,7 +1275,6 @@ void PlanState::InitDeleteConfirmPopup()
 	_deleteNoText.setPosition(_deleteNoButton.getPosition().x + 50.0f,
 		_deleteNoButton.getPosition().y + 20.0f);
 }
-
 void PlanState::ShowDeleteConfirmPopup()
 {
 	if (!CanDeleteCurrentPlan()) {
@@ -1297,12 +1283,10 @@ void PlanState::ShowDeleteConfirmPopup()
 	}
 	_showDeleteConfirmPopup = true;
 }
-
 void PlanState::HideDeleteConfirmPopup()
 {
 	_showDeleteConfirmPopup = false;
 }
-
 void PlanState::DeleteCurrentPlan()
 {
 	if (!this->_data->currentUser || !this->_data->currentUser->currentPlanId.has_value()) {

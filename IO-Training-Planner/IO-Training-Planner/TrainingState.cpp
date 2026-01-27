@@ -27,19 +27,6 @@ string TrainingState::getCurrentDate() {
     return ss.str();
 }
 
-void TrainingState::State_Init()
-{
-    this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
-    _font = this->_data->assets.getFont("Default Font");
-
-    if (this->_data->currentUser && this->_data->currentUser->currentPlanId.has_value()) {
-        int planId = this->_data->currentUser->currentPlanId.value();
-        _currentPlan = this->_data->database.getTrainingPlanById(planId);
-    }
-
-    InitDaySelection();
-}
-
 // ==========================================
 //              DAY SELECTION SCREEN
 // ==========================================
@@ -172,150 +159,6 @@ void TrainingState::InitWorkoutSession(int dayOfWeek)
 
     RecalculateLayout();
 }
-
-void TrainingState::AddExerciseToSession(int exerciseId)
-{
-    auto exData = this->_data->database.getExerciseById(exerciseId);
-    if (!exData) return;
-
-    ActiveExercise activeEx;
-    activeEx.exerciseId = exerciseId;
-    activeEx.name = exData->name;
-
-    // --- UNIT DETECTION ---
-    string u1 = "kg";
-    string u2 = "rep";
-
-    bool hasDist = false;
-    bool hasTime = false;
-    for (auto vt : exData->valueTypes) {
-        if (vt == ValueType::DISTANCE_KM) hasDist = true;
-        if (vt == ValueType::TIME_SEC) hasTime = true;
-    }
-
-    if (hasDist) {
-        u1 = "km";
-        u2 = "min";
-    }
-    else if (hasTime) {
-        u1 = "s";
-        u2 = "";
-    }
-
-    activeEx.unit1 = u1;
-    activeEx.unit2 = u2;
-
-    activeEx.addSetBtn.setSize(sf::Vector2f(120.0f, 30.0f));
-    activeEx.addSetBtn.setFillColor(sf::Color(50, 50, 50));
-    activeEx.addSetBtn.setOutlineColor(sf::Color::White);
-    activeEx.addSetBtn.setOutlineThickness(1.0f);
-
-    activeEx.addSetLabel.setFont(_font);
-    activeEx.addSetLabel.setString("+ Set"); // EN
-    activeEx.addSetLabel.setCharacterSize(16);
-    activeEx.addSetLabel.setFillColor(sf::Color::White);
-
-    _sessionExercises.push_back(activeEx);
-    AddSetToExercise(_sessionExercises.back());
-}
-
-void TrainingState::AddSetToExercise(ActiveExercise& ex)
-{
-    SetRow row;
-    row.setNumber = ex.sets.size() + 1;
-    row.isSaved = false;
-
-    // Input 1
-    row.input1.shape.setSize(sf::Vector2f(80.0f, 35.0f));
-    row.input1.shape.setFillColor(sf::Color(20, 20, 20));
-    row.input1.shape.setOutlineColor(sf::Color(100, 100, 100));
-    row.input1.shape.setOutlineThickness(1.0f);
-    row.input1.text.setFont(_font);
-    row.input1.text.setString(ex.unit1);
-    row.input1.text.setCharacterSize(20);
-    row.input1.text.setFillColor(sf::Color(150, 150, 150));
-
-    row.input1.valueString = "";
-    row.input1.placeholder = ex.unit1;
-    row.input1.isVisible = true;
-
-    // Input 2
-    row.input2.shape.setSize(sf::Vector2f(80.0f, 35.0f));
-    row.input2.shape.setFillColor(sf::Color(20, 20, 20));
-    row.input2.shape.setOutlineColor(sf::Color(100, 100, 100));
-    row.input2.shape.setOutlineThickness(1.0f);
-    row.input2.text.setFont(_font);
-    row.input2.text.setString(ex.unit2);
-    row.input2.text.setCharacterSize(20);
-    row.input2.text.setFillColor(sf::Color(150, 150, 150));
-
-    row.input2.valueString = "";
-    row.input2.placeholder = ex.unit2;
-
-    if (ex.unit2.empty()) {
-        row.input2.isVisible = false;
-    }
-    else {
-        row.input2.isVisible = true;
-    }
-
-    // Save Button
-    row.saveButton.setSize(sf::Vector2f(80.0f, 35.0f));
-    row.saveButton.setFillColor(sf::Color(0, 100, 0));
-    row.saveLabel.setFont(_font);
-    row.saveLabel.setString("OK"); // EN
-    row.saveLabel.setCharacterSize(18);
-    row.saveLabel.setFillColor(sf::Color::White);
-
-    ex.sets.push_back(row);
-    RecalculateLayout();
-}
-
-void TrainingState::RecalculateLayout()
-{
-    float currentY = 120.0f;
-    float xBtn = 750.0f;
-
-    for (auto& ex : _sessionExercises) {
-        ex.headerY = currentY;
-        currentY += 40.0f;
-
-        for (auto& row : ex.sets) {
-            float x1 = 550.0f;
-            float x2 = 650.0f;
-
-            row.input1.shape.setPosition(x1, currentY);
-            row.input1.text.setPosition(x1 + 5, currentY + 5);
-
-            if (row.input2.isVisible) {
-                row.input2.shape.setPosition(x2, currentY);
-                row.input2.text.setPosition(x2 + 5, currentY + 5);
-            }
-
-            row.saveButton.setPosition(xBtn, currentY);
-
-            sf::FloatRect b = row.saveLabel.getLocalBounds();
-            row.saveLabel.setOrigin(b.left + b.width / 2.0f, b.top + b.height / 2.0f);
-            row.saveLabel.setPosition(xBtn + 40.0f, currentY + 17.0f);
-
-            currentY += 45.0f;
-        }
-
-        ex.addSetBtn.setPosition(xBtn, currentY);
-        ex.addSetLabel.setPosition(xBtn + 10.0f, currentY + 5.0f);
-        currentY += 60.0f;
-    }
-
-    _addExerciseBtn.setPosition(SCREAN_WIDTH / 2.0f - 125.0f, currentY + 20.0f);
-    sf::FloatRect eb = _addExerciseLabel.getLocalBounds();
-    _addExerciseLabel.setOrigin(eb.left + eb.width / 2.0f, eb.top + eb.height / 2.0f);
-    _addExerciseLabel.setPosition(
-        _addExerciseBtn.getPosition().x + 125.0f,
-        _addExerciseBtn.getPosition().y + 25.0f
-    );
-}
-
-// PICKER
 void TrainingState::InitExercisePicker()
 {
     _allExercises.clear();
@@ -370,7 +213,146 @@ void TrainingState::InitExercisePicker()
     }
 }
 
-// INPUT HELPERS
+void TrainingState::AddExerciseToSession(int exerciseId)
+{
+    auto exData = this->_data->database.getExerciseById(exerciseId);
+    if (!exData) return;
+
+    ActiveExercise activeEx;
+    activeEx.exerciseId = exerciseId;
+    activeEx.name = exData->name;
+
+    // --- UNIT DETECTION ---
+    string u1 = "kg";
+    string u2 = "rep";
+
+    bool hasDist = false;
+    bool hasTime = false;
+    for (auto vt : exData->valueTypes) {
+        if (vt == ValueType::DISTANCE_KM) hasDist = true;
+        if (vt == ValueType::TIME_SEC) hasTime = true;
+    }
+
+    if (hasDist) {
+        u1 = "km";
+        u2 = "min";
+    }
+    else if (hasTime) {
+        u1 = "s";
+        u2 = "";
+    }
+
+    activeEx.unit1 = u1;
+    activeEx.unit2 = u2;
+
+    activeEx.addSetBtn.setSize(sf::Vector2f(120.0f, 30.0f));
+    activeEx.addSetBtn.setFillColor(sf::Color(50, 50, 50));
+    activeEx.addSetBtn.setOutlineColor(sf::Color::White);
+    activeEx.addSetBtn.setOutlineThickness(1.0f);
+
+    activeEx.addSetLabel.setFont(_font);
+    activeEx.addSetLabel.setString("+ Set"); // EN
+    activeEx.addSetLabel.setCharacterSize(16);
+    activeEx.addSetLabel.setFillColor(sf::Color::White);
+
+    _sessionExercises.push_back(activeEx);
+    AddSetToExercise(_sessionExercises.back());
+}
+void TrainingState::AddSetToExercise(ActiveExercise& ex)
+{
+    SetRow row;
+    row.setNumber = ex.sets.size() + 1;
+    row.isSaved = false;
+
+    // Input 1
+    row.input1.shape.setSize(sf::Vector2f(80.0f, 35.0f));
+    row.input1.shape.setFillColor(sf::Color(20, 20, 20));
+    row.input1.shape.setOutlineColor(sf::Color(100, 100, 100));
+    row.input1.shape.setOutlineThickness(1.0f);
+    row.input1.text.setFont(_font);
+    row.input1.text.setString(ex.unit1);
+    row.input1.text.setCharacterSize(20);
+    row.input1.text.setFillColor(sf::Color(150, 150, 150));
+
+    row.input1.valueString = "";
+    row.input1.placeholder = ex.unit1;
+    row.input1.isVisible = true;
+
+    // Input 2
+    row.input2.shape.setSize(sf::Vector2f(80.0f, 35.0f));
+    row.input2.shape.setFillColor(sf::Color(20, 20, 20));
+    row.input2.shape.setOutlineColor(sf::Color(100, 100, 100));
+    row.input2.shape.setOutlineThickness(1.0f);
+    row.input2.text.setFont(_font);
+    row.input2.text.setString(ex.unit2);
+    row.input2.text.setCharacterSize(20);
+    row.input2.text.setFillColor(sf::Color(150, 150, 150));
+
+    row.input2.valueString = "";
+    row.input2.placeholder = ex.unit2;
+
+    if (ex.unit2.empty()) {
+        row.input2.isVisible = false;
+    }
+    else {
+        row.input2.isVisible = true;
+    }
+
+    // Save Button
+    row.saveButton.setSize(sf::Vector2f(80.0f, 35.0f));
+    row.saveButton.setFillColor(sf::Color(0, 100, 0));
+    row.saveLabel.setFont(_font);
+    row.saveLabel.setString("OK"); // EN
+    row.saveLabel.setCharacterSize(18);
+    row.saveLabel.setFillColor(sf::Color::White);
+
+    ex.sets.push_back(row);
+    RecalculateLayout();
+}
+void TrainingState::RecalculateLayout()
+{
+    float currentY = 120.0f;
+    float xBtn = 750.0f;
+
+    for (auto& ex : _sessionExercises) {
+        ex.headerY = currentY;
+        currentY += 40.0f;
+
+        for (auto& row : ex.sets) {
+            float x1 = 550.0f;
+            float x2 = 650.0f;
+
+            row.input1.shape.setPosition(x1, currentY);
+            row.input1.text.setPosition(x1 + 5, currentY + 5);
+
+            if (row.input2.isVisible) {
+                row.input2.shape.setPosition(x2, currentY);
+                row.input2.text.setPosition(x2 + 5, currentY + 5);
+            }
+
+            row.saveButton.setPosition(xBtn, currentY);
+
+            sf::FloatRect b = row.saveLabel.getLocalBounds();
+            row.saveLabel.setOrigin(b.left + b.width / 2.0f, b.top + b.height / 2.0f);
+            row.saveLabel.setPosition(xBtn + 40.0f, currentY + 17.0f);
+
+            currentY += 45.0f;
+        }
+
+        ex.addSetBtn.setPosition(xBtn, currentY);
+        ex.addSetLabel.setPosition(xBtn + 10.0f, currentY + 5.0f);
+        currentY += 60.0f;
+    }
+
+    _addExerciseBtn.setPosition(SCREAN_WIDTH / 2.0f - 125.0f, currentY + 20.0f);
+    sf::FloatRect eb = _addExerciseLabel.getLocalBounds();
+    _addExerciseLabel.setOrigin(eb.left + eb.width / 2.0f, eb.top + eb.height / 2.0f);
+    _addExerciseLabel.setPosition(
+        _addExerciseBtn.getPosition().x + 125.0f,
+        _addExerciseBtn.getPosition().y + 25.0f
+    );
+}
+
 void TrainingState::handleInputBoxClick(InputBox& box, sf::Vector2i mousePos)
 {
     if (!box.isVisible) return;
@@ -391,7 +373,6 @@ void TrainingState::handleInputBoxClick(InputBox& box, sf::Vector2i mousePos)
         }
     }
 }
-
 void TrainingState::handleTyping(InputBox& box, sf::Uint32 unicode)
 {
     if (!box.isSelected || !box.isVisible) return;
@@ -420,7 +401,18 @@ string TrainingState::getDayName(int day) {
     }
 }
 
-// HANDLE INPUT
+void TrainingState::State_Init()
+{
+    this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
+    _font = this->_data->assets.getFont("Default Font");
+
+    if (this->_data->currentUser && this->_data->currentUser->currentPlanId.has_value()) {
+        int planId = this->_data->currentUser->currentPlanId.value();
+        _currentPlan = this->_data->database.getTrainingPlanById(planId);
+    }
+
+    InitDaySelection();
+}
 void TrainingState::State_HandleInput(sf::Event& event)
 {
     sf::Vector2i mousePos = sf::Mouse::getPosition(this->_data->window);
@@ -526,10 +518,7 @@ void TrainingState::State_HandleInput(sf::Event& event)
         }
     }
 }
-
-// DRAW
 void TrainingState::State_Update(float dt) {}
-
 void TrainingState::State_Draw(float dt)
 {
     this->_data->window.draw(this->_background);
