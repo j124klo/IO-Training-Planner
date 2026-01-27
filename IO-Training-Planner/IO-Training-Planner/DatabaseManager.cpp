@@ -341,7 +341,6 @@ shared_ptr<Exercise> DatabaseManager::addExercise(const string& name, const stri
             << name << description << typesStr;
 
         int newId = db->last_insert_rowid();
-        cout << "[INFO] Dodano nowe cwiczenie: " << name << endl; // Log dla Twojej wiadomości
         return getExerciseById(newId);
     }
     catch (exception& e) {

@@ -68,8 +68,41 @@ void LoginState::Password_Init()
 		this->_passwordBounds.getPosition().y - this->_passwordLabel.getGlobalBounds().height - 20.0f
 	);
 }
+
+// --- NOWA FUNKCJA INICJALIZUJ¥CA TEKST B£ÊDU ---
+void LoginState::ErrorMessage_Init()
+{
+	this->_errorMessage.setFont(this->_data->assets.getFont("Default Font"));
+	this->_errorMessage.setString(""); // Na pocz¹tku puste
+	this->_errorMessage.setCharacterSize(30);
+	this->_errorMessage.setFillColor(sf::Color::Red); // Czerwony kolor b³êdu
+	// Pozycja nad przyciskiem Continue (lub pod has³em)
+	this->_errorMessage.setPosition(SCREAN_WIDTH / 2, 0);
+}
+
+// --- NOWA FUNKCJA DO MASKOWANIA HAS£A ---
+void LoginState::UpdatePasswordMask()
+{
+	// Tworzymy ci¹g gwiazdek o d³ugoœci prawdziwego has³a
+	string masked = "";
+	for (size_t i = 0; i < _passwordText.length(); i++) {
+		masked += "*";
+	}
+
+	// Ustawiamy gwiazdki w obiekcie graficznym
+	this->_password.setString(masked);
+
+	// Ponowne centrowanie tekstu (bo gwiazdki maj¹ inn¹ szerokoœæ ni¿ litery)
+	this->_password.setOrigin(this->_password.getGlobalBounds().width / 2, this->_password.getGlobalBounds().height / 2);
+	this->_password.setPosition(
+		this->_passwordBounds.getPosition().x + this->_passwordBounds.getSize().x / 2,
+		this->_passwordBounds.getPosition().y - 15 + this->_passwordBounds.getSize().y / 2
+	);
+}
+
 void LoginState::TextFields_HandleInput(sf::Event& event)
 {
+	// Obs³uga klikniêæ myszk¹ (bez zmian)
 	if (this->_data->input.isRectangleShapeClicked(this->_loginBounds, sf::Mouse::Left, this->_data->window))
 	{
 		this->_isLoginActive = true;
@@ -77,6 +110,7 @@ void LoginState::TextFields_HandleInput(sf::Event& event)
 		this->_loginBounds.setOutlineColor(sf::Color::Blue);
 		this->_loginBounds.setOutlineThickness(2.0f);
 		this->_passwordBounds.setOutlineThickness(0.0f);
+		this->_errorMessage.setString("");
 	}
 	else if (this->_data->input.isRectangleShapeClicked(this->_passwordBounds, sf::Mouse::Left, this->_data->window))
 	{
@@ -85,6 +119,7 @@ void LoginState::TextFields_HandleInput(sf::Event& event)
 		this->_passwordBounds.setOutlineColor(sf::Color::Blue);
 		this->_passwordBounds.setOutlineThickness(2.0f);
 		this->_loginBounds.setOutlineThickness(0.0f);
+		this->_errorMessage.setString("");
 	}
 	else if (this->_data->input.isSpriteClicked(this->_background, sf::Mouse::Left, this->_data->window))
 	{
@@ -94,23 +129,41 @@ void LoginState::TextFields_HandleInput(sf::Event& event)
 		this->_passwordBounds.setOutlineThickness(0.0f);
 	}
 
+	// --- SEKCJA PISANIA Z OGRANICZENIEM DO 10 ZNAKÓW ---
+
+	// 1. LOGIN
 	if (this->_data->input.typingText(event, this->_loginText, this->_login, this->_isLoginActive))
 	{
+		// OGRANICZENIE: Jeœli d³u¿sze ni¿ 10, usuñ ostatni znak
+		if (this->_loginText.length() > 10) {
+			this->_loginText.pop_back();
+			this->_login.setString(this->_loginText); // Aktualizacja wygl¹du
+		}
+
+		// Pozycjonowanie (centrowanie)
 		this->_login.setOrigin(this->_login.getGlobalBounds().width / 2, this->_login.getGlobalBounds().height / 2);
 		this->_login.setPosition(
 			this->_loginBounds.getPosition().x + this->_loginBounds.getSize().x / 2,
-			this->_loginBounds.getPosition().y-15 + this->_loginBounds.getSize().y / 2
+			this->_loginBounds.getPosition().y - 15 + this->_loginBounds.getSize().y / 2
 		);
+
+		if (!this->_errorMessage.getString().isEmpty()) this->_errorMessage.setString("");
 	}
+	// 2. HAS£O
 	else if (this->_data->input.typingText(event, this->_passwordText, this->_password, this->_isPasswordActive))
 	{
-		this->_password.setOrigin(this->_password.getGlobalBounds().width / 2, this->_password.getGlobalBounds().height / 2);
-		this->_password.setPosition(
-			this->_passwordBounds.getPosition().x + this->_passwordBounds.getSize().x / 2,
-			this->_passwordBounds.getPosition().y-15 + this->_passwordBounds.getSize().y / 2
-		);
+		// OGRANICZENIE: Jeœli d³u¿sze ni¿ 10, usuñ ostatni znak
+		if (this->_passwordText.length() > 10) {
+			this->_passwordText.pop_back();
+			// UpdatePasswordMask() zaraz zaktualizuje wygl¹d (gwiazdki), wiêc nie musimy tu robiæ setString
+		}
+
+		UpdatePasswordMask(); // Zamiana na gwiazdki
+
+		if (!this->_errorMessage.getString().isEmpty()) this->_errorMessage.setString("");
 	}
 }
+
 void LoginState::TextFields_Update(float dt)
 {
 
@@ -124,6 +177,7 @@ void LoginState::TextFields_Draw(float dt)
 	this->_data->window.draw(this->_passwordLabel);
 	this->_data->window.draw(this->_passwordBounds);
 	this->_data->window.draw(this->_password);
+	this->_data->window.draw(this->_errorMessage);
 }
 
 void LoginState::Buttons_Init()
@@ -158,10 +212,26 @@ void LoginState::Buttons_HandleInput(sf::Event& event)
 {
 	if (this->_data->input.isSpriteClickedAndReleased(this->_continueButton._sprite, sf::Mouse::Left, this->_data->window, this->_continueButton._pressed, this->_continueButton._update))
 	{
-		auto user = this->_data->database.getUserByLogin(this->_login.getString());
-		if (user && user->password == this->_password.getString()) {
+		auto user = this->_data->database.getUserByLogin(this->_loginText); // U¿ywamy _loginText (string), a nie _login.getString()
+
+		// Sprawdzamy has³o u¿ywaj¹c _passwordText (prawdziwe dane), a nie _password (gwiazdki)
+		if (user && user->password == this->_passwordText) {
 			this->_data->currentUser = user;
 			this->_data->machine.AddState(StateRef(new HomeState(this->_data)), true);
+		}
+		else {
+			// --- B£¥D LOGOWANIA ---
+			this->_errorMessage.setString("Invalid login or password!");
+
+			// Centrowanie komunikatu b³êdu
+			sf::FloatRect textRect = this->_errorMessage.getLocalBounds();
+			this->_errorMessage.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
+
+			// Pozycja: Pomiêdzy polem has³a a przyciskiem Continue
+			this->_errorMessage.setPosition(
+				SCREAN_WIDTH / 2.0f,
+				this->_passwordBounds.getPosition().y + this->_passwordBounds.getSize().y + 20.0f
+			);
 		}
 	}
 
@@ -219,7 +289,7 @@ void LoginState::Init()
 	
 	Login_Init();
 	Password_Init();
-
+	ErrorMessage_Init();
 	Buttons_Init();
 }
 void LoginState::HandleInput()

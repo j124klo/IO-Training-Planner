@@ -29,6 +29,8 @@ private:
 	string _passwordText;
 	bool _isPasswordActive;
 
+	sf::Text _errorMessage;
+
 	Button _continueButton;
 	Button _registerButton;
 
@@ -40,7 +42,7 @@ public:
 	void TextFields_HandleInput(sf::Event& event);
 	void TextFields_Update(float dt);
 	void TextFields_Draw(float dt);
-
+	
 	void Buttons_Init();
 	void Buttons_HandleInput(sf::Event& event);
 	void Buttons_Update(float dt);
@@ -50,4 +52,7 @@ public:
 	void HandleInput();
 	void Update(float dt);
 	void Draw(float dt);
+
+	void UpdatePasswordMask();
+	void ErrorMessage_Init();
 };
