@@ -43,6 +43,7 @@ public:
     GuiState(AppDataRef data);
 
 	sf::Vector2f GetMenuButtonPosition(float& width, float& height);
+	bool IsGuiBarVisible();
 
     virtual void Init() override;
     virtual void HandleInput() override;

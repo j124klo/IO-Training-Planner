@@ -26,6 +26,7 @@ void ExerciseListState::Exercises_Init()
 	{
 		this->_exercises[i]._nameText.setFont(this->_data->assets.getFont("Default Font"));
 		this->_exercises[i]._descriptionText.setFont(this->_data->assets.getFont("Default Font"));
+
 		this->_exercises[i]._nameText.setString(this->_exercises[i]._name);
 		this->_exercises[i]._descriptionText.setString(this->_exercises[i]._description);
 		this->_exercises[i]._nameText.setCharacterSize(40);

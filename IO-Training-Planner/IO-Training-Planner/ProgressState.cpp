@@ -9,7 +9,7 @@ ProgressState::ProgressState(AppDataRef data) : GuiState(data)
 
 }
 
-void ProgressState::ProgressHistoryButton_Init()
+void ProgressState::Buttons_Init()
 {
     this->_data->assets.loadTexture("Progress History Button", TIMELINE_BUTTON_FILEPATH);
 	this->_progressHistoryButton._sprite.setTexture(this->_data->assets.getTexture("Progress History Button"));
@@ -18,22 +18,32 @@ void ProgressState::ProgressHistoryButton_Init()
     float menuButtonHeight;
     sf::Vector2f menuButtonPosition = GetMenuButtonPosition(menuButtonWidth, menuButtonHeight);
 
+	this->_progressHistoryButton._accessible = true;
 	this->_progressHistoryButton._pressed = false;
 	this->_progressHistoryButton._update = false;
 	this->_progressHistoryButton._rect = sf::IntRect(0, 0, 300, 300);
 	this->_progressHistoryButton._sprite.setTextureRect(this->_progressHistoryButton._rect);
 	this->_progressHistoryButton._sprite.setScale(0.35f, 0.35f);
-    this->_progressHistoryButton._sprite.setPosition( menuButtonPosition.x, SCREAN_HEIGHT - this->_progressHistoryButton._sprite.getGlobalBounds().height - 20.0f );
+    this->_progressHistoryButton._sprite.setPosition( menuButtonPosition.x, SCREAN_HEIGHT - this->_progressHistoryButton._sprite.getGlobalBounds().height - 40.0f );
 }
-void ProgressState::ProgressHistoryButton_HandleInput(sf::Event& event)
+void ProgressState::Buttons_HandleInput(sf::Event& event)
 {
-    if (this->_data->input.isSpriteClickedAndReleased(this->_progressHistoryButton._sprite, sf::Mouse::Left, this->_data->window, this->_progressHistoryButton._pressed, this->_progressHistoryButton._update))
+    if (this->_data->input.isSpriteClickedAndReleased(this->_progressHistoryButton._sprite, sf::Mouse::Left, this->_data->window, this->_progressHistoryButton._pressed, this->_progressHistoryButton._update) and this->_progressHistoryButton._accessible)
     {
         this->_data->machine.AddState(StateRef(new ProgressHistoryState(this->_data)), true);
     }
 }
-void ProgressState::ProgressHistoryButton_Update(float dt)
+void ProgressState::Buttons_Update(float dt)
 {
+    if (IsGuiBarVisible())
+    {
+        this->_progressHistoryButton._accessible = false;
+    }
+    else
+    {
+		this->_progressHistoryButton._accessible = true;
+    }
+
     if (this->_progressHistoryButton._update)
     {
         this->_progressHistoryButton._update = false;
@@ -50,7 +60,7 @@ void ProgressState::ProgressHistoryButton_Update(float dt)
         }
     }
 }
-void ProgressState::ProgressHistoryButton_Draw(float dt)
+void ProgressState::Buttons_Draw(float dt)
 {
     this->_data->window.draw(this->_progressHistoryButton._sprite);
 }
@@ -193,17 +203,17 @@ void ProgressState::State_Init()
 {
     this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
 
-    ProgressHistoryButton_Init();
+    Buttons_Init();
     PRLogs_Init();
 }
 void ProgressState::State_HandleInput(sf::Event& event)
 {
-	ProgressHistoryButton_HandleInput(event);
+	Buttons_HandleInput(event);
 	PRLogs_HandleInput(event);
 }
 void ProgressState::State_Update(float dt)
 {
-	ProgressHistoryButton_Update(dt);
+	Buttons_Update(dt);
 	PRLogs_Update(dt);
 }
 void ProgressState::State_Draw(float dt)
@@ -211,5 +221,5 @@ void ProgressState::State_Draw(float dt)
     this->_data->window.draw(this->_background);
 
     PRLogs_Draw(dt);
-    ProgressHistoryButton_Draw(dt);
+    Buttons_Draw(dt);
 }

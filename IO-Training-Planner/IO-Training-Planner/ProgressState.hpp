@@ -39,10 +39,10 @@ public:
 	void PRLogs_Update(float dt);
 	void PRLogs_Draw(float dt);
 
-    void ProgressHistoryButton_Init();
-    void ProgressHistoryButton_HandleInput(sf::Event& event);
-    void ProgressHistoryButton_Update(float dt);
-    void ProgressHistoryButton_Draw(float dt);
+    void Buttons_Init();
+    void Buttons_HandleInput(sf::Event& event);
+    void Buttons_Update(float dt);
+    void Buttons_Draw(float dt);
 
     void State_Init();
     void State_HandleInput(sf::Event& event);

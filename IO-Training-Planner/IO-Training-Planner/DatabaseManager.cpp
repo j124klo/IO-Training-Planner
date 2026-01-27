@@ -468,7 +468,7 @@ vector<WorkoutLog> DatabaseManager::getWorkoutLogs(int userId)
             "FROM workout_logs w "
             "LEFT JOIN exercises e ON w.exercise_id = e.id "
             "WHERE w.user_id = ? "
-            "ORDER BY w.date DESC, w.set_number ASC;"
+            "ORDER BY w.date DESC, e.name ASC, w.set_number ASC;"
             << userId
             >> [&](int _id, int _uid, int _eid, string _date, int _set, double _w, int _r, string _name) {
 

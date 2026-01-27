@@ -462,6 +462,15 @@ void GuiState::GUI_Draw(float dt)
 	this->_data->window.draw(this->_logoutButton._sprite);
 }
 
+bool GuiState::IsGuiBarVisible()
+{
+	if (this->_guiBarDestination.x == 0.0f)
+	{
+		return true;
+	}
+	return false;
+}
+
 sf::Vector2f GuiState::GetMenuButtonPosition(float& width, float& height)
 {
 	width = this->_menuButton._sprite.getGlobalBounds().width;
