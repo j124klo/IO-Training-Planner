@@ -7,6 +7,8 @@
 #include "AppPlanner.hpp"
 #include "ObjectMoveTo.hpp"
 #include "Button.hpp"
+#include "Models.hpp"
+#include "FormatLogResult.hpp"
 
 using namespace std;
 
@@ -27,8 +29,17 @@ private:
 
 	Button _startTrainingButton;
 
+	//	plan panel
 	sf::Sprite _planPanel;
 	vector<sf::Text> _planTextsDay[7];
+
+	//	logs
+	sf::Text _title;
+	vector<WorkoutLog> _logs;
+	vector<sf::Text> _logDates;
+	vector<sf::Text> _logExercises;
+	vector<sf::Text> _logSets;
+	vector<sf::Text> _logResults;
 
 public:
 	HomeState(AppDataRef data);
@@ -42,6 +53,11 @@ public:
 	void PlanPanel_HandleInput(sf::Event& event);
 	void PlanPanel_Update(float dt);
 	void PlanPanel_Draw(float dt);
+
+	void Logs_Init();
+	void Logs_HandleInput(sf::Event& event);
+	void Logs_Update(float dt);
+	void Logs_Draw(float dt);
 
 	void ScrollPanel_Init();
 	void ScrollPanel_HandleInput(sf::Event& event);

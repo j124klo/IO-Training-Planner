@@ -141,6 +141,100 @@ void HomeState::PlanPanel_Draw(float dt)
     }
 }
 
+void HomeState::Logs_Init()
+{
+    this->_title.setFont(this->_data->assets.getFont("Default Font"));
+
+    this->_logs.clear();
+    if (this->_data->currentUser) {
+        this->_logs = this->_data->database.getWorkoutLogs(this->_data->currentUser->id);
+    }
+
+    auto addText = [&](vector<sf::Text>& v, string s, float x, float y, sf::Color c, int size = 30, bool bold = false, bool center = false) {
+        sf::Text t;
+        t.setFont(this->_data->assets.getFont("Default Font"));
+        t.setString(s);
+        t.setCharacterSize(size);
+        t.setFillColor(c);
+        if (bold)   t.setStyle(sf::Text::Bold);
+        if (center) t.setPosition(x - t.getGlobalBounds().width / 2, y);
+        else        t.setPosition(v[0].getPosition().x, y);
+        v.push_back(t);
+    };
+
+    this->_title.setString("LAST TRAINING");
+    this->_title.setCharacterSize(50);
+    this->_title.setFillColor(sf::Color::White);
+    this->_title.setPosition(
+        this->_scrollTop.getPosition().x + this->_scrollTop.getGlobalBounds().width / 2 - this->_title.getGlobalBounds().width / 2,
+		this->_planPanel.getPosition().y + this->_planPanel.getGlobalBounds().height + 80.0f
+    );
+
+    float currentY = this->_title.getPosition().y + this->_title.getGlobalBounds().height + 40.0f;
+
+    float colDate = this->_scrollEdgeTop.getPosition().x + this->_scrollEdgeTop.getGlobalBounds().width * 3 / 12;
+    float colName = this->_scrollEdgeTop.getPosition().x + this->_scrollEdgeTop.getGlobalBounds().width * 5 / 12;
+    float colSet = this->_scrollEdgeTop.getPosition().x + this->_scrollEdgeTop.getGlobalBounds().width * 7 / 12;
+    float colRes = this->_scrollEdgeTop.getPosition().x + this->_scrollEdgeTop.getGlobalBounds().width * 8 / 12;
+
+    addText(this->_logDates, "Date", colDate, currentY, sf::Color::Cyan, 35, true, true);
+    addText(this->_logExercises, "Exercise", colName, currentY, sf::Color::Cyan, 35, true, true);
+    addText(this->_logSets, "Set", colSet, currentY, sf::Color::Cyan, 35, true, true);
+    addText(this->_logResults, "Result", colRes, currentY, sf::Color::Cyan, 35, true, true);
+
+    currentY += this->_logExercises[0].getGlobalBounds().height + 40.0f;
+
+    for (size_t i = 0; i < this->_logs.size(); i++)
+    {
+        if (this->_logDates.size() > 1) {
+            if (this->_logs[i].date != this->_logDates[1].getString().toAnsiString()) break;
+        }
+
+        addText(this->_logDates, this->_logs[i].date, colDate, currentY, sf::Color(200, 200, 200));
+        addText(this->_logExercises, this->_logs[i].exerciseNameVal, colName, currentY, sf::Color::White);
+        addText(this->_logSets, to_string(this->_logs[i].setNumber), colSet, currentY, sf::Color(200, 200, 200), 30, false, true);
+        addText(this->_logResults, formatLogResult(this->_logs[i], this->_data->database.getExerciseById(this->_logs[i].exerciseId)), colRes, currentY, sf::Color::White);
+
+        currentY += this->_logExercises[i + 1].getGlobalBounds().height + 40.0f;
+    }
+
+    if (this->_logExercises.size() == 1)
+    {
+        addText(this->_logDates, "- - -", colDate, currentY, sf::Color(200, 200, 200), 30, false, true);
+        addText(this->_logExercises, "- - -", colName, currentY, sf::Color(200, 200, 200), 30, false, true);
+        addText(this->_logSets, "- - -", colSet, currentY, sf::Color(200, 200, 200), 30, false, true);
+        addText(this->_logResults, "- - -", colRes, currentY, sf::Color(200, 200, 200), 30, false, true);
+
+        currentY += this->_logExercises[1].getGlobalBounds().height + 40.0f;
+    }
+
+    this->_scrollBot.setPosition(this->_scrollEdgeTop.getPosition().x, currentY - 40.f);
+}
+void HomeState::Logs_HandleInput(sf::Event& event)
+{
+
+}
+void HomeState::Logs_Update(float dt)
+{
+
+}
+void HomeState::Logs_Draw(float dt)
+{
+    this->_data->window.draw(this->_title);
+    for (const auto& dates : this->_logDates) {
+        this->_data->window.draw(dates);
+    }
+    for (const auto& exercises : this->_logExercises) {
+        this->_data->window.draw(exercises);
+    }
+    for (const auto& sets : this->_logSets) {
+        this->_data->window.draw(sets);
+    }
+    for (const auto& results : this->_logResults) {
+        this->_data->window.draw(results);
+    }
+}
+
 void HomeState::ScrollPanel_Init()
 {
     this->_data->assets.loadTexture("Scroll Edge", SCROLL_EDGE);
@@ -176,12 +270,28 @@ void HomeState::ScrollPanel_Update(float dt)
 
     float topBound = this->_scrollEdgeTop.getGlobalBounds().height - this->_scrollTop.getGlobalBounds().height / 2.0f;
 
-    float contentDeltaY = this->_scrollTop.getGlobalBounds().height * 1.5f + this->_startTrainingButton._sprite.getGlobalBounds().height + 40.0f + this->_planPanel.getGlobalBounds().height + 300.0f;
+    float contentDeltaY = this->_scrollTop.getGlobalBounds().height * 1.5f 
+                        + this->_startTrainingButton._sprite.getGlobalBounds().height 
+                        + this->_planPanel.getGlobalBounds().height 
+                        + this->_title.getGlobalBounds().height
+                        + 120.0f;
+
+    for (size_t i = 0; i < this->_logExercises.size(); i++)
+    {
+        contentDeltaY += this->_logExercises[i].getGlobalBounds().height + 40.0f;
+    }
     float bottomBound = this->_scrollEdgeBot.getPosition().y - contentDeltaY;
 
-    this->_scrollTopDestination.y += scrollDelta;
-    if (this->_scrollTopDestination.y > topBound) { this->_scrollTopDestination.y = topBound; }
-    else if (this->_scrollTopDestination.y < bottomBound) { this->_scrollTopDestination.y = bottomBound; }
+    if (bottomBound >= topBound)
+    {
+        this->_scrollTopDestination.y = topBound;
+    }
+    else
+    {
+        this->_scrollTopDestination.y += scrollDelta;
+        if (this->_scrollTopDestination.y > topBound) { this->_scrollTopDestination.y = topBound; }
+        else if (this->_scrollTopDestination.y < bottomBound) { this->_scrollTopDestination.y = bottomBound; }
+    }
 
     if (floorV2f(this->_scrollTop.getPosition()) != floorV2f(this->_scrollTopDestination))
     {
@@ -211,9 +321,22 @@ void HomeState::ScrollPanel_Update(float dt)
             }
         }
 
-		//  Scroll Bot position
-        this->_scrollBot.setPosition(this->_scrollBot.getPosition().x, this->_planPanel.getPosition().y + this->_planPanel.getGlobalBounds().height + 300.0f);
+		//  Logs positions
+        this->_title.setPosition(this->_title.getPosition().x, this->_planPanel.getPosition().y + this->_planPanel.getGlobalBounds().height + 80.0f);
 
+        float currentY = this->_title.getPosition().y + this->_title.getGlobalBounds().height + 40.0f;
+        for (size_t i = 0; i < this->_logExercises.size(); i++)
+        {
+            this->_logDates[i].setPosition(this->_logDates[i].getPosition().x, currentY);
+            this->_logExercises[i].setPosition(this->_logExercises[i].getPosition().x, currentY);
+            this->_logSets[i].setPosition(this->_logSets[i].getPosition().x, currentY);
+            this->_logResults[i].setPosition(this->_logResults[i].getPosition().x, currentY);
+            currentY += this->_logExercises[i].getGlobalBounds().height + 40.0f;
+
+            //  Scroll Bot position
+            this->_scrollBot.setPosition(this->_scrollBot.getPosition().x, currentY - 40.0f);
+        }
+		
         this->_data->input.resetScrollDelta();
     }
 }
@@ -228,25 +351,25 @@ void HomeState::ScrollPanel_Draw(float dt)
 
 void HomeState::State_Init()
 {
-    this->_data->assets.loadTexture("Default Background", DEFAULT_BACKGROUND_FILEPATH);
-
     this->_background.setTexture(this->_data->assets.getTexture("Default Background"));
 
 	ScrollPanel_Init();
 	Buttons_Init();
 	PlanPanel_Init();
-    this->_scrollBot.setPosition(this->_scrollEdgeTop.getPosition().x, this->_planPanel.getPosition().y + this->_planPanel.getGlobalBounds().height + 300.0f);
+	Logs_Init();
 }
 void HomeState::State_HandleInput(sf::Event& event)
 {
 	Buttons_HandleInput(event);
 	PlanPanel_HandleInput(event);
+	Logs_HandleInput(event);
 	ScrollPanel_HandleInput(event);
 }
 void HomeState::State_Update(float dt)
 {
 	Buttons_Update(dt);
 	PlanPanel_Update(dt);
+	Logs_Update(dt);
 	ScrollPanel_Update(dt);
 }
 void HomeState::State_Draw(float dt)
@@ -254,6 +377,7 @@ void HomeState::State_Draw(float dt)
     this->_data->window.draw(this->_background);
 
 	PlanPanel_Draw(dt);
+	Logs_Draw(dt);
 	Buttons_Draw(dt);
 	ScrollPanel_Draw(dt);
 }

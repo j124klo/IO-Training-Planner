@@ -93,9 +93,16 @@ void ExerciseListState::ScrollPanel_Update(float dt)
 	}
 	float bottomBound = this->_scrollEdgeBot.getPosition().y - contentDeltaY + 60.0f;
 
-	this->_scrollTopDestination.y += scrollDelta;
-	if (this->_scrollTopDestination.y > topBound) {	this->_scrollTopDestination.y = topBound; }
-	else if (this->_scrollTopDestination.y < bottomBound) {	this->_scrollTopDestination.y = bottomBound; }
+	if (bottomBound >= topBound)
+	{
+		this->_scrollTopDestination.y = topBound;
+	}
+	else
+	{
+		this->_scrollTopDestination.y += scrollDelta;
+		if (this->_scrollTopDestination.y > topBound) { this->_scrollTopDestination.y = topBound; }
+		else if (this->_scrollTopDestination.y < bottomBound) { this->_scrollTopDestination.y = bottomBound; }
+	}
 
 	if (floorV2f(this->_scrollTop.getPosition()) != floorV2f(this->_scrollTopDestination))
 	{

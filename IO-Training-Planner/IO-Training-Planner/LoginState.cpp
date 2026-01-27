@@ -68,8 +68,6 @@ void LoginState::Password_Init()
 		this->_passwordBounds.getPosition().y - this->_passwordLabel.getGlobalBounds().height - 20.0f
 	);
 }
-
-// --- NOWA FUNKCJA INICJALIZUJ¥CA TEKST B£ÊDU ---
 void LoginState::ErrorMessage_Init()
 {
 	this->_errorMessage.setFont(this->_data->assets.getFont("Default Font"));
@@ -80,7 +78,6 @@ void LoginState::ErrorMessage_Init()
 	this->_errorMessage.setPosition(SCREAN_WIDTH / 2, 0);
 }
 
-// --- NOWA FUNKCJA DO MASKOWANIA HAS£A ---
 void LoginState::UpdatePasswordMask()
 {
 	// Tworzymy ci¹g gwiazdek o d³ugoœci prawdziwego has³a
@@ -163,7 +160,6 @@ void LoginState::TextFields_HandleInput(sf::Event& event)
 		if (!this->_errorMessage.getString().isEmpty()) this->_errorMessage.setString("");
 	}
 }
-
 void LoginState::TextFields_Update(float dt)
 {
 

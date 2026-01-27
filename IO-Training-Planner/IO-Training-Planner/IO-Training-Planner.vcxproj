@@ -164,6 +164,7 @@
     <ClInclude Include="CalculatorState.hpp" />
     <ClInclude Include="Exercise.hpp" />
     <ClInclude Include="ExerciseListState.hpp" />
+    <ClInclude Include="FormatLogResult.hpp" />
     <ClInclude Include="GuiState.hpp" />
     <ClInclude Include="InputManager.hpp" />
     <ClCompile Include="Main.cpp" />

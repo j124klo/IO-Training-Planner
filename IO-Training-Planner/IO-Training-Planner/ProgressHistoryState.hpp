@@ -7,6 +7,8 @@
 #include "GuiState.hpp"
 #include "AppPlanner.hpp"
 #include "Models.hpp"
+#include "Button.hpp"
+#include "FormatLogResult.hpp"
 
 using namespace std;
 
@@ -34,9 +36,6 @@ private:
 	vector<sf::Text> _logExercises;
 	vector<sf::Text> _logSets;
 	vector<sf::Text> _logResults;
-
-    // Helper do formatowania wyniku
-    string formatLogResult(const WorkoutLog& log);
 
 public:
     ProgressHistoryState(AppDataRef data);

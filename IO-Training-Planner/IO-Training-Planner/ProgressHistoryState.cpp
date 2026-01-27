@@ -1,54 +1,12 @@
 #include "DEFINITIONS.hpp"
 #include "ProgressHistoryState.hpp"
 #include "ProgressState.hpp"
-#include <iomanip>
 
 using namespace std;
 
 ProgressHistoryState::ProgressHistoryState(AppDataRef data) : GuiState(data)
 {
 
-}
-
-string ProgressHistoryState::formatLogResult(const WorkoutLog& log)
-{
-    // Pobieramy æwiczenie, ¿eby znaæ typ
-    auto ex = this->_data->database.getExerciseById(log.exerciseId);
-
-    if (!ex) {
-        stringstream ss;
-        ss << log.weight << " - " << log.reps;
-        return ss.str();
-    }
-
-    bool hasDist = false;
-    bool hasTime = false;
-    for (auto vt : ex->valueTypes) {
-        if (vt == ValueType::DISTANCE_KM) hasDist = true;
-        if (vt == ValueType::TIME_SEC) hasTime = true;
-    }
-
-    stringstream ss;
-    if (hasDist) {
-        // Bieganie: km / min
-        ss << log.weight << "km / " << log.reps << "min";
-    }
-    else if (hasTime) {
-        // Plank: s
-        ss << log.weight << "s";
-    }
-    else {
-        // Si³ownia
-        if (log.weight > 0) {
-            ss << log.weight << "kg x " << log.reps;
-        }
-        else {
-            // Jeœli ciê¿ar 0 (np. pompki), wyœwietl tylko powtórzenia
-            ss << log.reps << " reps";
-        }
-    }
-
-    return ss.str();
 }
 
 void ProgressHistoryState::Buttons_Init()
@@ -147,7 +105,7 @@ void ProgressHistoryState::Logs_Init()
         addText(this->_logDates, this->_logs[i].date, colDate, currentY, sf::Color(200, 200, 200));
         addText(this->_logExercises, this->_logs[i].exerciseNameVal, colName, currentY, sf::Color::White);
         addText(this->_logSets, to_string(this->_logs[i].setNumber), colSet, currentY, sf::Color(200, 200, 200), 30, false, true);
-        addText(this->_logResults, formatLogResult(this->_logs[i]), colRes, currentY, sf::Color::White);
+        addText(this->_logResults, formatLogResult(this->_logs[i], this->_data->database.getExerciseById(this->_logs[i].exerciseId)), colRes, currentY, sf::Color::White);
 
         currentY += this->_logExercises[i+1].getGlobalBounds().height + 40.0f;
     }
@@ -219,12 +177,12 @@ void ProgressHistoryState::ScrollPanel_Update(float dt)
 
     float topBound = this->_scrollEdgeTop.getGlobalBounds().height - this->_scrollTop.getGlobalBounds().height / 2.0f;
 
-    float contentDeltaY = this->_scrollTop.getGlobalBounds().height * 1.5f + this->_title.getGlobalBounds().height + 40.0f;
+    float contentDeltaY = this->_scrollTop.getGlobalBounds().height * 1.5f + this->_title.getGlobalBounds().height;
     for (size_t i = 0; i < this->_logExercises.size(); i++)
     {
         contentDeltaY += this->_logExercises[i].getGlobalBounds().height + 40.0f;
     }
-    float bottomBound = this->_scrollEdgeBot.getPosition().y - contentDeltaY + 40.0f;
+    float bottomBound = this->_scrollEdgeBot.getPosition().y - contentDeltaY;
 
     if (bottomBound >= topBound)
     {
