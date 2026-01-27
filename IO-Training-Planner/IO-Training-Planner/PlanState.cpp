@@ -703,11 +703,11 @@ void PlanState::InitLeftMenuButtons()
 	// Konfiguracja wymiarów
 	float buttonWidth = 180.0f;
 	float buttonHeight = 50.0f;
-	float startX = 80.0f;   // Przesuniête w prawo (by³o 20)
-	float newPlanY = 300.0f;    // Przesuniête w dó³ (by³o 150)
-	float deletePlanY = 370.0f; // Przesuniête w dó³ (by³o 220)
-	float editY = 440.0f;       // EDIT pod DELETE
-	float saveY = 510.0f;       // SAVE pod EDIT
+	float startX = this->_availablePlansTitle.getPosition().x + this->_availablePlansTitle.getGlobalBounds().width / 2 - 90.0f;   // Przesuniête w prawo (by³o 20)
+	float newPlanY = 500.0f;    // Przesuniête w dó³ (by³o 150)
+	float deletePlanY = 570.0f; // Przesuniête w dó³ (by³o 220)
+	float editY = 640.0f;       // EDIT pod DELETE
+	float saveY = 710.0f;       // SAVE pod EDIT
 
 	sf::Font& font = this->_data->assets.getFont("Default Font");
 
